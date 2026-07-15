@@ -1,0 +1,119 @@
+---
+import { formatDate, toIsoDate, type NewsEntry } from "../lib/news";
+
+interface Props {
+  article: NewsEntry;
+}
+
+const { article } = Astro.props;
+const { title, summary, company, publishedAt } = article.data;
+const href = `/berita/${article.id}`;
+---
+
+<article class="card">
+  <div class="card-top">
+    <span class="tag">{company}</span>
+    <time class="date" datetime={toIsoDate(publishedAt)}>
+      {formatDate(publishedAt)}
+    </time>
+  </div>
+  <h3 class="card-title">
+    <a href={href}>{title}</a>
+  </h3>
+  <p class="card-summary">{summary}</p>
+  <a class="card-link" href={href} aria-label={`Baca sinyal: ${title}`}>
+    Baca sinyal
+    <span aria-hidden="true">→</span>
+  </a>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.25rem;
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(18, 24, 32, 0.92) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    min-height: 100%;
+    box-shadow: none;
+    transition:
+      border-color var(--ease),
+      transform var(--ease),
+      background var(--ease),
+      box-shadow var(--ease);
+  }
+
+  .card:hover {
+    border-color: rgba(61, 255, 154, 0.38);
+    transform: translateY(-3px);
+    background: var(--bg-card-hover);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .date {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .card-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .card-title a:hover {
+    color: var(--accent);
+  }
+
+  .card-summary {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .card-link:hover {
+    color: var(--accent-bright);
+    text-decoration: none;
+  }
+
+  .card-link span {
+    transition: transform var(--ease);
+  }
+
+  .card:hover .card-link span {
+    transform: translateX(3px);
+  }
+</style>

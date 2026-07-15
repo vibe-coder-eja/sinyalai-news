@@ -1,0 +1,75 @@
+{
+  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | page (page = manual/bookmark, belum di-fetch otomatis).",
+  "sources": [
+    {
+      "id": "openai",
+      "company": "OpenAI",
+      "type": "rss",
+      "url": "https://openai.com/news/rss.xml",
+      "home": "https://openai.com/news",
+      "enabled": true,
+      "notes": "Fallback alternatif: https://openai.com/blog/rss.xml"
+    },
+    {
+      "id": "anthropic",
+      "company": "Anthropic",
+      "type": "rss",
+      "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/master/feeds/feed_anthropic_news.xml",
+      "home": "https://www.anthropic.com/news",
+      "enabled": true,
+      "trusted": false,
+      "notes": "Feed komunitas/mirror (tidak resmi); utamakan verifikasi manual sebelum menerbitkan karena risiko manipulasi konten."
+    },
+    {
+      "id": "nvidia-blog",
+      "company": "NVIDIA",
+      "type": "rss",
+      "url": "https://blogs.nvidia.com/feed/",
+      "home": "https://blogs.nvidia.com",
+      "enabled": true
+    },
+    {
+      "id": "microsoft-blog",
+      "company": "Microsoft",
+      "type": "rss",
+      "url": "https://blogs.microsoft.com/feed/",
+      "home": "https://blogs.microsoft.com/",
+      "enabled": true,
+      "notes": "Feed umum Microsoft Blog (AI /ai/feed mengembalikan 410)."
+    },
+    {
+      "id": "google-deepmind",
+      "company": "Google",
+      "type": "rss",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "home": "https://deepmind.google/discover/blog/",
+      "enabled": true
+    },
+    {
+      "id": "google-ai",
+      "company": "Google",
+      "type": "rss",
+      "url": "https://blog.google/technology/ai/rss/",
+      "home": "https://blog.google/technology/ai/",
+      "enabled": true
+    },
+    {
+      "id": "xai",
+      "company": "xAI",
+      "type": "page",
+      "url": "https://x.ai",
+      "home": "https://x.ai",
+      "enabled": false,
+      "notes": "Belum ada RSS publik yang stabil. Isi manual atau sambungkan scraper/API nanti."
+    },
+    {
+      "id": "meta-ai",
+      "company": "Meta",
+      "type": "page",
+      "url": "https://ai.meta.com/blog/",
+      "home": "https://ai.meta.com/blog/",
+      "enabled": false,
+      "notes": "RSS resmi belum stabil (404 pada /blog/rss/). Manual dulu."
+    }
+  ]
+}

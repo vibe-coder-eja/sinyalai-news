@@ -1,0 +1,79 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  articleDate?: string;
+  articleCompany?: string;
+}
+
+const {
+  title = "Sinyal AI",
+  description = "Sinyal AI — Sinyal Akal Imitasi. Berita ringkas seputar rilis AI dari industri teknologi.",
+  ogImage = "/og-default.png",
+  articleDate,
+  articleCompany,
+} = Astro.props;
+
+const fullTitle = title === "Sinyal AI" ? title : `${title} · Sinyal AI`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://sinyalai.vercel.app");
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#07090c" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={articleDate ? "article" : "website"} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, canonicalURL.origin)} />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="Sinyal AI" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(ogImage, canonicalURL.origin)} />
+
+    <!-- Article Specific Metadata -->
+    {articleDate && <meta property="article:published_time" content={articleDate} />}
+    {articleCompany && <meta property="article:section" content={articleCompany} />}
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Sinyal AI RSS Feed" href="/rss.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Lewati ke konten</a>
+    <Header />
+    <main id="main" class="site-main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

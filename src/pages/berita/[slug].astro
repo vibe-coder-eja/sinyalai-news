@@ -1,0 +1,93 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, getPublishedNews, toIsoDate } from "../../lib/news";
+
+export async function getStaticPaths() {
+  const articles = await getPublishedNews();
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const { title, summary, company, source, publishedAt } = article.data;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": title,
+  "description": summary,
+  "datePublished": publishedAt.toISOString(),
+  "author": {
+    "@type": "Organization",
+    "name": "Sinyal AI"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Sinyal AI",
+    "logo": {
+      "@type": "ImageObject",
+      "url": new URL("/favicon.svg", Astro.site || "https://sinyalai.vercel.app").toString()
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": new URL(Astro.url.pathname, Astro.site || "https://sinyalai.vercel.app").toString()
+  }
+};
+---
+
+<BaseLayout title={title} description={summary} articleDate={publishedAt.toISOString()} articleCompany={company}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  <article class="container article">
+    <header class="article-header">
+      <p class="eyebrow">Detail sinyal</p>
+      <div class="meta">
+        <span class="tag">{company}</span>
+        <time datetime={toIsoDate(publishedAt)}>{formatDate(publishedAt)}</time>
+      </div>
+      <h1 class="page-title">{title}</h1>
+      <p class="page-lead summary">{summary}</p>
+    </header>
+
+    <div class="prose article-body">
+      <Content />
+    </div>
+
+    <div class="source-box">
+      <p class="label">Sumber resmi</p>
+      <a href={source} target="_blank" rel="noopener noreferrer">
+        {source}
+      </a>
+    </div>
+
+    <a class="back-link" href="/berita">← Kembali ke daftar berita</a>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: min(100% - 2rem, 720px);
+  }
+
+  .article-header {
+    margin-bottom: 0.25rem;
+  }
+
+  .article-header .meta {
+    margin-bottom: 1rem;
+  }
+
+  .summary {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-body {
+    max-width: none;
+  }
+</style>

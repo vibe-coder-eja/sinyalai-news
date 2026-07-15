@@ -1,0 +1,95 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand-block">
+      <p class="footer-brand">Sinyal AI</p>
+      <p class="footer-copy muted">
+        Sinyal Akal Imitasi — ringkasan berita AI dari rilis resmi industri.
+      </p>
+    </div>
+    <nav class="footer-nav" aria-label="Tautan footer">
+      <a href="/berita">Berita</a>
+      <a href="/tentang">Tentang</a>
+    </nav>
+    <div class="footer-meta muted">
+      <p>&copy; {year} Sinyal AI</p>
+      <p>Dibangun oleh Reza Syahputra</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.28);
+    padding: 2.25rem 0;
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1.4fr auto auto;
+    gap: 1.5rem 2rem;
+    align-items: start;
+  }
+
+  .footer-brand {
+    margin: 0 0 0.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .footer-copy {
+    margin: 0;
+    max-width: 28rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .footer-nav a {
+    color: var(--text-muted);
+    font-weight: 550;
+    text-decoration: none;
+  }
+
+  .footer-nav a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer-meta {
+    font-size: 0.85rem;
+    text-align: right;
+    font-family: var(--font-mono);
+  }
+
+  .footer-meta p {
+    margin: 0 0 0.3rem;
+  }
+
+  @media (max-width: 720px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .footer-meta {
+      text-align: left;
+    }
+
+    .footer-nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.1rem;
+    }
+  }
+</style>

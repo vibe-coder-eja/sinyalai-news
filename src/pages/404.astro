@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Halaman Tidak Ditemukan"
+  description="Maaf, halaman yang Anda cari tidak dapat ditemukan di Sinyal AI."
+>
+  <section class="container error-page">
+    <p class="eyebrow">404 Error</p>
+    <h1 class="page-title">Sinyal Hilang</h1>
+    <p class="page-lead">
+      Halaman yang Anda tuju tidak dapat ditemukan. Mungkin halaman telah dihapus, dipindahkan, atau alamat URL yang Anda masukkan salah.
+    </p>
+
+    <div class="error-actions">
+      <a class="btn btn-primary" href="/">Kembali ke Beranda</a>
+      <a class="btn btn-ghost" href="/berita">Lihat Semua Berita</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .error-page {
+    padding: var(--space-8) 0;
+    text-align: center;
+    max-width: var(--read-width);
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+</style>

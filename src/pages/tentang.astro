@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const sources = [
+  "xAI",
+  "Anthropic",
+  "OpenAI",
+  "NVIDIA",
+  "Microsoft",
+  "Google / DeepMind",
+];
+---
+
+<BaseLayout
+  title="Tentang"
+  description="Tentang Sinyal AI — Sinyal Akal Imitasi, portal berita ringkas industri AI."
+>
+  <section class="container about">
+    <p class="eyebrow">About</p>
+    <h1 class="page-title">Tentang Sinyal AI</h1>
+    <p class="page-lead">
+      Sinyal AI (Sinyal Akal Imitasi) adalah website berita sederhana yang
+      memantau rilis dari dunia kecerdasan buatan.
+    </p>
+
+    <div class="prose">
+      <h2>Misi</h2>
+      <p>
+        Memberi pembaca sinyal yang jelas: apa yang baru diumumkan, kenapa relevan,
+        dan di mana sumber resminya — tanpa noise portal berita umum.
+      </p>
+
+      <h2>Sumber yang dipantau (rencana)</h2>
+    </div>
+
+    <div class="chip-row" role="list" aria-label="Daftar perusahaan">
+      {sources.map((name) => <span class="chip" role="listitem"><strong>{name}</strong></span>)}
+      <span class="chip" role="listitem">+ lainnya</span>
+    </div>
+
+    <div class="prose">
+      <h2>Cara kerja (roadmap)</h2>
+      <ol>
+        <li>Website statis sederhana (Astro) — sudah jalan</li>
+        <li>Konten Markdown per artikel (content collections) — sudah jalan</li>
+        <li>Pipeline RSS → draft Markdown — sudah ada skeleton</li>
+        <li>Rewrite AI + publish terotomasi — berikutnya</li>
+      </ol>
+
+      <h2>Editorial</h2>
+      <p>
+        Kami mengutamakan ringkasan netral dan tautan ke sumber resmi. Bukan
+        salinan penuh siaran pers.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about .chip-row {
+    margin-top: -0.25rem;
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NewsCard from "../components/NewsCard.astro";
+import { getPublishedNews } from "../lib/news";
+
+const articles = await getPublishedNews();
+const latest = articles.slice(0, 3);
+const companies = [...new Set(articles.map((a) => a.data.company))];
+---
+
+<BaseLayout
+  title="Sinyal AI"
+  description="Sinyal AI — Sinyal Akal Imitasi. Ringkasan berita AI dari rilis resmi industri."
+>
+  <section class="container hero">
+    <p class="eyebrow">Live signal feed</p>
+    <h1 class="page-title">Sinyal dari industri AI</h1>
+    <p class="page-lead">
+      <strong>Sinyal AI</strong> (Sinyal Akal Imitasi) merangkum rilis resmi dari
+      perusahaan teknologi AI menjadi berita singkat yang mudah dipantau — netral,
+      bersumber, tanpa noise.
+    </p>
+
+    {
+      companies.length > 0 && (
+        <div class="chip-row" role="list" aria-label="Perusahaan yang muncul di feed">
+          {companies.map((company) => (
+            <span class="chip" role="listitem">
+              <strong>{company}</strong>
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/berita">Lihat semua berita</a>
+      <a class="btn btn-ghost" href="/tentang">Tentang Sinyal AI</a>
+    </div>
+  </section>
+
+  <section class="container latest">
+    <div class="section-head">
+      <h2>Sinyal terbaru</h2>
+      <a href="/berita">Semua berita →</a>
+    </div>
+
+    {
+      latest.length === 0 ? (
+        <div class="empty-state">
+          <p class="empty-title">Belum ada sinyal</p>
+          <p>Tambahkan artikel Markdown di <code>src/content/news/</code>.</p>
+        </div>
+      ) : (
+        <div class="news-grid">
+          {latest.map((article) => (
+            <NewsCard article={article} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-bottom: 2.75rem;
+    position: relative;
+  }
+
+  .hero::after {
+    content: "";
+    display: block;
+    margin-top: 2.5rem;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(61, 255, 154, 0.35),
+      var(--border),
+      transparent
+    );
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .latest {
+    padding-top: 0.25rem;
+  }
+
+  strong {
+    color: var(--text);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+</style>
