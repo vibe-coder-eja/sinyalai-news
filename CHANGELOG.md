@@ -4,6 +4,35 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.3.0] — 2026-10-04
+
+Integrasi aset identitas visual resmi Sinyal AI News: konversi logo format PNG ke WebP performa tinggi, restrukturisasi varian logo semantik, serta implementasi ke seluruh komponen situs dan metadata web.
+
+### 🎨 Identitas Visual & Konversi Logo WebP (Brand Assets)
+- **Konversi WebP Lossless/High-Quality**:
+  - Mengonversi seluruh 7 varian logo dari `src/logo/` ke format modern `.webp` dengan penghematan ukuran file hingga 70-95% (contoh: 1.5MB turun menjadi ~62KB) tanpa mengurangi ketajaman visual.
+  - Menyediakan penamaan semantik terstruktur di `src/logo/` dan `public/logo/`:
+    - `sinyal-ai-news-logo-horizontal-dark.webp`: Lockup horizontal teks putih + simbol hijau neon untuk latar belakang gelap / navbar.
+    - `sinyal-ai-news-logo-horizontal-alt.webp`: Varian alternatif lockup horizontal.
+    - `sinyal-ai-news-logo-horizontal-light.webp`: Lockup horizontal teks gelap untuk latar belakang terang.
+    - `sinyal-ai-news-logo-stacked-dark.webp`: Lockup vertikal bertumpuk untuk tema gelap.
+    - `sinyal-ai-news-logo-stacked-light.webp`: Lockup vertikal bertumpuk untuk tema terang.
+    - `sinyal-ai-news-logo-icon.webp`: Ikon/simbol murni 1:1 dengan latar belakang transparan.
+    - `sinyal-ai-news-logo-icon-card.webp`: Ikon/simbol solid 1:1 dengan latar belakang gelap.
+- **Implementasi Komponen Navigasi & Footer**:
+  - **Header Navigasi (`src/components/Header.astro`)**: Mengganti kotak placeholder CSS dengan ikon resmi WebP (`sinyal-ai-news-logo-icon.webp`) lengkap dengan efek visual neon glow halus saat *hover* dan *tap feedback* interaktif.
+  - **Footer Situs (`src/components/Footer.astro`)**: Menyematkan simbol resmi di samping nama media pada blok identitas redaksi.
+  - **Halaman Tentang (`src/pages/tentang.astro`)**: Menambahkan kartu identitas resmi (*brand badge card*) yang memamerkan logo horizontal resmi.
+- **Aset Ikon Web & Favicon**:
+  - Menghasilkan `public/logo.webp` dan `public/logo.png` (512x512) untuk PWA dan Schema.org.
+  - Menghasilkan `public/apple-touch-icon.png` (180x180) untuk homescreen iOS.
+  - Menghasilkan `public/favicon-32x32.png` dan `public/favicon-16x16.png` untuk browser modern.
+  - Memperbarui `public/manifest.webmanifest` dan `src/layouts/BaseLayout.astro` dengan definisi ikon lengkap.
+- **Kartu Berbagi Sosial (Social OG Image)**:
+  - Membuat `public/og-default.png` (1200x630) beresolusi tinggi dengan logo resmi horizontal, label *LIVE SIGNALS*, dan tipografi tema gelap.
+
+---
+
 ## [0.2.0] — 2026-10-04
 
 Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI otomatis, deduplikasi sumber berlapis, penguatan metadata SEO/Schema.org, ekspansi pengujian unit, serta penerbitan artikel sinyal resmi industri teknologi.

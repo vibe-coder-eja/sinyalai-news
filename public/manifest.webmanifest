@@ -14,6 +14,21 @@
       "type": "image/svg+xml"
     },
     {
+      "src": "/sinyalai-news/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/sinyalai-news/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/sinyalai-news/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    },
+    {
       "src": "/sinyalai-news/logo.png",
       "sizes": "512x512",
       "type": "image/png"

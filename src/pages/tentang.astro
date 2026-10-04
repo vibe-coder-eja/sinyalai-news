@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/url";
 
 const sources = [
   "Meta",
@@ -23,6 +24,18 @@ const sources = [
       Sinyal AI News (Berita Terkini Dunia AI / Akal Imitasi) adalah media berita teknologi yang
       memantau dan merangkum rilis resmi dari industri kecerdasan buatan global.
     </p>
+
+    <div class="brand-badge-card">
+      <img
+        src={withBase("/logo/sinyal-ai-news-logo-horizontal-dark.webp")}
+        alt="Identitas Resmi Sinyal AI News"
+        width="380"
+        height="126"
+        class="brand-badge-img"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
 
     <div class="prose">
       <h2>Misi</h2>
@@ -60,6 +73,24 @@ const sources = [
 </BaseLayout>
 
 <style>
+  .brand-badge-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem 2rem;
+    background: linear-gradient(145deg, rgba(13, 20, 28, 0.8), rgba(7, 9, 12, 0.95));
+    border: 1px solid rgba(61, 255, 154, 0.25);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(61, 255, 154, 0.08);
+  }
+
+  .brand-badge-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
   .about .chip-row {
     margin-top: -0.25rem;
   }
