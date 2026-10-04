@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/url";
 ---
 
 <BaseLayout
@@ -14,8 +15,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </p>
 
     <div class="error-actions">
-      <a class="btn btn-primary" href="/">Kembali ke Beranda</a>
-      <a class="btn btn-ghost" href="/berita">Lihat Semua Berita</a>
+      <a class="btn btn-primary" href={withBase("/")}>Kembali ke Beranda</a>
+      <a class="btn btn-ghost" href={withBase("/berita")}>Lihat Semua Berita</a>
     </div>
   </section>
 </BaseLayout>

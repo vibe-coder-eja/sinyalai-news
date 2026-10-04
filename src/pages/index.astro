@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NewsCard from "../components/NewsCard.astro";
 import { getPublishedNews } from "../lib/news";
+import { withBase } from "../lib/url";
 
 const articles = await getPublishedNews();
 const latest = articles.slice(0, 3);
@@ -34,15 +35,15 @@ const companies = [...new Set(articles.map((a) => a.data.company))];
     }
 
     <div class="hero-actions">
-      <a class="btn btn-primary" href="/berita">Lihat semua berita</a>
-      <a class="btn btn-ghost" href="/tentang">Tentang Sinyal AI</a>
+      <a class="btn btn-primary" href={withBase("/berita")}>Lihat semua berita</a>
+      <a class="btn btn-ghost" href={withBase("/tentang")}>Tentang Sinyal AI</a>
     </div>
   </section>
 
   <section class="container latest">
     <div class="section-head">
       <h2>Sinyal terbaru</h2>
-      <a href="/berita">Semua berita →</a>
+      <a href={withBase("/berita")}>Semua berita →</a>
     </div>
 
     {

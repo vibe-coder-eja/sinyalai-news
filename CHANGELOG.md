@@ -75,6 +75,16 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
     - `review-animations`: Checklist audit kualitas dan fluiditas animasi antarmuka.
     - `write-swift`: Panduan penulisan kode SwiftUI dan integrasi platform Apple.
 
+### 🌐 Hosting & CI/CD Deployment GitHub Pages
+- **Konfigurasi Subpath Astro ([`astro.config.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/astro.config.mjs))**:
+  - Mengonfigurasi `site: 'https://vibe-coder-eja.github.io'` dan `base: '/sinyalai-news'` untuk deployment GitHub Pages.
+- **Utilitas Path Dinamis ([`src/lib/url.ts`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/lib/url.ts))**:
+  - Menyediakan fungsi pembantu `withBase(path)` agar seluruh navigasi header, footer, tombol hero, kartu berita, sitemap, dan tautan aset (favicon, logo, ogImage) secara dinamis mendukung hosting subpath tanpa broken link.
+- **Otomasi Workflow GitHub Actions ([`.github/workflows/deploy.yml`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/.github/workflows/deploy.yml))**:
+  - Menyiapkan workflow deployment otomatis menggunakan `actions/upload-pages-artifact@v3` dan `actions/deploy-pages@v4` yang otomatis mem-build dan mempublikasikan situs setiap kali ada push ke branch `main`.
+- **Feed RSS & Sitemap Terpadu ([`src/pages/rss.xml.ts`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/rss.xml.ts), [`public/robots.txt`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/public/robots.txt))**:
+  - Menyelaraskan seluruh link permalink pada XML RSS dan lokasi sitemap di `robots.txt` ke URL target GitHub Pages.
+
 ---
 
 ## [0.1.0] — 2026-07-11

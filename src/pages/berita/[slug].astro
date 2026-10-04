@@ -2,6 +2,7 @@
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { formatDate, getPublishedNews, toIsoDate } from "../../lib/news";
+import { withBase } from "../../lib/url";
 
 export async function getStaticPaths() {
   const articles = await getPublishedNews();
@@ -14,7 +15,7 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content } = await render(article);
 const { title, summary, company, source, publishedAt, updatedAt } = article.data;
-const siteUrl = Astro.site || "https://sinyalai.vercel.app";
+const siteUrl = Astro.site || new URL("https://vibe-coder-eja.github.io/sinyalai-news");
 const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const modifiedAt = updatedAt ?? publishedAt;
 
@@ -23,7 +24,7 @@ const jsonLd = {
   "@type": "NewsArticle",
   "headline": title,
   "description": summary,
-  "image": [new URL("/og-default.png", siteUrl).toString()],
+  "image": [new URL(withBase("/og-default.png"), siteUrl).toString()],
   "datePublished": publishedAt.toISOString(),
   "dateModified": modifiedAt.toISOString(),
   "inLanguage": "id-ID",
@@ -39,7 +40,7 @@ const jsonLd = {
     "name": "Sinyal AI",
     "logo": {
       "@type": "ImageObject",
-      "url": new URL("/logo.png", siteUrl).toString(),
+      "url": new URL(withBase("/logo.png"), siteUrl).toString(),
       "width": 512,
       "height": 512
     }
@@ -75,7 +76,7 @@ const jsonLd = {
       </a>
     </div>
 
-    <a class="back-link" href="/berita">← Kembali ke daftar berita</a>
+    <a class="back-link" href={withBase("/berita")}>← Kembali ke daftar berita</a>
   </article>
 </BaseLayout>
 

@@ -4,15 +4,22 @@ import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async (context) => {
   const news = await getPublishedNews();
+  const siteUrl = context.site
+    ? new URL(import.meta.env.BASE_URL, context.site).toString()
+    : 'https://vibe-coder-eja.github.io/sinyalai-news/';
+
+  const baseSubpath = (import.meta.env.BASE_URL ?? '/').replace(/^\/+|\/+$/g, '');
+  const itemPrefix = baseSubpath ? `${baseSubpath}/` : '';
+
   return rss({
     title: 'Sinyal AI',
     description: 'Sinyal Akal Imitasi — Ringkasan berita AI resmi dari industri teknologi.',
-    site: context.site || 'https://sinyalai.vercel.app',
+    site: siteUrl,
     items: news.map((item) => ({
       title: item.data.title,
       pubDate: item.data.publishedAt,
       description: item.data.summary,
-      link: `/berita/${item.id}/`,
+      link: `${itemPrefix}berita/${item.id}/`,
     })),
     customData: `<language>id-id</language>`,
   });

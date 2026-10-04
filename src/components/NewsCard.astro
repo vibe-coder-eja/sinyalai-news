@@ -1,5 +1,6 @@
 ---
 import { formatDate, toIsoDate, type NewsEntry } from "../lib/news";
+import { withBase } from "../lib/url";
 
 interface Props {
   article: NewsEntry;
@@ -7,7 +8,7 @@ interface Props {
 
 const { article } = Astro.props;
 const { title, summary, company, publishedAt } = article.data;
-const href = `/berita/${article.id}`;
+const href = withBase(`/berita/${article.id}`);
 ---
 
 <article class="card">

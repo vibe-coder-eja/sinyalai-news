@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sinyalai.vercel.app/sitemap-index.xml
+Sitemap: https://vibe-coder-eja.github.io/sinyalai-news/sitemap-index.xml

@@ -1,21 +1,24 @@
 ---
+import { withBase } from "../lib/url";
+
 const pathname = Astro.url.pathname;
+const homeHref = withBase("/");
 
 const links = [
-  { href: "/", label: "Beranda" },
-  { href: "/berita", label: "Berita" },
-  { href: "/tentang", label: "Tentang" },
+  { href: homeHref, label: "Beranda" },
+  { href: withBase("/berita"), label: "Berita" },
+  { href: withBase("/tentang"), label: "Tentang" },
 ];
 
 function isActive(href: string): boolean {
-  if (href === "/") return pathname === "/";
+  if (href === homeHref) return pathname === homeHref || pathname === `${homeHref}/`;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 ---
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="Sinyal AI — beranda">
+    <a class="brand" href={homeHref} aria-label="Sinyal AI — beranda">
       <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-text">
         <span class="brand-name">Sinyal AI</span>

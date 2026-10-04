@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../lib/url";
+
 const year = new Date().getFullYear();
 ---
 
@@ -11,8 +13,8 @@ const year = new Date().getFullYear();
       </p>
     </div>
     <nav class="footer-nav" aria-label="Tautan footer">
-      <a href="/berita">Berita</a>
-      <a href="/tentang">Tentang</a>
+      <a href={withBase("/berita")}>Berita</a>
+      <a href={withBase("/tentang")}>Tentang</a>
     </nav>
     <div class="footer-meta muted">
       <p>&copy; {year} Sinyal AI</p>
