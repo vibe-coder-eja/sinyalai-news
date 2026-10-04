@@ -55,6 +55,26 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - [`scripts/lib/__tests__/text.test.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/__tests__/text.test.mjs): 6 test untuk pemotongan kata aman dan penanganan tanda baca.
   - Pembaruan unit test existing untuk parser RSS dan writer Markdown.
 
+### 🧠 AI Agent Skills & Tooling
+- **Humanizer Skill ([`.agents/skills/humanizer`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/.agents/skills/humanizer))**:
+  - Mengintegrasikan modul kepenulisan natural (`blader/humanizer`) untuk mengikis pola tulisan kaku AI (*AI tell/slop*), menghilangkan frasa klise korporat, dan menghasilkan gaya bahasa jurnalistik teknologi yang tajam dan natural.
+- **Emil Kowalski Design Engineering & UI Skills ([`.agents/skills/`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/.agents/skills))**:
+  - Menginstal 14 skill interaksi, animasi, dan desain UI tingkat lanjut dari `emilkowalski/skills`:
+    - `animate`: Resep dan prinsip implementasi animasi modern berbasis performa.
+    - `animate-expo`: Praktik animasi gesture dan layout untuk platform React Native/Expo.
+    - `animation-vocabulary`: Glosarium istilah animasi interaktif dan transisi mikro.
+    - `apple-design`: Panduan konsistensi estetika Apple Human Interface Guidelines.
+    - `ask-sonner`: Pola integrasi dan toast notification Sonner.
+    - `break-ui`: Audit edge case layout, overflow, dan stress-testing UI.
+    - `emil-design-eng`: Standar rekayasa desain (Design Engineering) kelas dunia.
+    - `find-animation-opportunities`: Deteksi titik-titik interaksi yang membutuhkan micro-feedback.
+    - `improve-animations`: Perbaikan kurva easing, spring physics, dan timing animasi.
+    - `mobile-native`: Optimasi performa dan pola native feel pada mobile.
+    - `pick-ui-library`: Panduan pemilihan library UI yang tepat sesuai kebutuhan arsitektur.
+    - `prototype`: Alur pembuatan prototipe interaktif cepat (*rapid prototyping*).
+    - `review-animations`: Checklist audit kualitas dan fluiditas animasi antarmuka.
+    - `write-swift`: Panduan penulisan kode SwiftUI dan integrasi platform Apple.
+
 ---
 
 ## [0.1.0] — 2026-07-11
