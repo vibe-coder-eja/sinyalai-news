@@ -16,42 +16,44 @@ const sources = [
   title="Tentang"
   description="Tentang Sinyal AI — Sinyal Akal Imitasi, portal berita ringkas industri AI."
 >
-  <section class="container about">
+  <section class="container about reveal reveal-1">
     <p class="eyebrow">About</p>
     <h1 class="page-title">Tentang Sinyal AI</h1>
     <p class="page-lead">
-      Sinyal AI (Sinyal Akal Imitasi) adalah website berita sederhana yang
-      memantau rilis dari dunia kecerdasan buatan.
+      Sinyal AI (Sinyal Akal Imitasi) adalah website berita teknologi yang
+      memantau dan merangkum rilis resmi dari industri kecerdasan buatan.
     </p>
 
     <div class="prose">
       <h2>Misi</h2>
       <p>
         Memberi pembaca sinyal yang jelas: apa yang baru diumumkan, kenapa relevan,
-        dan di mana sumber resminya — tanpa noise portal berita umum.
+        dan di mana sumber resminya — berfokus pada rilis model baru, fitur, produk,
+        serta kolaborasi industri tanpa noise media umum.
       </p>
 
-      <h2>Sumber yang dipantau (rencana)</h2>
+      <h2>Sumber resmi yang dipantau</h2>
     </div>
 
     <div class="chip-row" role="list" aria-label="Daftar perusahaan">
       {sources.map((name) => <span class="chip" role="listitem"><strong>{name}</strong></span>)}
-      <span class="chip" role="listitem">+ lainnya</span>
+      <span class="chip" role="listitem">+ rilis resmi terverifikasi</span>
     </div>
 
     <div class="prose">
-      <h2>Cara kerja (roadmap)</h2>
+      <h2>Cara kerja redaksi</h2>
       <ol>
-        <li>Website statis sederhana (Astro) — sudah jalan</li>
-        <li>Konten Markdown per artikel (content collections) — sudah jalan</li>
-        <li>Pipeline RSS → draft Markdown — sudah ada skeleton</li>
-        <li>Rewrite AI + publish terotomasi — berikutnya</li>
+        <li>Website statis performa tinggi (Astro & GitHub Pages) — aktif</li>
+        <li>Organisasi arsip Markdown berbasis tanggal rilis harian — aktif</li>
+        <li>Pemantauan rilis resmi otomatis dari 8 raksasa AI — aktif</li>
+        <li>Kurasi Pemimpin Redaksi (3 berita pagi & 3 berita malam) — aktif</li>
+        <li>Penulisan berita AI bebas klise (Humanizer & Redaktur RSAIN) — aktif</li>
       </ol>
 
       <h2>Editorial</h2>
       <p>
-        Kami mengutamakan ringkasan netral dan tautan ke sumber resmi. Bukan
-        salinan penuh siaran pers.
+        Kami mengutamakan ringkasan netral, anti-duplikasi, fakta teknis utama, dan
+        tautan langsung ke sumber resmi perusahaan.
       </p>
     </div>
   </section>

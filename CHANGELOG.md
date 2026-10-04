@@ -14,6 +14,24 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
 - **Sanitasi Skema Tautan & Kontrol Karakter**: Mencegah serangan injeksi protokol `javascript:` pada parser link dan membersihkan karakter kontrol tersembunyi pada serializer frontmatter YAML.
 - **Verifikasi Feed Mirror Komunitas**: Menandai sumber cermin komunitas (seperti mirror RSS Anthropic) dengan flag `"trusted": false` pada konfigurasi [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json).
 
+### 🎨 UI & Animasi Interaktif (Emil Kowalski Design Engineering)
+- **Transisi Antar-Halaman Halus (View Transitions)**:
+  - Mengintegrasikan `<ClientRouter />` dari `astro:transitions` pada [`src/layouts/BaseLayout.astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/layouts/BaseLayout.astro).
+  - Menerapkan animasi *cross-fade & subtle lift* (`::view-transition-old(root)` dan `::view-transition-new(root)`) menggunakan kurva kustom Emil Kowalski (`--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`).
+- **Animasi Sekuen & Stagger di Setiap Section**:
+  - Menambahkan kelas utilitas `.reveal`, `.reveal-1`, `.reveal-2`, `.reveal-3` dengan durasi kencang (~320ms) dan akselerasi natural.
+  - Kartu berita ([`src/components/NewsCard.astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/components/NewsCard.astro)) masuk secara bertahap (*staggered entrance*) dengan jeda dinamis 45ms per kartu.
+  - Mengikuti prinsip Emil Kowalski: tidak pernah menganimasi dari `scale(0)`, melainkan dari `scale(0.985)` + `translateY(14px)` demi kesan fisik yang natural.
+- **Hover Jelas & Umpan Balik Taktil (`:active`)**:
+  - Seluruh efek *hover* kartu, tombol, link, dan chip dikunci di balik `@media (hover: hover) and (pointer: fine)` agar tidak terjadi *sticky hover bug* pada layar sentuh ponsel.
+  - Umpan balik klik/tekan (*press feedback*): tombol dan kartu merespons sentuhan dengan `scale(0.97 - 0.985)` dalam 90ms.
+  - Kartu berita menyajikan iluminasi batas aksen (`rgba(61, 255, 154, 0.45)`), kenaikan bayangan dramatis, dan pergeseran ikon panah link (`translateX(4px)`).
+- **Desain Responsif & Mobile Native**:
+  - Mengatur ukuran kontainer cairan (`min(100% - max(1.5rem, 4vw), 1080px)`).
+  - Target sentuh minimal 44px untuk kenyamanan navigasi jari di perangkat genggam.
+  - Menghilangkan *tap highlight flash* abu-abu bawaan browser mobile melalui `-webkit-tap-highlight-color: transparent`.
+  - Dukungan penuh `@media (prefers-reduced-motion: reduce)` yang mematikan transform gerak bagi pengguna yang sensitif terhadap gerakan.
+
 ### 📂 Manajemen Konten & Struktur URL (Opsi A)
 - **Organisasi Subfolder Berdasarkan Tanggal Rilis (`YYYY-MM-DD`)**:
   - Mengklasifikasikan seluruh file artikel di [`src/content/news/`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/) ke dalam subfolder tanggal terbitnya (misal: `src/content/news/2026-10-04/slug.md`) agar struktur direktori bersih dan rapi.

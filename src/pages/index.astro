@@ -13,7 +13,7 @@ const companies = [...new Set(articles.map((a) => a.data.company))];
   title="Sinyal AI"
   description="Sinyal AI — Sinyal Akal Imitasi. Ringkasan berita AI dari rilis resmi industri."
 >
-  <section class="container hero">
+  <section class="container hero reveal reveal-1">
     <p class="eyebrow">Live signal feed</p>
     <h1 class="page-title">Sinyal dari industri AI</h1>
     <p class="page-lead">
@@ -40,7 +40,7 @@ const companies = [...new Set(articles.map((a) => a.data.company))];
     </div>
   </section>
 
-  <section class="container latest">
+  <section class="container latest reveal reveal-2">
     <div class="section-head">
       <h2>Sinyal terbaru</h2>
       <a href={withBase("/berita")}>Semua berita →</a>
@@ -54,8 +54,8 @@ const companies = [...new Set(articles.map((a) => a.data.company))];
         </div>
       ) : (
         <div class="news-grid">
-          {latest.map((article) => (
-            <NewsCard article={article} />
+          {latest.map((article, idx) => (
+            <NewsCard article={article} index={idx} />
           ))}
         </div>
       )

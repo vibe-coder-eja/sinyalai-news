@@ -4,14 +4,16 @@ import { withBase } from "../lib/url";
 
 interface Props {
   article: NewsEntry;
+  index?: number;
 }
 
-const { article } = Astro.props;
+const { article, index = 0 } = Astro.props;
 const { title, summary, company, publishedAt } = article.data;
 const href = withBase(`/berita/${article.id}`);
+const delayMs = Math.min(index * 45, 360);
 ---
 
-<article class="card">
+<article class="card" style={`--card-delay: ${delayMs}ms;`}>
   <div class="card-top">
     <span class="tag">{company}</span>
     <time class="date" datetime={toIsoDate(publishedAt)}>
@@ -24,33 +26,60 @@ const href = withBase(`/berita/${article.id}`);
   <p class="card-summary">{summary}</p>
   <a class="card-link" href={href} aria-label={`Baca sinyal: ${title}`}>
     Baca sinyal
-    <span aria-hidden="true">→</span>
+    <span class="arrow" aria-hidden="true">→</span>
   </a>
 </article>
 
 <style>
+  @keyframes cardEnter {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
   .card {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
-    padding: 1.25rem;
-    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(18, 24, 32, 0.92) 100%);
+    gap: 0.85rem;
+    padding: 1.35rem;
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(18, 24, 32, 0.94) 100%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     min-height: 100%;
-    box-shadow: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    animation: cardEnter 320ms var(--ease-out) forwards;
+    animation-delay: var(--card-delay, 0ms);
+    will-change: transform, opacity;
     transition:
-      border-color var(--ease),
-      transform var(--ease),
-      background var(--ease),
-      box-shadow var(--ease);
+      transform 200ms var(--ease-out),
+      border-color 200ms var(--ease-out),
+      background 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out);
   }
 
-  .card:hover {
-    border-color: rgba(61, 255, 154, 0.38);
-    transform: translateY(-3px);
-    background: var(--bg-card-hover);
-    box-shadow: var(--shadow-card);
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      border-color: rgba(61, 255, 154, 0.45);
+      transform: translateY(-4px);
+      background: linear-gradient(180deg, var(--bg-card-hover) 0%, rgba(22, 30, 40, 0.98) 100%);
+      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.45), 0 0 24px rgba(61, 255, 154, 0.12);
+    }
+
+    .card:hover .arrow {
+      transform: translateX(4px);
+      color: var(--accent-bright);
+    }
+  }
+
+  .card:active {
+    transform: scale(0.985) translateY(0);
+    transition-duration: 90ms;
   }
 
   .card-top {
@@ -69,24 +98,27 @@ const href = withBase(`/berita/${article.id}`);
 
   .card-title {
     margin: 0;
-    font-size: 1.05rem;
-    line-height: 1.35;
+    font-size: 1.08rem;
+    line-height: 1.38;
   }
 
   .card-title a {
     color: var(--text);
     text-decoration: none;
+    transition: color 160ms var(--ease-out);
   }
 
-  .card-title a:hover {
-    color: var(--accent);
+  @media (hover: hover) and (pointer: fine) {
+    .card-title a:hover {
+      color: var(--accent);
+    }
   }
 
   .card-summary {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.92rem;
-    line-height: 1.55;
+    line-height: 1.58;
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -98,23 +130,24 @@ const href = withBase(`/berita/${article.id}`);
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    margin-top: 0.15rem;
+    margin-top: 0.2rem;
     font-size: 0.9rem;
     font-weight: 650;
     text-decoration: none;
     color: var(--accent);
+    transition: color 160ms var(--ease-out);
   }
 
-  .card-link:hover {
-    color: var(--accent-bright);
-    text-decoration: none;
+  .arrow {
+    display: inline-block;
+    transition: transform 180ms var(--ease-out), color 180ms var(--ease-out);
+    will-change: transform;
   }
 
-  .card-link span {
-    transition: transform var(--ease);
-  }
-
-  .card:hover .card-link span {
-    transform: translateX(3px);
+  @media (hover: hover) and (pointer: fine) {
+    .card-link:hover {
+      color: var(--accent-bright);
+      text-decoration: none;
+    }
   }
 </style>

@@ -14,7 +14,7 @@ const countLabel =
   title="Berita"
   description="Daftar berita AI ringkas dari rilis industri — Sinyal AI."
 >
-  <section class="container">
+  <section class="container reveal reveal-1">
     <p class="eyebrow">Archive</p>
     <h1 class="page-title">Semua berita</h1>
     <p class="page-lead">
@@ -34,8 +34,8 @@ const countLabel =
         </div>
       ) : (
         <div class="news-grid">
-          {articles.map((article) => (
-            <NewsCard article={article} />
+          {articles.map((article, idx) => (
+            <NewsCard article={article} index={idx} />
           ))}
         </div>
       )

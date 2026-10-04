@@ -67,28 +67,39 @@ function isActive(href: string): boolean {
     text-decoration: none;
     color: inherit;
     min-width: 0;
+    transition: transform 160ms var(--ease-out);
+    will-change: transform;
   }
 
   .brand:hover {
     text-decoration: none;
   }
 
-  .brand:hover .brand-mark {
-    box-shadow: 0 0 22px rgba(61, 255, 154, 0.4);
+  .brand:active {
+    transform: scale(0.98);
+    transition-duration: 90ms;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .brand:hover .brand-mark {
+      box-shadow: 0 0 24px rgba(61, 255, 154, 0.45);
+      transform: translateY(-1px) scale(1.03);
+    }
   }
 
   .brand-mark {
     flex-shrink: 0;
-    width: 2.05rem;
-    height: 2.05rem;
-    border-radius: 0.55rem;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 0.58rem;
     background:
       radial-gradient(circle at 30% 30%, #9dffc9, transparent 45%),
       linear-gradient(145deg, #1a9f5c, #0a0c0f 70%);
     border: 1px solid rgba(61, 255, 154, 0.45);
     box-shadow: 0 0 18px rgba(61, 255, 154, 0.25);
     position: relative;
-    transition: box-shadow var(--ease);
+    transition: box-shadow 200ms var(--ease-out), transform 200ms var(--ease-out);
+    will-change: transform, box-shadow;
   }
 
   .brand-mark::after {
@@ -110,6 +121,7 @@ function isActive(href: string): boolean {
   .brand-name {
     font-weight: 700;
     letter-spacing: -0.02em;
+    font-size: 1.05rem;
   }
 
   .brand-tagline {
@@ -124,31 +136,46 @@ function isActive(href: string): boolean {
   .nav {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
     flex-shrink: 0;
   }
 
   .nav-link {
     color: var(--text-muted);
     text-decoration: none;
-    padding: 0.48rem 0.8rem;
+    padding: 0.52rem 0.95rem;
     border-radius: 999px;
     font-size: 0.92rem;
     font-weight: 550;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition:
-      color var(--ease),
-      background var(--ease);
+      color 160ms var(--ease-out),
+      background 160ms var(--ease-out),
+      transform 160ms var(--ease-out);
+    will-change: transform;
   }
 
-  .nav-link:hover {
-    color: var(--text);
-    background: var(--bg-elevated);
-    text-decoration: none;
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--bg-elevated);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+  }
+
+  .nav-link:active {
+    transform: scale(0.95);
+    transition-duration: 90ms;
   }
 
   .nav-link.active {
     color: var(--accent);
     background: var(--accent-soft);
+    font-weight: 600;
   }
 
   @media (max-width: 560px) {
@@ -156,9 +183,14 @@ function isActive(href: string): boolean {
       display: none;
     }
 
+    .nav {
+      gap: 0.2rem;
+    }
+
     .nav-link {
-      padding: 0.42rem 0.58rem;
-      font-size: 0.84rem;
+      padding: 0.45rem 0.72rem;
+      font-size: 0.85rem;
+      min-height: 36px;
     }
   }
 </style>
