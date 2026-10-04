@@ -4,6 +4,24 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.5.0] — 2026-10-04
+
+Optimasi penjadwalan pipeline otomatisasi berita (RSAIN), peningkatan izin token GitHub Actions, dan penerbitan langsung Edisi Malam.
+
+### ⚙️ Pipeline Otomasi & Penjadwalan (GitHub Actions)
+- **Anti-Drop Cron Scheduler**:
+  - Menggeser jadwal siaran edisi malam di `.github/workflows/auto-news.yml` dari `0 15 * * *` (22:00 WIB) ke `5 15 * * *` (22:05 WIB) guna menghindari lonjakan antrean puncak global (*top-of-the-hour queue drop*) pada infrastruktur GitHub Actions.
+- **Izin Token Bot Otomatis**:
+  - Memperbarui izin repository `default_workflow_permissions` menjadi `write` via GitHub API untuk memastikan bot Redaktur Sinyal AI News (RSAIN) dapat melakukan git push dan auto-deploy tanpa kendala hak akses token.
+- **Penerbitan Edisi Malam**:
+  - Menjalankan pipeline siaran malam dan menerbitkan 3 artikel resmi terkurasi oleh Pemimpin Redaksi (RSAIN):
+    1. *Anthropic*: "Anthropic Rilis Fitur Computer Use dan Model Claude 3.5 Sonnet serta Haiku Terbaru"
+    2. *OpenAI*: "OpenAI Rilis GPT-6.1 Sol, Model dengan Tarif Token Lebih Murah"
+    3. *Google*: "Google Perkenalkan Pemahaman Video Agen di Gemini"
+  - Seluruh artikel berhasil dibangun, diuji, dan dipublikasikan langsung ke web live `sinyalai.xyz`.
+
+---
+
 ## [0.4.0] — 2026-10-04
 
 Migrasi dan integrasi Custom Domain resmi **`sinyalai.xyz`** menggantikan subfolder GitHub Pages default (`/sinyalai-news`).
