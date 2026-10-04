@@ -59,14 +59,17 @@ export async function loadExistingArticles(dir) {
 
   let files = [];
   try {
-    files = await readdir(dir);
+    files = await readdir(dir, { recursive: true });
   } catch {
     return { slugs, sources };
   }
 
   for (const file of files) {
     if (!/\.mdx?$/i.test(file)) continue;
-    slugs.add(file.replace(/\.mdx?$/i, ""));
+    const baseSlug = path.basename(file).replace(/\.mdx?$/i, "");
+    slugs.add(baseSlug);
+    const relSlug = file.replace(/\\/g, "/").replace(/\.mdx?$/i, "");
+    slugs.add(relSlug);
     try {
       const source = readSourceFromFrontmatter(await readFile(path.join(dir, file), "utf8"));
       const normalized = source && normalizeUrl(source);

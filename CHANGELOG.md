@@ -14,6 +14,15 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
 - **Sanitasi Skema Tautan & Kontrol Karakter**: Mencegah serangan injeksi protokol `javascript:` pada parser link dan membersihkan karakter kontrol tersembunyi pada serializer frontmatter YAML.
 - **Verifikasi Feed Mirror Komunitas**: Menandai sumber cermin komunitas (seperti mirror RSS Anthropic) dengan flag `"trusted": false` pada konfigurasi [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json).
 
+### 📂 Manajemen Konten & Struktur URL (Opsi A)
+- **Organisasi Subfolder Berdasarkan Tanggal Rilis (`YYYY-MM-DD`)**:
+  - Mengklasifikasikan seluruh file artikel di [`src/content/news/`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/) ke dalam subfolder tanggal terbitnya (misal: `src/content/news/2026-10-04/slug.md`) agar struktur direktori bersih dan rapi.
+  - Memperbarui generator [`scripts/generate-news.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/generate-news.mjs) dan utilitas [`scripts/lib/markdown.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/markdown.mjs) dengan parameter `dateFolder` sehingga artikel baru otomatis disimpan ke subfolder tanggal rilisnya.
+  - Memperbarui modul deduplikasi [`scripts/lib/dedupe.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/dedupe.mjs) agar melakukan pemindaian berkas secara rekursif (`readdir(dir, { recursive: true })`) serta melacak slug dasar dan slug relatif.
+- **Routing Dinamis Rest Parameter (`[...slug].astro`)**:
+  - Mengubah rute halaman berita dari `src/pages/berita/[slug].astro` menjadi [`src/pages/berita/[...slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5B...slug%5D.astro).
+  - Format URL permalink artikel kini mengusung standar media berita: `/sinyalai-news/berita/YYYY-MM-DD/slug`, selaras dengan tautan kartu berita di beranda dan link pada feed RSS `dist/rss.xml`.
+
 ### 🤖 Pipeline & Ingestion Otomatis
 - **Penyaring Relevansi AI Otomatis ([`scripts/lib/relevance.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/relevance.mjs))**:
   - Menambahkan modul filter cerdas berbasis pola regex untuk memisahkan pengumuman AI (LLM, GPT, reasoning, agentic, inference, DeepMind, dsb.) dari artikel non-AI pada feed umum korporat (Microsoft, NVIDIA).

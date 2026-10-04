@@ -14,7 +14,7 @@ import { fetchFeed } from "./lib/rss.mjs";
 import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
-import { writePublishedArticle } from "./lib/markdown.mjs";
+import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 
 /**
@@ -161,6 +161,7 @@ async function main() {
 
         const result = await writePublishedArticle({
           outDir: CONTENT_DIR,
+          dateFolder: toIsoDate(publishedDate),
           slug,
           title: aiArticle.title,
           summary: aiArticle.summary,

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import path from "node:path";
 import { yamlQuote, toIsoDate, buildDraftBody, writeDraftArticle } from "../markdown.mjs";
 
 describe("yamlQuote", () => {
@@ -140,6 +141,25 @@ describe("writePublishedArticle", () => {
     expect(result.markdown).toContain('author: "Redaktur Sinyal AI News (RSAIN)"');
     expect(result.markdown).toContain("draft: false");
     expect(result.markdown).toContain("Paragraf berita resmi.");
+  });
+
+  it("places article in date subfolder when dateFolder is provided", async () => {
+    const { writePublishedArticle } = await import("../markdown.mjs");
+    const result = await writePublishedArticle({
+      outDir: "dummy",
+      dateFolder: "2026-10-04",
+      slug: "rsain-news",
+      title: "Grok 3 Rilis Resmi",
+      summary: "xAI merilis model penalaran Grok 3.",
+      company: "xAI",
+      source: "https://x.ai/blog/grok-3",
+      publishedAt: new Date("2026-10-04T12:00:00Z"),
+      body: "Paragraf berita resmi.",
+      dryRun: true,
+    });
+
+    const expectedPath = path.join("dummy", "2026-10-04", "rsain-news.md");
+    expect(result.outPath).toBe(expectedPath);
   });
 });
 

@@ -121,13 +121,14 @@ export async function writeDraftArticle(params) {
     .replaceAll("{{publishedAt}}", toIsoDate(params.publishedAt))
     .replaceAll("{{body}}", params.body);
 
-  const outPath = path.join(params.outDir, `${params.slug}.md`);
+  const targetDir = params.dateFolder ? path.join(params.outDir, params.dateFolder) : params.outDir;
+  const outPath = path.join(targetDir, `${params.slug}.md`);
 
   if (params.dryRun) {
     return { outPath, written: false, markdown };
   }
 
-  await mkdir(params.outDir, { recursive: true });
+  await mkdir(targetDir, { recursive: true });
   await writeFile(outPath, markdown, "utf8");
   return { outPath, written: true, markdown };
 }
@@ -136,6 +137,7 @@ export async function writeDraftArticle(params) {
  * Writes a final published article (draft: false) authored by RSAIN.
  * @param {object} params
  * @param {string} params.outDir
+ * @param {string} [params.dateFolder]
  * @param {string} params.slug
  * @param {string} params.title
  * @param {string} params.summary
@@ -171,13 +173,14 @@ export async function writePublishedArticle(params) {
     ``,
   ].join("\n");
 
-  const outPath = path.join(params.outDir, `${params.slug}.md`);
+  const targetDir = params.dateFolder ? path.join(params.outDir, params.dateFolder) : params.outDir;
+  const outPath = path.join(targetDir, `${params.slug}.md`);
 
   if (params.dryRun) {
     return { outPath, written: false, markdown };
   }
 
-  await mkdir(params.outDir, { recursive: true });
+  await mkdir(targetDir, { recursive: true });
   await writeFile(outPath, markdown, "utf8");
   return { outPath, written: true, markdown };
 }

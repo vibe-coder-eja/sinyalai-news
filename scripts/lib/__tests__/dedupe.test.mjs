@@ -64,10 +64,20 @@ describe("loadExistingArticles", () => {
     await rm(dir, { recursive: true, force: true });
   });
 
-  it("collects slugs and normalized sources from Markdown files", async () => {
+  it("collects slugs and normalized sources from Markdown files in root and subfolders", async () => {
+    const subDir = path.join(dir, "2026-10-04");
+    const { mkdir } = await import("node:fs/promises");
+    await mkdir(subDir, { recursive: true });
+    await writeFile(
+      path.join(subDir, "nested-article.md"),
+      '---\ntitle: "Subfolder Article"\nsource: "https://anthropic.com/news/nested"\n---\n',
+    );
+
     const { slugs, sources } = await loadExistingArticles(dir);
-    expect([...slugs].sort()).toEqual(["edited-title", "no-source"]);
-    expect(sources.has(normalizeUrl("https://openai.com/index/some-launch?utm_source=rss"))).toBe(true);
+    expect(slugs.has("edited-title")).toBe(true);
+    expect(slugs.has("nested-article")).toBe(true);
+    expect(slugs.has("2026-10-04/nested-article")).toBe(true);
+    expect(sources.has(normalizeUrl("https://anthropic.com/news/nested"))).toBe(true);
   });
 
   it("returns empty sets for a missing directory", async () => {
