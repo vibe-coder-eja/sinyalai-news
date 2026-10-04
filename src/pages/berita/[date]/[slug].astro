@@ -1,15 +1,20 @@
 ---
 import { render } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { formatDate, getPublishedNews, toIsoDate } from "../../lib/news";
-import { withBase } from "../../lib/url";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { formatDate, getPublishedNews, toIsoDate } from "../../../lib/news";
+import { withBase } from "../../../lib/url";
 
 export async function getStaticPaths() {
   const articles = await getPublishedNews();
-  return articles.map((article) => ({
-    params: { slug: article.id },
-    props: { article },
-  }));
+  return articles.map((article) => {
+    const parts = article.id.split("/");
+    const date = parts.length > 1 ? parts[0] : toIsoDate(article.data.publishedAt);
+    const slug = parts.length > 1 ? parts.slice(1).join("/") : parts[0];
+    return {
+      params: { date, slug },
+      props: { article },
+    };
+  });
 }
 
 const { article } = Astro.props;

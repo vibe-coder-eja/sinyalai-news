@@ -37,9 +37,13 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - Mengklasifikasikan seluruh file artikel di [`src/content/news/`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/) ke dalam subfolder tanggal terbitnya (misal: `src/content/news/2026-10-04/slug.md`) agar struktur direktori bersih dan rapi.
   - Memperbarui generator [`scripts/generate-news.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/generate-news.mjs) dan utilitas [`scripts/lib/markdown.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/markdown.mjs) dengan parameter `dateFolder` sehingga artikel baru otomatis disimpan ke subfolder tanggal rilisnya.
   - Memperbarui modul deduplikasi [`scripts/lib/dedupe.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/dedupe.mjs) agar melakukan pemindaian berkas secara rekursif (`readdir(dir, { recursive: true })`) serta melacak slug dasar dan slug relatif.
-- **Routing Dinamis Rest Parameter (`[...slug].astro`)**:
-  - Mengubah rute halaman berita dari `src/pages/berita/[slug].astro` menjadi [`src/pages/berita/[...slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5B...slug%5D.astro).
-  - Format URL permalink artikel kini mengusung standar media berita: `/sinyalai-news/berita/YYYY-MM-DD/slug`, selaras dengan tautan kartu berita di beranda dan link pada feed RSS `dist/rss.xml`.
+- **Routing Dinamis Rest Parameter & Detail Artikel (`[date]/[slug].astro`)**:
+  - Mengubah rute detail artikel menjadi [`src/pages/berita/[date]/[slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5Bdate%5D/%5Bslug%5D.astro).
+  - Format URL permalink artikel konsisten mengusung standar media berita: `/sinyalai-news/berita/YYYY-MM-DD/slug`, selaras dengan kartu berita di beranda dan link pada feed RSS `dist/rss.xml`.
+- **Fitur Pagination Berita (9 Berita per Halaman)**:
+  - Mengimplementasikan rute paginasi Astro [`src/pages/berita/[...page].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5B...page%5D.astro) dengan batas `pageSize: 9` per halaman.
+  - Halaman 1 terbit di `/sinyalai-news/berita/` dan halaman berikutnya di `/sinyalai-news/berita/2`, `/sinyalai-news/berita/3`, dst.
+  - Dilengkapi kontrol navigasi halaman (tombol Sebelumnya/Selanjutnya, nomor halaman lingkaran dengan efek tekan taktil, serta indikator jumlah artikel) yang terhubung mulus dengan View Transitions.
 
 ### 🤖 Pipeline & Ingestion Otomatis
 - **Penyaring Relevansi AI Otomatis ([`scripts/lib/relevance.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/relevance.mjs))**:

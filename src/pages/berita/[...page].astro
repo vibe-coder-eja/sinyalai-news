@@ -1,0 +1,261 @@
+---
+import type { Page } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import NewsCard from "../../components/NewsCard.astro";
+import { getPublishedNews, type NewsEntry } from "../../lib/news";
+import { withBase } from "../../lib/url";
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const articles = await getPublishedNews();
+  return paginate(articles, { pageSize: 9 });
+}
+
+interface Props {
+  page: Page<NewsEntry>;
+}
+
+const { page } = Astro.props;
+const articles = page.data;
+
+const totalPages = page.lastPage;
+const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+function getPageUrl(num: number): string {
+  return num === 1 ? withBase("/berita") : withBase(`/berita/${num}`);
+}
+---
+
+<BaseLayout
+  title={page.currentPage === 1 ? "Berita" : `Berita — Halaman ${page.currentPage}`}
+  description="Daftar berita AI ringkas dari rilis industri — Sinyal AI."
+>
+  <section class="container reveal reveal-1">
+    <header class="archive-header">
+      <p class="eyebrow">Archive</p>
+      <h1 class="page-title">Semua berita</h1>
+      <p class="page-lead">
+        Kumpulan sinyal yang dirangkum dari blog, changelog, dan rilis resmi
+        perusahaan AI. Disimpan sebagai Markdown content collections.
+      </p>
+      <div class="archive-meta">
+        <span class="count-tag">
+          Menampilkan {page.start + 1}–{page.end + 1} dari {page.total} sinyal resmi
+        </span>
+        <span class="page-indicator">
+          Halaman {page.currentPage} dari {page.lastPage}
+        </span>
+      </div>
+    </header>
+
+    {
+      articles.length === 0 ? (
+        <div class="empty-state">
+          <p class="empty-title">Feed masih kosong</p>
+          <p>
+            Buat file baru di <code>src/content/news/</code> dengan frontmatter
+            yang valid.
+          </p>
+        </div>
+      ) : (
+        <div class="news-grid">
+          {articles.map((article, idx) => (
+            <NewsCard article={article} index={idx} />
+          ))}
+        </div>
+      )
+    }
+
+    {
+      totalPages > 1 && (
+        <nav class="pagination" aria-label="Navigasi halaman berita">
+          {page.url.prev ? (
+            <a class="page-btn page-prev" href={page.url.prev} rel="prev">
+              <span aria-hidden="true">←</span> Sebelumnya
+            </a>
+          ) : (
+            <span class="page-btn page-disabled" aria-disabled="true">
+              <span aria-hidden="true">←</span> Sebelumnya
+            </span>
+          )}
+
+          <div class="page-numbers">
+            {pageNumbers.map((num) => {
+              const isCurrent = num === page.currentPage;
+              return isCurrent ? (
+                <span class="page-num active" aria-current="page">
+                  {num}
+                </span>
+              ) : (
+                <a class="page-num" href={getPageUrl(num)}>
+                  {num}
+                </a>
+              );
+            })}
+          </div>
+
+          {page.url.next ? (
+            <a class="page-btn page-next" href={page.url.next} rel="next">
+              Selanjutnya <span aria-hidden="true">→</span>
+            </a>
+          ) : (
+            <span class="page-btn page-disabled" aria-disabled="true">
+              Selanjutnya <span aria-hidden="true">→</span>
+            </span>
+          )}
+        </nav>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .archive-header {
+    margin-bottom: 2rem;
+  }
+
+  .archive-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: -1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .count-tag {
+    color: var(--text-muted);
+  }
+
+  .page-indicator {
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(61, 255, 154, 0.25);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* Pagination styles with Emil Kowalski polish */
+  .pagination {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.62rem 1.15rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(18, 24, 32, 0.75);
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    min-height: 42px;
+    transition:
+      transform 160ms var(--ease-out),
+      border-color 160ms var(--ease-out),
+      background 160ms var(--ease-out),
+      color 160ms var(--ease-out),
+      box-shadow 160ms var(--ease-out);
+    will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .page-btn:hover:not(.page-disabled) {
+      border-color: rgba(61, 255, 154, 0.45);
+      background: var(--accent-soft);
+      color: var(--accent-bright);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      text-decoration: none;
+    }
+  }
+
+  .page-btn:active:not(.page-disabled) {
+    transform: scale(0.96) translateY(0);
+    transition-duration: 90ms;
+  }
+
+  .page-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: transparent;
+    border-color: rgba(36, 48, 65, 0.5);
+  }
+
+  .page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .page-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    transition:
+      transform 160ms var(--ease-out),
+      background 160ms var(--ease-out),
+      color 160ms var(--ease-out),
+      border-color 160ms var(--ease-out);
+    will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .page-num:hover:not(.active) {
+      color: var(--text);
+      background: var(--bg-card-hover);
+      border-color: var(--border);
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+  }
+
+  .page-num:active:not(.active) {
+    transform: scale(0.92);
+    transition-duration: 90ms;
+  }
+
+  .page-num.active {
+    color: #04140c;
+    background: var(--accent);
+    font-weight: 700;
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  @media (max-width: 600px) {
+    .pagination {
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .archive-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
