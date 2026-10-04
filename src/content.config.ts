@@ -23,6 +23,7 @@ const news = defineCollection({
     summary: z.string(),
     company: z.string(),
     source: secureUrl,
+    author: z.string().default("Redaktur Sinyal AI News (RSAIN)"),
     publishedAt: z.coerce.date(),
     updatedAt: z.coerce.date().optional(),
     draft: z.boolean().default(false),

@@ -82,6 +82,11 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - Menyediakan fungsi pembantu `withBase(path)` agar seluruh navigasi header, footer, tombol hero, kartu berita, sitemap, dan tautan aset (favicon, logo, ogImage) secara dinamis mendukung hosting subpath tanpa broken link.
 - **Otomasi Workflow GitHub Actions ([`.github/workflows/deploy.yml`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/.github/workflows/deploy.yml))**:
   - Menyiapkan workflow deployment otomatis menggunakan `actions/upload-pages-artifact@v3` dan `actions/deploy-pages@v4` yang otomatis mem-build dan mempublikasikan situs setiap kali ada push ke branch `main`.
+- **Jadwal Tayang Otomatis 2x Sehari ([`.github/workflows/auto-news.yml`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/.github/workflows/auto-news.yml))**:
+  - Menjadwalkan cron otomatis setiap hari pada pukul **10:30 WIB** (Edisi Pagi) dan **22:00 WIB** (Edisi Malam).
+  - Pipeline secara otomatis menarik rilis resmi terbaru, menulis berita menggunakan OpenRouter (`minimax/minimax-m3`) berstandar Humanizer, mengatribusikan ke **Redaktur Sinyal AI News (RSAIN)**, melakukan commit artikel ke branch `main`, dan mendeploy pembaruan ke GitHub Pages.
+- **Proteksi Ketat API Key & Repositori Publik**:
+  - Memblokir seluruh file `.env*` pada `.gitignore` dan memindahkan kredensial OpenRouter ke GitHub Repository Secrets (`${{ secrets.OPENROUTER_API_KEY }}`), menjamin keamanan 100% saat repositori diubah statusnya menjadi Public.
 - **Feed RSS & Sitemap Terpadu ([`src/pages/rss.xml.ts`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/rss.xml.ts), [`public/robots.txt`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/public/robots.txt))**:
   - Menyelaraskan seluruh link permalink pada XML RSS dan lokasi sitemap di `robots.txt` ke URL target GitHub Pages.
 

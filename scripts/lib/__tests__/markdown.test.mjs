@@ -119,3 +119,27 @@ describe("writeDraftArticle", () => {
     })).rejects.toThrow("Article source URL must use HTTPS");
   });
 });
+
+describe("writePublishedArticle", () => {
+  it("formats published frontmatter with RSAIN author and draft: false", async () => {
+    const { writePublishedArticle } = await import("../markdown.mjs");
+    const result = await writePublishedArticle({
+      outDir: "dummy",
+      slug: "rsain-news",
+      title: "Grok 3 Rilis Resmi",
+      summary: "xAI merilis model penalaran Grok 3.",
+      company: "xAI",
+      source: "https://x.ai/blog/grok-3",
+      publishedAt: new Date("2026-10-04T12:00:00Z"),
+      body: "Paragraf berita resmi.",
+      dryRun: true,
+    });
+
+    expect(result.written).toBe(false);
+    expect(result.markdown).toContain('title: "Grok 3 Rilis Resmi"');
+    expect(result.markdown).toContain('author: "Redaktur Sinyal AI News (RSAIN)"');
+    expect(result.markdown).toContain("draft: false");
+    expect(result.markdown).toContain("Paragraf berita resmi.");
+  });
+});
+

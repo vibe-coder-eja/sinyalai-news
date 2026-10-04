@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
-const { title, summary, company, source, publishedAt, updatedAt } = article.data;
+const { title, summary, company, source, author, publishedAt, updatedAt } = article.data;
 const siteUrl = Astro.site || new URL("https://vibe-coder-eja.github.io/sinyalai-news");
 const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const modifiedAt = updatedAt ?? publishedAt;
@@ -31,8 +31,8 @@ const jsonLd = {
   "about": company,
   "isBasedOn": source,
   "author": {
-    "@type": "Organization",
-    "name": "Sinyal AI",
+    "@type": "Person",
+    "name": author || "Redaktur Sinyal AI News (RSAIN)",
     "url": siteUrl.toString()
   },
   "publisher": {
@@ -59,6 +59,7 @@ const jsonLd = {
       <p class="eyebrow">Detail sinyal</p>
       <div class="meta">
         <span class="tag">{company}</span>
+        <span class="author-tag">Oleh: {author || "Redaktur Sinyal AI News (RSAIN)"}</span>
         <time datetime={toIsoDate(publishedAt)}>{formatDate(publishedAt)}</time>
       </div>
       <h1 class="page-title">{title}</h1>
@@ -91,6 +92,16 @@ const jsonLd = {
 
   .article-header .meta {
     margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .author-tag {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 
   .summary {

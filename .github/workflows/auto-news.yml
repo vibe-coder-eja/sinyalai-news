@@ -1,0 +1,98 @@
+name: Automated News Pipeline (RSAIN)
+
+on:
+  schedule:
+    # 10:30 WIB (UTC+7) = 03:30 UTC
+    - cron: '30 3 * * *'
+    # 22:00 WIB (UTC+7) = 15:00 UTC
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: 'Pilih jadwal tayang'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - pagi
+          - malam
+      dryRun:
+        description: 'Mode simulasi (tanpa simpan/deploy)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  generate-and-deploy:
+    name: Generate News & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run automated AI news generation
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'minimax/minimax-m3' }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.edition }}" = "pagi" ] || [ "${{ inputs.edition }}" = "malam" ]; then
+            ARGS="$ARGS --edition=${{ inputs.edition }}"
+          fi
+          if [ "${{ inputs.dryRun }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          node scripts/generate-news.mjs $ARGS
+
+      - name: Commit and push new articles to main branch
+        if: ${{ inputs.dryRun != true }}
+        run: |
+          if [ -n "$(git status --porcelain src/content/news)" ]; then
+            git config --global user.name "Redaktur Sinyal AI News (RSAIN)"
+            git config --global user.email "rsain@sinyalai.users.noreply.github.com"
+            git add src/content/news/
+            git commit -m "chore(news): automated edition broadcast [skip ci]"
+            git push origin main
+          else
+            echo "Tidak ada artikel baru yang dihasilkan pada jadwal tayang ini."
+          fi
+
+      - name: Run test suite
+        run: npm run test
+
+      - name: Build static site with Astro
+        run: npm run build
+
+      - name: Upload GitHub Pages artifact
+        if: ${{ inputs.dryRun != true }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        if: ${{ inputs.dryRun != true }}
+        id: deployment
+        uses: actions/deploy-pages@v4

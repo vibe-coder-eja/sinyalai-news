@@ -131,3 +131,54 @@ export async function writeDraftArticle(params) {
   await writeFile(outPath, markdown, "utf8");
   return { outPath, written: true, markdown };
 }
+
+/**
+ * Writes a final published article (draft: false) authored by RSAIN.
+ * @param {object} params
+ * @param {string} params.outDir
+ * @param {string} params.slug
+ * @param {string} params.title
+ * @param {string} params.summary
+ * @param {string} params.company
+ * @param {string} params.source
+ * @param {string} [params.author]
+ * @param {Date | null} [params.publishedAt]
+ * @param {string} params.body
+ * @param {boolean} [params.dryRun]
+ */
+export async function writePublishedArticle(params) {
+  if (!isSecureUrl(params.source)) {
+    throw new Error("Article source URL must use HTTPS and must not contain credentials");
+  }
+
+  const author = params.author || "Redaktur Sinyal AI News (RSAIN)";
+  const summaryRaw = params.summary || `Sinyal resmi: ${params.title} (${params.company}).`;
+  const summary = truncateAtWord(summaryRaw, MAX_SUMMARY_LENGTH);
+  const publishedAt = toIsoDate(params.publishedAt);
+
+  const markdown = [
+    `---`,
+    `title: "${yamlQuote(params.title)}"`,
+    `summary: "${yamlQuote(summary)}"`,
+    `company: "${yamlQuote(params.company)}"`,
+    `source: "${yamlQuote(params.source)}"`,
+    `author: "${yamlQuote(author)}"`,
+    `publishedAt: ${publishedAt}`,
+    `draft: false`,
+    `---`,
+    ``,
+    params.body.trim(),
+    ``,
+  ].join("\n");
+
+  const outPath = path.join(params.outDir, `${params.slug}.md`);
+
+  if (params.dryRun) {
+    return { outPath, written: false, markdown };
+  }
+
+  await mkdir(params.outDir, { recursive: true });
+  await writeFile(outPath, markdown, "utf8");
+  return { outPath, written: true, markdown };
+}
+
