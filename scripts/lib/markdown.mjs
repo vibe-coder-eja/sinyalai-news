@@ -156,7 +156,9 @@ export async function writePublishedArticle(params) {
   const author = params.author || "Redaktur Sinyal AI News (RSAIN)";
   const summaryRaw = params.summary || `Sinyal resmi: ${params.title} (${params.company}).`;
   const summary = truncateAtWord(summaryRaw, MAX_SUMMARY_LENGTH);
-  const publishedAt = toIsoDate(params.publishedAt);
+  const publishedAt = params.publishedAt instanceof Date
+    ? params.publishedAt.toISOString()
+    : (params.publishedAt || toIsoDate(new Date()));
 
   const markdown = [
     `---`,

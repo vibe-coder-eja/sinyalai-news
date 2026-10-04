@@ -4,7 +4,7 @@ summary: "Anthropic mengumumkan model AI Claude berhasil menemukan sistem enzim 
 company: "Anthropic"
 source: "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

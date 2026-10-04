@@ -4,7 +4,7 @@ summary: "xAI merilis fitur Skills di Grok untuk platform web, iOS, dan Android,
 company: "xAI"
 source: "https://x.ai/news/grok-skills"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

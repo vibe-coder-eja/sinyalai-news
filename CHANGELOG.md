@@ -4,6 +4,23 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.5.1] — 2026-10-04
+
+Pengurutan berita hierarkis pada halaman berita (`/berita/`) berdasarkan waktu rilis (tanggal dan jam) descending serta alfabetis judul berita (A-Z) untuk artikel pada jadwal siaran yang sama.
+
+### 📰 Pengurutan Berita & Metadata Waktu (`src/lib/news.ts`)
+- **Hierarchical News Sorting**:
+  - Memperbarui fungsi `getPublishedNews` agar mengurutkan artikel secara bertingkat:
+    1. **Prioritas Utama**: Waktu rilis (`publishedAt.getTime()`) secara descending (terbaru lebih dulu: tahun, bulan, tanggal, dan jam rilis).
+    2. **Prioritas Sekunder**: Abjad judul berita (`a.data.title.localeCompare(b.data.title, 'id-ID')`) secara A-Z jika waktu rilis/edisi sama.
+- **Preservasi ISO Timestamp**:
+  - Memperbarui `scripts/lib/markdown.mjs` agar menyimpan format timestamp ISO lengkap pada frontmatter saat pembuatan artikel otomatis, sehingga pemisahan rilis pagi dan malam tercatat akurat.
+  - Memperbarui timestamp frontmatter artikel 2026-10-04 sesuai jadwal siaran Edisi Pagi (10:30 WIB) dan Edisi Malam (22:05 WIB).
+- **Unit Testing**:
+  - Menambahkan pengujian vitest komprehensif pada `src/__tests__/news.test.ts` untuk memastikan akurasi pengurutan waktu rilis dan abjad judul.
+
+---
+
 ## [0.5.0] — 2026-10-04
 
 Optimasi penjadwalan pipeline otomatisasi berita (RSAIN), peningkatan izin token GitHub Actions, dan penerbitan langsung Edisi Malam.

@@ -4,7 +4,7 @@ summary: "NVIDIA memaparkan tiga faktor utama—produktivitas, daya tahan, dan f
 company: "NVIDIA"
 source: "https://blogs.nvidia.com/blog/productive-durable-fungible-ai-factories/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

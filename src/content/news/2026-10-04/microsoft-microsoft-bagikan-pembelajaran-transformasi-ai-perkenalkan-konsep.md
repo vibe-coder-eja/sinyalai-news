@@ -4,7 +4,7 @@ summary: "Microsoft mempublikasikan pembelajaran dari transformasi AI internal m
 company: "Microsoft"
 source: "https://blogs.microsoft.com/blog/2026/09/17/what-weve-learned-from-microsofts-own-ai-transformation/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

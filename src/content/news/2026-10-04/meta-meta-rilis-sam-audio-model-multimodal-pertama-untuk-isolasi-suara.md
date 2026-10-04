@@ -4,7 +4,7 @@ summary: "Meta memperkenalkan SAM Audio, model multimodal pertama yang memisahka
 company: "Meta"
 source: "https://ai.meta.com/blog/sam-audio/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

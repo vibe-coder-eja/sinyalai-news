@@ -4,7 +4,7 @@ summary: "OpenAI merilis esai berjudul “The Eternal Complement” yang membaha
 company: "OpenAI"
 source: "https://openai.com/index/the-eternal-complement"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

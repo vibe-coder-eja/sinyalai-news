@@ -4,7 +4,7 @@ summary: "OpenAI memperkenalkan GPT-6.1 Sol, model dengan kemampuan mendekati As
 company: "OpenAI"
 source: "https://openai.com/index/introducing-gpt-6-1-sol"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T22:05:00+07:00
 draft: false
 ---
 

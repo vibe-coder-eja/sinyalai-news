@@ -4,7 +4,7 @@ summary: "Google DeepMind memperkenalkan fitur agentic video understanding di Ge
 company: "Google"
 source: "https://deepmind.google/blog/introducing-agentic-video-in-gemini/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T22:05:00+07:00
 draft: false
 ---
 

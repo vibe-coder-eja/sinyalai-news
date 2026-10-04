@@ -4,7 +4,7 @@ summary: "Google mengumumkan perluasan layanan Google Beam ke lima negara baru s
 company: "Google"
 source: "https://blog.google/innovation-and-ai/technology/research/google-beam-expansion/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
 ---
 

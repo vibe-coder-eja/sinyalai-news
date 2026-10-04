@@ -4,7 +4,7 @@ summary: "Anthropic memperkenalkan kemampuan computer use pada Claude 3.5 Sonnet
 company: "Anthropic"
 source: "https://www.anthropic.com/news/3-5-models-and-computer-use"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04
+publishedAt: 2026-10-04T22:05:00+07:00
 draft: false
 ---
 
