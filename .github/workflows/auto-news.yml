@@ -17,6 +17,11 @@ on:
           - auto
           - pagi
           - malam
+      limit:
+        description: 'Kuota berita tayang per edisi'
+        required: false
+        default: '3'
+        type: string
       dryRun:
         description: 'Mode simulasi (tanpa simpan/deploy)'
         required: false
@@ -58,7 +63,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'minimax/minimax-m3' }}
         run: |
-          ARGS=""
+          ARGS="--limit=${{ inputs.limit || '3' }}"
           if [ "${{ inputs.edition }}" = "pagi" ] || [ "${{ inputs.edition }}" = "malam" ]; then
             ARGS="$ARGS --edition=${{ inputs.edition }}"
           fi

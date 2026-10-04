@@ -28,6 +28,16 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - Menambahkan modul filter cerdas berbasis pola regex untuk memisahkan pengumuman AI (LLM, GPT, reasoning, agentic, inference, DeepMind, dsb.) dari artikel non-AI pada feed umum korporat (Microsoft, NVIDIA).
   - Menyediakan filter penolakan kata kunci (`excludeKeywords`) untuk memblokir rilis gaming (misal: *GeForce NOW* / *GFN Thursday*).
   - Menandai feed spesifik riset AI (OpenAI, Google DeepMind, Google AI) dengan atribut `"aiFocused": true` agar tidak terkena pemotongan kuota.
+- **Aturan Redaksi Baru & Kurasi Pemimpin Redaksi ([`scripts/lib/editor.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/editor.mjs))**:
+  - **Kuota Tayang Terukur**: Menetapkan jadwal tayang tetap **3 berita pagi (10:30 WIB)** dan **3 berita malam (22:00 WIB)** (maksimal 6 berita/hari), menghemat konsumsi token API OpenRouter Minimax-M3 lebih dari 60%.
+  - **Peran Pemimpin Redaksi**: Mengumpulkan kandidat dari seluruh 8 sumber resmi secara terpadu, lalu memilih 3 sinyal paling berdampak menggunakan 4 pilar prioritas (Rilis Model > Fitur & Skills > Produk & Infrastruktur > Kerjasama Industri > Standar Umum).
+  - **Prioritas Hari Ini & Fallback Cerdas**: Memprioritaskan rilis bertanggal hari ini. Jika rilis hari ini kurang dari 3, sistem secara otomatis mengkurasi rilis hari-hari sebelumnya yang belum pernah diterbitkan (*unreleased backlog*).
+  - **Diversifikasi Sumber**: Memprioritaskan rilis dari perusahaan teknologi yang berbeda dalam satu edisi tayang agar berita mencakup ekosistem AI secara variatif.
+  - **Anti-Duplikasi Ketat**: Melarang penerbitan rilis duplikat, baik dalam satu hari maupun dari arsip hari-hari sebelumnya.
+- **Penguatan Ketahanan AI Writer ([`scripts/lib/ai-writer.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/ai-writer.mjs))**:
+  - Menambahkan mode `response_format: { type: "json_object" }` pada muatan API OpenRouter.
+  - Menyediakan *parser fallback* berbasis regex untuk mengekstrak judul, ringkasan, dan isi berita jika terdapat karakter kontrol atau baris baru unescaped pada output JSON LLM.
+  - Menambahkan sistem *retry* otomatis 1 kali untuk kegagalan jaringan transient serta menaikkan batas waktu *timeout* hingga 90 detik.
 - **Sistem Prioritas Redaksi Berita ([`scripts/lib/relevance.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/relevance.mjs), [`scripts/generate-news.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/generate-news.mjs))**:
   - Menetapkan 4 pilar prioritas editorial utama saat memilih dan menerbitkan rilis:
     1. **Rilis Model Terbaru** (penalaran, frontier LLM, checkpoint, parameter).

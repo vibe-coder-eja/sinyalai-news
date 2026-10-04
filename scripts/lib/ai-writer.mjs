@@ -65,7 +65,25 @@ export function parseAIJsonResponse(rawText) {
     cleaned = cleaned.slice(firstBrace, lastBrace + 1);
   }
 
-  const parsed = JSON.parse(cleaned);
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    // Robust fallback: Extract title, summary, and body if unescaped quotes or newlines occurred in body
+    const titleMatch = cleaned.match(/"title"\s*:\s*"((?:\\.|[^"\\])*)"/);
+    const summaryMatch = cleaned.match(/"summary"\s*:\s*"((?:\\.|[^"\\])*)"/);
+    const bodyMatch = cleaned.match(/"body"\s*:\s*"([\s\S]*?)"\s*\}?\s*$/);
+
+    if (titleMatch && summaryMatch && bodyMatch) {
+      parsed = {
+        title: titleMatch[1].replace(/\\"/g, '"').replace(/\\\\/g, "\\"),
+        summary: summaryMatch[1].replace(/\\"/g, '"').replace(/\\\\/g, "\\"),
+        body: bodyMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"'),
+      };
+    } else {
+      throw new Error(`Failed to parse AI JSON response: ${cleaned.slice(0, 300)}`);
+    }
+  }
 
   if (!parsed.title || typeof parsed.title !== "string") {
     throw new Error("AI output missing 'title' string");
@@ -86,6 +104,7 @@ export function parseAIJsonResponse(rawText) {
 
 /**
  * Calls OpenRouter to write an article with Minimax M3 adhering to Humanizer standards.
+ * Includes automatic 1-time retry for transient network timeouts.
  * @param {object} params
  * @param {string} params.title - Original source title
  * @param {string} params.summary - Original source snippet
@@ -93,7 +112,7 @@ export function parseAIJsonResponse(rawText) {
  * @param {string} params.sourceUrl - Official URL
  * @param {string} params.apiKey - OpenRouter API key
  * @param {string} [params.model] - Model ID (default minimax/minimax-m3)
- * @param {number} [params.timeoutMs=45000] - Request timeout
+ * @param {number} [params.timeoutMs=90000] - Request timeout (90s default)
  * @returns {Promise<{ title: string, summary: string, body: string }>}
  */
 export async function generateArticleWithAI({
@@ -103,7 +122,7 @@ export async function generateArticleWithAI({
   sourceUrl,
   apiKey,
   model = DEFAULT_MODEL,
-  timeoutMs = 45000,
+  timeoutMs = 90000,
 }) {
   if (!apiKey) {
     throw new Error("OpenRouter API key is required");
@@ -116,43 +135,54 @@ export async function generateArticleWithAI({
     `Ringkasan/Cuplikan Asli: ${summary || "Tidak ada cuplikan tambahan. Kembangkan dari judul rilis resmi di atas."}`,
   ].join("\n");
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let lastError;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  try {
-    const res = await fetch(OPENROUTER_ENDPOINT, {
-      method: "POST",
-      signal: controller.signal,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://vibe-coder-eja.github.io/sinyalai-news/",
-        "X-Title": "Sinyal AI News",
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.2,
-      }),
-    });
+    try {
+      const res = await fetch(OPENROUTER_ENDPOINT, {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://vibe-coder-eja.github.io/sinyalai-news/",
+          "X-Title": "Sinyal AI News",
+        },
+        body: JSON.stringify({
+          model,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.2,
+        }),
+      });
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      throw new Error(`OpenRouter API error (HTTP ${res.status}): ${errText.slice(0, 300)}`);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`OpenRouter API error (HTTP ${res.status}): ${errText.slice(0, 300)}`);
+      }
+
+      const data = await res.json();
+      const rawContent = data.choices?.[0]?.message?.content;
+
+      if (!rawContent) {
+        throw new Error("Empty response choice received from OpenRouter");
+      }
+
+      return parseAIJsonResponse(rawContent);
+    } catch (err) {
+      lastError = err;
+      if (attempt === 1) {
+        console.warn(`      ⚠️ Upaya 1 gagal (${err.message}). Mengulang kembali...`);
+      }
+    } finally {
+      clearTimeout(timer);
     }
-
-    const data = await res.json();
-    const rawContent = data.choices?.[0]?.message?.content;
-
-    if (!rawContent) {
-      throw new Error("Empty response choice received from OpenRouter");
-    }
-
-    return parseAIJsonResponse(rawContent);
-  } finally {
-    clearTimeout(timer);
   }
+
+  throw lastError;
 }

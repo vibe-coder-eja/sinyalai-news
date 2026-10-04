@@ -15,6 +15,7 @@ import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
+import { selectEditorialEdition, isToday } from "./lib/editor.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 
 /**
@@ -53,7 +54,8 @@ const SOURCES_PATH = path.resolve(process.cwd(), "scripts/sources.json");
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const sourceFilter = args.find((a) => a.startsWith("--source="))?.split("=")[1];
-const maxPerSource = parseInt(args.find((a) => a.startsWith("--limit="))?.split("=")[1] || "1", 10);
+// Default quota: 3 articles per edition (Pagi: 3, Malam: 3)
+const editionQuota = parseInt(args.find((a) => a.startsWith("--limit="))?.split("=")[1] || "3", 10);
 
 // Determine broadcast edition (Pagi: 10.30 WIB / 03:30 UTC, Malam: 22.00 WIB / 15:00 UTC)
 const currentUtcHour = new Date().getUTCHours();
@@ -63,10 +65,11 @@ const editionLabel = edition === "pagi" ? "Edisi Pagi (10:30 WIB)" : "Edisi Mala
 
 async function main() {
   console.log(`\n======================================================`);
-  console.log(`🤖 Sinyal AI News — Generator Otomatis (${editionLabel})`);
+  console.log(`🤖 Sinyal AI News — Pemimpin Redaksi (${editionLabel})`);
   console.log(`======================================================`);
   console.log(`Model: ${MODEL}`);
   console.log(`Target Direktori: ${CONTENT_DIR}`);
+  console.log(`Target Kuota Tayang: ${editionQuota} berita`);
   console.log(`Dry run: ${dryRun ? "YA (tidak menyimpan file)" : "TIDAK (publikasi langsung)"}`);
 
   if (!API_KEY) {
@@ -91,104 +94,95 @@ async function main() {
   const { sources: existingUrls } = await loadExistingArticles(CONTENT_DIR);
   console.log(`Terdeteksi ${existingUrls.size} URL rilis resmi yang sudah ada sebelumnya.\n`);
 
-  let totalPublished = 0;
+  // 1. Fetch and pool candidate signals from all sources
+  console.log(`🔍 Mengumpulkan sinyal rilis dari ${sources.length} sumber resmi...`);
+  const allFeedItems = [];
 
   for (const src of sources) {
-    console.log(`\n📡 Memeriksa sumber: ${src.company} (${src.id})...`);
-    let feedItems = [];
-
     try {
-      feedItems = await fetchFeed(src.url, 15000);
-      console.log(`   Ditemukan ${feedItems.length} entri feed dari ${src.url}`);
+      const feedItems = await fetchFeed(src.url, 15000);
+      let relevantCount = 0;
+      for (const item of feedItems) {
+        const relevance = checkRelevance(item, src);
+        if (!relevance.keep) continue;
+        const priority = getEditorialPriority(item);
+        allFeedItems.push({ item, source: src, priority });
+        relevantCount++;
+      }
+      console.log(`   • [${src.company}] ${feedItems.length} entri (${relevantCount} sinyal relevan)`);
     } catch (err) {
       console.warn(`   ⚠️ Gagal menarik feed ${src.id}: ${err.message}`);
-      continue;
     }
+  }
 
-    let publishedFromSource = 0;
+  // 2. Chief Editor Selection (Prioritas, Hari Ini > Hari Sebelumnya, Anti-Duplikasi, Diversifikasi)
+  const selectedArticles = selectEditorialEdition({
+    allFeedItems,
+    existingUrls,
+    limit: editionQuota,
+    referenceDate: new Date(),
+  });
 
-    // Filter and score candidate fresh items according to Editorial Priorities
-    const candidates = [];
-    for (const item of feedItems) {
-      const normUrl = normalizeUrl(item.link);
-      if (!normUrl || existingUrls.has(normUrl)) {
-        continue;
-      }
+  console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} / ${editionQuota} slot tayang):`);
+  if (selectedArticles.length === 0) {
+    console.log(`   ℹ️ Tidak ada rilis baru yang layak tayang saat ini.`);
+    console.log(`\n======================================================\n`);
+    return;
+  }
 
-      const relevance = checkRelevance(item, src);
-      if (!relevance.keep) {
-        continue;
-      }
+  selectedArticles.forEach((cand, idx) => {
+    const isCurToday = isToday(cand.item.date ? new Date(cand.item.date) : null);
+    const tag = cand.priority.categories.join(", ");
+    console.log(`   ${idx + 1}. [${isCurToday ? "HARI INI" : "HARI SEBELUMNYA"} | ${cand.source.company} | ${tag} (Skor: ${cand.priority.priorityScore})]:`);
+    console.log(`      "${cand.item.title}"`);
+    console.log(`      Sumber: ${cand.item.link}`);
+  });
 
-      const priority = getEditorialPriority(item);
-      candidates.push({ item, normUrl, priority });
-    }
+  // 3. Process and write only the chosen articles (strictly saving API tokens)
+  console.log(`\n✍️ Memulai penulisan berita dengan AI (Maksimal ${selectedArticles.length} artikel)...`);
+  let totalPublished = 0;
 
-    // Sort by priorityScore descending (Rilis Model, Fitur/Skills, Produk, Kerjasama first),
-    // then by pubDate descending (newest first)
-    candidates.sort((a, b) => {
-      if (b.priority.priorityScore !== a.priority.priorityScore) {
-        return b.priority.priorityScore - a.priority.priorityScore;
-      }
-      const dateA = a.item.date ? new Date(a.item.date).getTime() : 0;
-      const dateB = b.item.date ? new Date(b.item.date).getTime() : 0;
-      return dateB - dateA;
-    });
+  for (const candidate of selectedArticles) {
+    const { item, source: src, normUrl, priority } = candidate;
+    console.log(`\n   🧠 Menjalankan AI rewrite (Humanizer & Redaktur RSAIN) untuk [${src.company}]: "${item.title}"...`);
 
-    for (const candidate of candidates) {
-      if (publishedFromSource >= maxPerSource) {
-        break;
-      }
+    try {
+      const aiArticle = await generateArticleWithAI({
+        title: item.title,
+        summary: item.summary || "",
+        company: src.company,
+        sourceUrl: item.link,
+        apiKey: API_KEY,
+        model: MODEL,
+      });
 
-      const { item, normUrl, priority } = candidate;
-      const priorityTag = priority.categories.join(", ");
-      console.log(`   ✨ Memproses sinyal [${priorityTag} | Skor: ${priority.priorityScore}]: "${item.title}"`);
-      console.log(`      Sumber: ${item.link}`);
+      const slug = slugify(aiArticle.title, src.company);
+      const publishedDate = item.date && !Number.isNaN(item.date.valueOf()) ? item.date : new Date();
 
-      try {
-        console.log(`      🧠 Menjalankan AI rewrite (Humanizer & Redaktur RSAIN)...`);
-        const aiArticle = await generateArticleWithAI({
-          title: item.title,
-          summary: item.summary || "",
-          company: src.company,
-          sourceUrl: item.link,
-          apiKey: API_KEY,
-          model: MODEL,
-        });
+      const result = await writePublishedArticle({
+        outDir: CONTENT_DIR,
+        dateFolder: toIsoDate(publishedDate),
+        slug,
+        title: aiArticle.title,
+        summary: aiArticle.summary,
+        company: src.company,
+        source: item.link,
+        author: "Redaktur Sinyal AI News (RSAIN)",
+        publishedAt: publishedDate,
+        body: aiArticle.body,
+        dryRun,
+      });
 
-        const slug = slugify(aiArticle.title, src.company);
-        const publishedDate = item.date && !Number.isNaN(item.date.valueOf()) ? item.date : new Date();
-
-        const result = await writePublishedArticle({
-          outDir: CONTENT_DIR,
-          dateFolder: toIsoDate(publishedDate),
-          slug,
-          title: aiArticle.title,
-          summary: aiArticle.summary,
-          company: src.company,
-          source: item.link,
-          author: "Redaktur Sinyal AI News (RSAIN)",
-          publishedAt: publishedDate,
-          body: aiArticle.body,
-          dryRun,
-        });
-
-        console.log(`      ✅ Berhasil diterbitkan: ${result.outPath}`);
-        existingUrls.add(normUrl);
-        publishedFromSource++;
-        totalPublished++;
-      } catch (err) {
-        console.error(`      ❌ Gagal memproses artikel "${item.title}": ${err.message}`);
-      }
-    }
-
-    if (publishedFromSource === 0) {
-      console.log(`   ℹ️ Tidak ada sinyal baru yang belum terbit dari ${src.company}.`);
+      console.log(`      ✅ Berhasil diterbitkan: ${result.outPath}`);
+      existingUrls.add(normUrl);
+      totalPublished++;
+    } catch (err) {
+      console.error(`      ❌ Gagal memproses artikel "${item.title}": ${err.message}`);
     }
   }
 
   console.log(`\n======================================================`);
-  console.log(`🎉 Selesai! Total ${totalPublished} berita baru berhasil diproduksi.`);
+  console.log(`🎉 Selesai! Total ${totalPublished} berita resmi berhasil diproduksi untuk ${editionLabel}.`);
   console.log(`======================================================\n`);
 }
 
