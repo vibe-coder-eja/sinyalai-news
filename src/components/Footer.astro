@@ -7,9 +7,9 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container footer-inner">
     <div class="footer-brand-block">
-      <p class="footer-brand">Sinyal AI</p>
+      <p class="footer-brand">Sinyal AI News</p>
       <p class="footer-copy muted">
-        Sinyal Akal Imitasi — ringkasan berita AI dari rilis resmi industri.
+        Berita Terkini Dunia AI (Akal Imitasi) — ringkasan berita AI dari rilis resmi industri teknologi.
       </p>
     </div>
     <nav class="footer-nav" aria-label="Tautan footer">
@@ -17,8 +17,17 @@ const year = new Date().getFullYear();
       <a href={withBase("/tentang")}>Tentang</a>
     </nav>
     <div class="footer-meta muted">
-      <p>&copy; {year} Sinyal AI</p>
-      <p>Dibangun oleh Reza Syahputra</p>
+      <p>&copy; {year} Sinyal AI News</p>
+      <p>
+        <a
+          class="footer-credit"
+          href="https://rezasyahputra.com"
+          target="_blank"
+          rel="noopener"
+        >
+          Dibangun oleh Reza Syahputra
+        </a>
+      </p>
     </div>
   </div>
 </footer>
@@ -76,6 +85,28 @@ const year = new Date().getFullYear();
 
   .footer-meta p {
     margin: 0 0 0.3rem;
+  }
+
+  .footer-credit {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition:
+      color 160ms var(--ease-out),
+      text-decoration-color 160ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .footer-credit:hover {
+      color: var(--accent);
+      text-decoration-color: currentColor;
+    }
+  }
+
+  .footer-credit:focus-visible {
+    color: var(--accent);
+    text-decoration-color: currentColor;
   }
 
   @media (max-width: 720px) {

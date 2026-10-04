@@ -14,14 +14,18 @@ interface Props {
 }
 
 const {
-  title = "Sinyal AI",
-  description = "Sinyal AI — Sinyal Akal Imitasi. Berita ringkas seputar rilis AI dari industri teknologi.",
+  title,
+  description = "Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi). Portal kurasi sinyal dan rilis resmi kecerdasan buatan global terpercaya dalam bahasa Indonesia.",
   ogImage = "/og-default.png",
   articleDate,
   articleCompany,
 } = Astro.props;
 
-const fullTitle = title === "Sinyal AI" ? title : `${title} · Sinyal AI`;
+const isHome = !title || title === "Sinyal AI" || title === "Sinyal AI News";
+const fullTitle = isHome
+  ? "Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi)"
+  : `${title} · Sinyal AI News`;
+
 const siteUrl = Astro.site || new URL("https://vibe-coder-eja.github.io/sinyalai-news");
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const ogImageURL = new URL(withBase(ogImage), siteUrl);
@@ -31,13 +35,34 @@ const ogImageURL = new URL(withBase(ogImage), siteUrl);
 <html lang="id">
   <head>
     <meta charset="utf-8" />
+
+    <!-- Favicon & Touch Icons with SEO descriptions -->
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
-    <link rel="icon" href={withBase("/favicon.ico")} />
+    <link rel="icon" type="image/x-icon" href={withBase("/favicon.ico")} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase("/logo.png")} />
+    <link rel="manifest" href={withBase("/manifest.webmanifest")} />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta
+      name="keywords"
+      content="Sinyal AI News, Berita AI, Berita Terkini Dunia AI, Akal Imitasi, Kecerdasan Buatan, Berita AI Indonesia, OpenAI, Anthropic, Google DeepMind, Meta AI, xAI, NVIDIA, Microsoft Copilot, LLM, Model AI, Frontier AI"
+    />
+    <meta name="author" content="Redaktur Sinyal AI News (RSAIN)" />
+    <meta name="publisher" content="Sinyal AI News" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#07090c" />
     <meta name="color-scheme" content="dark" />
+
+    <!-- GEO / Localization Meta Tags (Indonesia) -->
+    <meta name="geo.region" content="ID" />
+    <meta name="geo.placename" content="Indonesia" />
+    <meta name="geo.position" content="-0.789275;113.921327" />
+    <meta name="ICBM" content="-0.789275, 113.921327" />
+    <meta name="language" content="id-ID" />
+    <meta http-equiv="content-language" content="id-ID" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={articleDate ? "article" : "website"} />
@@ -45,15 +70,17 @@ const ogImageURL = new URL(withBase(ogImage), siteUrl);
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:alt" content="Sinyal AI News — Berita Terkini Dunia AI" />
     <meta property="og:locale" content="id_ID" />
-    <meta property="og:site_name" content="Sinyal AI" />
+    <meta property="og:site_name" content="Sinyal AI News" />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content="Sinyal AI News — Berita Terkini Dunia AI" />
 
     <!-- Article Specific Metadata -->
     {articleDate && <meta property="article:published_time" content={articleDate} />}
@@ -62,8 +89,13 @@ const ogImageURL = new URL(withBase(ogImage), siteUrl);
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- RSS Feed -->
-    <link rel="alternate" type="application/rss+xml" title="Sinyal AI RSS Feed" href={withBase("/rss.xml")} />
+    <!-- RSS Feed & Discovery -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Sinyal AI News RSS Feed — Berita Terkini Dunia AI"
+      href={withBase("/rss.xml")}
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -71,7 +103,6 @@ const ogImageURL = new URL(withBase(ogImage), siteUrl);
       rel="stylesheet"
     />
     <ClientRouter />
-    <title>{fullTitle}</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Lewati ke konten</a>

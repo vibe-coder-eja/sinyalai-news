@@ -1,0 +1,22 @@
+{
+  "name": "Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi)",
+  "short_name": "Sinyal AI News",
+  "description": "Portal kurasi sinyal dan rilis resmi kecerdasan buatan global terpercaya dalam bahasa Indonesia.",
+  "start_url": "/sinyalai-news/",
+  "display": "standalone",
+  "background_color": "#07090c",
+  "theme_color": "#07090c",
+  "lang": "id-ID",
+  "icons": [
+    {
+      "src": "/sinyalai-news/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/sinyalai-news/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 ---
-import type { Page } from "astro";
+import type { GetStaticPaths, Page } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import NewsCard from "../../components/NewsCard.astro";
 import { getPublishedNews, type NewsEntry } from "../../lib/news";
 import { withBase } from "../../lib/url";
 
-export async function getStaticPaths({ paginate }: { paginate: any }) {
+export const getStaticPaths = (async ({ paginate }) => {
   const articles = await getPublishedNews();
   return paginate(articles, { pageSize: 9 });
-}
+}) satisfies GetStaticPaths;
 
 interface Props {
   page: Page<NewsEntry>;
@@ -18,7 +18,30 @@ const { page } = Astro.props;
 const articles = page.data;
 
 const totalPages = page.lastPage;
-const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+const current = page.currentPage;
+
+/**
+ * Windowed page list: always show first, last, and current ±1.
+ * Gaps are collapsed into "…" so the bar never overflows on mobile,
+ * e.g. 1 … 4 5 6 … 20
+ */
+function buildPageItems(cur: number, last: number): (number | "gap")[] {
+  const keep = new Set<number>([1, last, cur - 1, cur, cur + 1]);
+  const nums = [...keep].filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
+  const items: (number | "gap")[] = [];
+  nums.forEach((n, i) => {
+    const prev = nums[i - 1];
+    if (prev !== undefined && n - prev > 1) {
+      // Single hidden page? show it instead of an ellipsis.
+      if (n - prev === 2) items.push(prev + 1);
+      else items.push("gap");
+    }
+    items.push(n);
+  });
+  return items;
+}
+
+const pageItems = buildPageItems(current, totalPages);
 
 function getPageUrl(num: number): string {
   return num === 1 ? withBase("/berita") : withBase(`/berita/${num}`);
@@ -39,7 +62,9 @@ function getPageUrl(num: number): string {
       </p>
       <div class="archive-meta">
         <span class="count-tag">
-          Menampilkan {page.start + 1}–{page.end + 1} dari {page.total} sinyal resmi
+          {page.total === 0
+            ? "Belum ada sinyal terbit"
+            : `Menampilkan ${page.start + 1}–${page.end + 1} dari ${page.total} sinyal resmi`}
         </span>
         <span class="page-indicator">
           Halaman {page.currentPage} dari {page.lastPage}
@@ -79,14 +104,17 @@ function getPageUrl(num: number): string {
           )}
 
           <div class="page-numbers">
-            {pageNumbers.map((num) => {
-              const isCurrent = num === page.currentPage;
+            {pageItems.map((num) => {
+              if (num === "gap") {
+                return <span class="page-gap" aria-hidden="true">…</span>;
+              }
+              const isCurrent = num === current;
               return isCurrent ? (
                 <span class="page-num active" aria-current="page">
                   {num}
                 </span>
               ) : (
-                <a class="page-num" href={getPageUrl(num)}>
+                <a class="page-num" href={getPageUrl(num)} aria-label={`Halaman ${num}`}>
                   {num}
                 </a>
               );
@@ -113,13 +141,17 @@ function getPageUrl(num: number): string {
     margin-bottom: 2rem;
   }
 
+  /* Tighter gap between lead and meta row (replaces old negative margin) */
+  .archive-header .page-lead {
+    margin-bottom: calc(var(--space-6) - 1rem);
+  }
+
   .archive-meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-top: -1rem;
     padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--border);
     font-family: var(--font-mono);
@@ -172,7 +204,6 @@ function getPageUrl(num: number): string {
       background 160ms var(--ease-out),
       color 160ms var(--ease-out),
       box-shadow 160ms var(--ease-out);
-    will-change: transform;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -222,7 +253,6 @@ function getPageUrl(num: number): string {
       background 160ms var(--ease-out),
       color 160ms var(--ease-out),
       border-color 160ms var(--ease-out);
-    will-change: transform;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -245,6 +275,16 @@ function getPageUrl(num: number): string {
     background: var(--accent);
     font-weight: 700;
     box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  .page-gap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    user-select: none;
   }
 
   @media (max-width: 600px) {

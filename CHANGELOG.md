@@ -37,13 +37,15 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - Mengklasifikasikan seluruh file artikel di [`src/content/news/`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/) ke dalam subfolder tanggal terbitnya (misal: `src/content/news/2026-10-04/slug.md`) agar struktur direktori bersih dan rapi.
   - Memperbarui generator [`scripts/generate-news.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/generate-news.mjs) dan utilitas [`scripts/lib/markdown.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/markdown.mjs) dengan parameter `dateFolder` sehingga artikel baru otomatis disimpan ke subfolder tanggal rilisnya.
   - Memperbarui modul deduplikasi [`scripts/lib/dedupe.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/dedupe.mjs) agar melakukan pemindaian berkas secara rekursif (`readdir(dir, { recursive: true })`) serta melacak slug dasar dan slug relatif.
-- **Routing Dinamis Rest Parameter & Detail Artikel (`[date]/[slug].astro`)**:
+- **Routing Dinamis Bertanggal & Detail Artikel (`[date]/[slug].astro`)**:
   - Mengubah rute detail artikel menjadi [`src/pages/berita/[date]/[slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5Bdate%5D/%5Bslug%5D.astro).
   - Format URL permalink artikel konsisten mengusung standar media berita: `/sinyalai-news/berita/YYYY-MM-DD/slug`, selaras dengan kartu berita di beranda dan link pada feed RSS `dist/rss.xml`.
 - **Fitur Pagination Berita (9 Berita per Halaman)**:
   - Mengimplementasikan rute paginasi Astro [`src/pages/berita/[...page].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5B...page%5D.astro) dengan batas `pageSize: 9` per halaman.
   - Halaman 1 terbit di `/sinyalai-news/berita/` dan halaman berikutnya di `/sinyalai-news/berita/2`, `/sinyalai-news/berita/3`, dst.
   - Dilengkapi kontrol navigasi halaman (tombol Sebelumnya/Selanjutnya, nomor halaman lingkaran dengan efek tekan taktil, serta indikator jumlah artikel) yang terhubung mulus dengan View Transitions.
+  - Nomor halaman diringkas otomatis (misal: `1 … 4 5 6 … 20`) agar baris navigasi tidak meluap di layar ponsel seiring bertambahnya arsip.
+  - Penanganan feed kosong: indikator jumlah menampilkan "Belum ada sinyal terbit" alih-alih rentang `1–0 dari 0`.
 
 ### 🤖 Pipeline & Ingestion Otomatis
 - **Penyaring Relevansi AI Otomatis ([`scripts/lib/relevance.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/relevance.mjs))**:
@@ -77,25 +79,30 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
 - **Peringatan Tanggal Terbit Hilang**: Draft otomatis yang tidak memiliki metadata tanggal pada feed aslinya akan ditandai dengan peringatan editorial tebal agar dikoreksi sebelum publikasi.
 - **User-Agent Publik Resmi**: Memperbarui User-Agent crawler RSS agar mengarah ke tautan identitas publik: `SinyalAI-Bot/0.1 (+https://sinyalai.vercel.app/tentang; news draft pipeline)`.
 
-### 🔎 SEO & Structured Data
+### 🔎 SEO, GEO Targeting & Metadata
+- **Optimasi Meta Tag SEO & GEO Friendly ([`src/layouts/BaseLayout.astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/layouts/BaseLayout.astro))**:
+  - Menambahkan meta tag penargetan geografis lokal Indonesia (`geo.region: "ID"`, `geo.placename: "Indonesia"`, `geo.position: "-0.789275;113.921327"`, `ICBM`, serta deklarasi bahasa `id-ID` dan `http-equiv="content-language"`).
+  - Menyematkan kata kunci industri AI lengkap (`keywords`), hak cipta penerbit (`author: RSAIN`, `publisher: Sinyal AI News`), dan arahan robot pencari dengan *large image preview*.
+  - Mengonfigurasi Web App Manifest di [`public/manifest.webmanifest`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/public/manifest.webmanifest) dan tag icon berdefinisi tinggi (`apple-touch-icon`) untuk pratinjau browser, mobile PWA, dan rich snippet.
+  - Memperbarui title default menjadi format resmi: `Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi)`.
 - **Koreksi Meta Twitter/X Card**: Memperbaiki spesifikasi tag Twitter di [`src/layouts/BaseLayout.astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/layouts/BaseLayout.astro) dari `property=` menjadi standar W3C/X yaitu `<meta name="twitter:...">`.
 - **Standar Schema.org `NewsArticle` Lengkap**:
   - Menghasilkan aset logo publisher raster beresolusi tinggi di [`public/logo.png`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/public/logo.png) (512x512 PNG) menggantikan SVG untuk memenuhi kriteria Google Rich Snippets.
-  - Menambahkan metadata terstruktur `image`, `dateModified`, `inLanguage`, `about`, dan `isBasedOn` pada halaman detail [`src/pages/berita/[slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5Bslug%5D.astro).
+  - Menambahkan metadata terstruktur `image`, `dateModified`, `inLanguage`, `about`, dan `isBasedOn` pada halaman detail [`src/pages/berita/[date]/[slug].astro`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/pages/berita/%5Bdate%5D/%5Bslug%5D.astro).
   - Menambahkan field skema opsional `updatedAt` di schema content collection.
 
 ### 📰 Konten & Redaksi (Editorial)
 - **Penghapusan Artikel Demo Dummy**: Membersihkan 7 file artikel mock awal yang sebelumnya hanya merujuk ke halaman landing umum.
-- **Penerbitan 6 Berita Sinyal Industri Resmi**:
-  1. **OpenAI**: [Panduan Praktis OpenAI untuk Arsitektur Model Keluarga GPT-6](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/openai-a-model-guide-for-the-gpt-6-family.md)
-  2. **Anthropic**: [Anthropic Kucurkan $100 Juta untuk Claude Frontier Academy](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/anthropic-anthropic-invests-100-million-to-train-10-000-engineers-and-tackle.md)
-  3. **Google DeepMind**: [Google DeepMind Kenalkan Gemini 4 Argon untuk Coding dan Pertahanan Siber](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/google-gemini-4-argon-our-next-era-of-frontier-intelligence.md)
-  4. **Google DeepMind**: [DeepMind Rilis SynthID Bio: Metode Watermarking untuk Biologi Sintetis](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/google-introducing-synthid-bio.md)
-  5. **Microsoft**: [Microsoft Rombak Copilot dengan Fitur Home, Code, dan Autopilot](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/microsoft-introducing-the-new-copilot-with-home-code-and-autopilot.md)
-  6. **NVIDIA**: [NVIDIA Hadirkan DGX Spark 64GB untuk Komputasi Agen AI Lokal](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/nvidia-nvidia-dgx-spark-64gb-gives-developers-more-ways-to-build-and-scale.md)
-  7. **xAI**: [xAI Integrasikan Model Grok ke Lingkungan Koding OpenCode](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/xai-use-grok-in-opencode.md)
-  8. **Meta**: [Meta Rilis SAM Audio, Model Multimodal Pertama untuk Isolasi Suara](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/meta-meta-rilis-sam-audio-model-multimodal-pertama-untuk-isolasi-suara.md)
-- **Aktivasi Sumber Meta AI & xAI**: Mengaktifkan feed RSS berita Meta AI (`ai.meta.com`) dan xAI melalui mirror feed komunitas di [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json), meningkatkan kapasitas produksi harian menjadi **hingga 16 berita per hari** (8 edisi pagi + 8 edisi malam).
+- **Penerbitan 8 Berita Sinyal Industri Resmi**:
+  1. **OpenAI**: [Panduan Praktis OpenAI untuk Arsitektur Model Keluarga GPT-6](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-10-02/openai-a-model-guide-for-the-gpt-6-family.md)
+  2. **Anthropic**: [Anthropic Kucurkan $100 Juta untuk Claude Frontier Academy](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-10-02/anthropic-anthropic-invests-100-million-to-train-10-000-engineers-and-tackle.md)
+  3. **Google DeepMind**: [Google DeepMind Kenalkan Gemini 4 Argon untuk Coding dan Pertahanan Siber](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-09-30/google-gemini-4-argon-our-next-era-of-frontier-intelligence.md)
+  4. **Google DeepMind**: [DeepMind Rilis SynthID Bio: Metode Watermarking untuk Biologi Sintetis](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-09-30/google-introducing-synthid-bio.md)
+  5. **Microsoft**: [Microsoft Rombak Copilot dengan Fitur Home, Code, dan Autopilot](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-09-25/microsoft-introducing-the-new-copilot-with-home-code-and-autopilot.md)
+  6. **NVIDIA**: [NVIDIA Hadirkan DGX Spark 64GB untuk Komputasi Agen AI Lokal](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-10-02/nvidia-nvidia-dgx-spark-64gb-gives-developers-more-ways-to-build-and-scale.md)
+  7. **xAI**: [xAI Integrasikan Model Grok ke Lingkungan Koding OpenCode](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-05-21/xai-use-grok-in-opencode.md)
+  8. **Meta**: [Meta Rilis SAM Audio, Model Multimodal Pertama untuk Isolasi Suara](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/2026-10-04/meta-meta-rilis-sam-audio-model-multimodal-pertama-untuk-isolasi-suara.md)
+- **Aktivasi Sumber Meta AI & xAI**: Mengaktifkan feed RSS berita Meta AI (`ai.meta.com`) dan xAI melalui mirror feed komunitas di [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json). Kapasitas produksi harian kini mengikuti kuota Pemimpin Redaksi: **maksimal 6 berita per hari** (3 edisi pagi + 3 edisi malam).
 - **Manajemen Draft**: Menyimpan 7 draf berita lainnya dengan status `draft: true` untuk siap direview oleh tim redaksi.
 
 ### 🧪 Pengujian Unit (Testing)

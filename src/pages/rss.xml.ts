@@ -12,8 +12,8 @@ export const GET: APIRoute = async (context) => {
   const itemPrefix = baseSubpath ? `${baseSubpath}/` : '';
 
   return rss({
-    title: 'Sinyal AI',
-    description: 'Sinyal Akal Imitasi — Ringkasan berita AI resmi dari industri teknologi.',
+    title: 'Sinyal AI News',
+    description: 'Berita Terkini Dunia AI (Akal Imitasi) — Ringkasan berita AI resmi dari industri teknologi.',
     site: siteUrl,
     items: news.map((item) => ({
       title: item.data.title,
