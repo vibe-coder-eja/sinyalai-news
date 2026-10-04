@@ -1,5 +1,5 @@
 {
-  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | page (page = manual/bookmark, belum di-fetch otomatis).",
+  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | page (page = manual/bookmark, belum di-fetch otomatis). aiFocused: true = semua item dianggap relevan AI; selain itu item disaring dengan kata kunci AI (scripts/lib/relevance.mjs). excludeKeywords: item yang judul/ringkasannya mengandung salah satu kata ini selalu dibuang.",
   "sources": [
     {
       "id": "openai",
@@ -8,6 +8,7 @@
       "url": "https://openai.com/news/rss.xml",
       "home": "https://openai.com/news",
       "enabled": true,
+      "aiFocused": true,
       "notes": "Fallback alternatif: https://openai.com/blog/rss.xml"
     },
     {
@@ -18,6 +19,7 @@
       "home": "https://www.anthropic.com/news",
       "enabled": true,
       "trusted": false,
+      "aiFocused": true,
       "notes": "Feed komunitas/mirror (tidak resmi); utamakan verifikasi manual sebelum menerbitkan karena risiko manipulasi konten."
     },
     {
@@ -26,7 +28,9 @@
       "type": "rss",
       "url": "https://blogs.nvidia.com/feed/",
       "home": "https://blogs.nvidia.com",
-      "enabled": true
+      "enabled": true,
+      "excludeKeywords": ["GFN Thursday", "GeForce NOW", "cloud gaming"],
+      "notes": "Feed umum NVIDIA (gaming, otomotif, AI). Disaring dengan kata kunci AI."
     },
     {
       "id": "microsoft-blog",
@@ -43,7 +47,8 @@
       "type": "rss",
       "url": "https://deepmind.google/blog/rss.xml",
       "home": "https://deepmind.google/discover/blog/",
-      "enabled": true
+      "enabled": true,
+      "aiFocused": true
     },
     {
       "id": "google-ai",
@@ -51,7 +56,8 @@
       "type": "rss",
       "url": "https://blog.google/technology/ai/rss/",
       "home": "https://blog.google/technology/ai/",
-      "enabled": true
+      "enabled": true,
+      "aiFocused": true
     },
     {
       "id": "xai",

@@ -70,6 +70,12 @@ describe("buildDraftBody", () => {
     });
     expect(body).toContain("[Buka pengumuman resmi](#)");
   });
+
+  it("flags drafts whose feed item had no publish date", () => {
+    const base = { title: "T", summary: "S", company: "C", link: "https://example.com/n" };
+    expect(buildDraftBody({ ...base, dateMissing: true })).toContain("Feed tidak menyertakan tanggal terbit");
+    expect(buildDraftBody(base)).not.toContain("Feed tidak menyertakan tanggal terbit");
+  });
 });
 
 describe("writeDraftArticle", () => {

@@ -45,11 +45,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://sinyalai
     <meta property="og:site_name" content="Sinyal AI" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={fullTitle} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(ogImage, canonicalURL.origin)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, canonicalURL.origin)} />
 
     <!-- Article Specific Metadata -->
     {articleDate && <meta property="article:published_time" content={articleDate} />}

@@ -24,6 +24,7 @@ const news = defineCollection({
     company: z.string(),
     source: secureUrl,
     publishedAt: z.coerce.date(),
+    updatedAt: z.coerce.date().optional(),
     draft: z.boolean().default(false),
   }),
 });

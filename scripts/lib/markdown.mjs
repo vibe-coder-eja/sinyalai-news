@@ -1,10 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
+import { truncateAtWord } from "./text.mjs";
 
-/**
- * Escape string for YAML double-quoted scalars.
- * @param {string} value
- */
 const MAX_SUMMARY_LENGTH = 220;
 
 /**
@@ -37,23 +34,9 @@ function isSecureUrl(value) {
 }
 
 /**
- * Truncate text at the last word boundary before the limit.
- * @param {string} text
- * @param {number} limit
- */
-function truncateAtWord(text, limit) {
-  if (!text) return "";
-  if (text.length <= limit) return text;
-  const truncated = text.slice(0, limit);
-  const lastSpace = truncated.lastIndexOf(" ");
-  if (lastSpace > 0) {
-    return truncated.slice(0, lastSpace).trim() + "...";
-  }
-  return truncated.trim() + "...";
-}
-
-/**
- * @param {Date} date
+ * Falls back to today's date when the feed item has no valid date.
+ * Callers should flag such drafts (see `buildDraftBody({ dateMissing })`).
+ * @param {Date | null | undefined} date
  */
 export function toIsoDate(date) {
   if (!date || Number.isNaN(date.valueOf())) {
@@ -64,7 +47,7 @@ export function toIsoDate(date) {
 
 /**
  * Skeleton “rewrite” — nanti diganti LLM (xAI/Grok API, dll.).
- * @param {{ title: string, summary: string, company: string, link: string }} item
+ * @param {{ title: string, summary: string, company: string, link: string, dateMissing?: boolean }} item
  */
 export function buildDraftBody(item) {
   const blurb =
@@ -72,6 +55,17 @@ export function buildDraftBody(item) {
     "Ringkasan otomatis belum tersedia. Silakan baca sumber resmi.";
 
   const safeLink = isSecureUrl(item.link) ? item.link : "#";
+
+  const checks = [
+    `- Detail teknis dan klaim di sumber resmi`,
+    `- Tanggal rilis dan ketersediaan produk/API`,
+    `- Apakah ini sinyal penting bagi pembaca Indonesia / builder`,
+  ];
+  if (item.dateMissing) {
+    checks.unshift(
+      `- **⚠️ Feed tidak menyertakan tanggal terbit.** \`publishedAt\` diisi tanggal fetch — wajib dikoreksi.`,
+    );
+  }
 
   return [
     `> Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**`,
@@ -82,9 +76,7 @@ export function buildDraftBody(item) {
     ``,
     `## Yang perlu diverifikasi`,
     ``,
-    `- Detail teknis dan klaim di sumber resmi`,
-    `- Tanggal rilis dan ketersediaan produk/API`,
-    `- Apakah ini sinyal penting bagi pembaca Indonesia / builder`,
+    ...checks,
     ``,
     `## Sumber`,
     ``,
@@ -106,7 +98,7 @@ export function buildDraftBody(item) {
  * @param {string} params.summary
  * @param {string} params.company
  * @param {string} params.source
- * @param {Date} params.publishedAt
+ * @param {Date | null} params.publishedAt
  * @param {string} params.body
  * @param {boolean} params.dryRun
  * @param {string} [params.templateContent] - Optional cached template

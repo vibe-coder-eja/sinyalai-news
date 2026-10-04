@@ -12,12 +12,14 @@
  * (tidak tampil di site sampai di-set draft: false).
  */
 
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchFeed } from "./lib/rss.mjs";
 import { buildDraftBody, writeDraftArticle } from "./lib/markdown.mjs";
 import { slugify, uniqueSlug } from "./lib/slug.mjs";
+import { checkRelevance } from "./lib/relevance.mjs";
+import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -42,17 +44,6 @@ function parseArgs(argv) {
 
   if (!Number.isFinite(args.limit) || args.limit < 1) args.limit = 3;
   return args;
-}
-
-async function loadExistingSlugs() {
-  try {
-    const files = await readdir(outDir);
-    return new Set(
-      files.filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/i, "")),
-    );
-  } catch {
-    return new Set();
-  }
 }
 
 function printHelp() {
@@ -98,8 +89,8 @@ async function main() {
     sources = [selected];
   }
 
-  const existing = await loadExistingSlugs();
-  const stats = { sources: 0, fetched: 0, written: 0, skipped: 0, errors: 0 };
+  const { slugs: existing, sources: existingSources } = await loadExistingArticles(outDir);
+  const stats = { sources: 0, fetched: 0, written: 0, skipped: 0, filtered: 0, errors: 0 };
   let templateContent = "";
   try {
     templateContent = await readFile(templatePath, "utf8");
@@ -128,17 +119,37 @@ async function main() {
       stats.fetched += items.length;
 
       // Safe sorting that handles null dates by moving them to the bottom
-      const newest = items
+      const sorted = items
         .slice()
         .sort((a, b) => {
           const dateA = a.publishedAt ? a.publishedAt.getTime() : 0;
           const dateB = b.publishedAt ? b.publishedAt.getTime() : 0;
           return dateB - dateA;
-        })
-        .slice(0, args.limit);
+        });
+
+      // Filter for AI relevance before applying the limit, so off-topic
+      // posts don't consume the per-source quota.
+      const newest = [];
+      for (const item of sorted) {
+        if (newest.length >= args.limit) break;
+        const relevance = checkRelevance(item, source);
+        if (!relevance.keep) {
+          console.log(`  - filter (${relevance.reason}): ${item.title}`);
+          stats.filtered += 1;
+          continue;
+        }
+        newest.push(item);
+      }
 
       for (const item of newest) {
         const baseSlug = slugify(item.title, source.company);
+        const sourceKey = normalizeUrl(item.link);
+
+        if (sourceKey && existingSources.has(sourceKey)) {
+          console.log(`  - skip (sumber sudah ada): ${item.link}`);
+          stats.skipped += 1;
+          continue;
+        }
 
         if (existing.has(baseSlug)) {
           console.log(`  - skip (sudah ada): ${baseSlug}`);
@@ -147,12 +158,17 @@ async function main() {
         }
 
         const slug = uniqueSlug(baseSlug, existing);
+        const dateMissing = !item.publishedAt;
+        if (dateMissing) {
+          console.log(`  ! tanggal tidak tersedia di feed, diisi tanggal hari ini: ${item.title}`);
+        }
 
         const body = buildDraftBody({
           title: item.title,
           summary: item.summary,
           company: source.company,
           link: item.link,
+          dateMissing,
         });
 
         const result = await writeDraftArticle({
@@ -164,13 +180,14 @@ async function main() {
           summary: item.summary,
           company: source.company,
           source: item.link,
-          publishedAt: item.publishedAt || new Date(),
+          publishedAt: item.publishedAt,
           body,
           dryRun: args.dryRun,
         });
 
         existing.add(slug);
         existing.add(baseSlug);
+        if (sourceKey) existingSources.add(sourceKey);
         stats.written += 1;
         console.log(
           `  - ${args.dryRun ? "draft?" : "wrote"} ${path.relative(root, result.outPath)}`,
@@ -189,7 +206,7 @@ async function main() {
 
   console.log("\nSelesai.");
   console.log(
-    `sources=${stats.sources} fetched_items=${stats.fetched} written=${stats.written} skipped=${stats.skipped} errors=${stats.errors}`,
+    `sources=${stats.sources} fetched_items=${stats.fetched} written=${stats.written} skipped=${stats.skipped} filtered=${stats.filtered} errors=${stats.errors}`,
   );
   console.log(
     "\nLangkah berikutnya: review file draft:true → edit ringkasan → set draft: false → npm run build",

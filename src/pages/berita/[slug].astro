@@ -13,29 +13,40 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
-const { title, summary, company, source, publishedAt } = article.data;
+const { title, summary, company, source, publishedAt, updatedAt } = article.data;
+const siteUrl = Astro.site || "https://sinyalai.vercel.app";
+const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const modifiedAt = updatedAt ?? publishedAt;
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
   "headline": title,
   "description": summary,
+  "image": [new URL("/og-default.png", siteUrl).toString()],
   "datePublished": publishedAt.toISOString(),
+  "dateModified": modifiedAt.toISOString(),
+  "inLanguage": "id-ID",
+  "about": company,
+  "isBasedOn": source,
   "author": {
     "@type": "Organization",
-    "name": "Sinyal AI"
+    "name": "Sinyal AI",
+    "url": siteUrl.toString()
   },
   "publisher": {
     "@type": "Organization",
     "name": "Sinyal AI",
     "logo": {
       "@type": "ImageObject",
-      "url": new URL("/favicon.svg", Astro.site || "https://sinyalai.vercel.app").toString()
+      "url": new URL("/logo.png", siteUrl).toString(),
+      "width": 512,
+      "height": 512
     }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": new URL(Astro.url.pathname, Astro.site || "https://sinyalai.vercel.app").toString()
+    "@id": pageUrl
   }
 };
 ---

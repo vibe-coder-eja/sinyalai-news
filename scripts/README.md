@@ -15,7 +15,10 @@ sources.json  →  fetch RSS  →  draft .md (draft: true)  →  editorial revie
 | `scripts/fetch-signals.mjs` | CLI fetch → tulis draft |
 | `scripts/lib/rss.mjs` | Parser RSS/Atom minimal |
 | `scripts/lib/markdown.mjs` | Writer draft + skeleton body |
-| `scripts/lib/slug.mjs` | Pembuat slug |
+| `scripts/lib/slug.mjs` | Pembuat slug aman |
+| `scripts/lib/relevance.mjs` | Penyaring relevansi AI untuk feed umum |
+| `scripts/lib/dedupe.mjs` | Deduplikasi URL sumber & slug |
+| `scripts/lib/text.mjs` | Pemotongan teks batas kata (*word-boundary*) |
 | `src/content/news/` | Artikel (termasuk draft) |
 
 ## Menjalankan

@@ -1,3 +1,5 @@
+import { truncateAtWord } from "./text.mjs";
+
 const MAX_SUMMARY_LENGTH = 400;
 const FETCH_TIMEOUT_MS = 20000;
 const MAX_RESPONSE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -113,7 +115,7 @@ export function parseFeed(xml) {
         publishedAt: publishedAt && !Number.isNaN(publishedAt.valueOf())
           ? publishedAt
           : null,
-        summary: summary.slice(0, MAX_SUMMARY_LENGTH),
+        summary: truncateAtWord(summary, MAX_SUMMARY_LENGTH),
       };
     })
     .filter(Boolean);
@@ -171,7 +173,7 @@ export async function fetchFeed(url, timeoutMs = FETCH_TIMEOUT_MS) {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "SinyalAI-Bot/0.1 (+https://sinyalai.local; news draft pipeline)",
+        "User-Agent": "SinyalAI-Bot/0.1 (+https://sinyalai.vercel.app/tentang; news draft pipeline)",
         Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       },
     });
