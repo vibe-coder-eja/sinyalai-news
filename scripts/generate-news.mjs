@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fetchFeed } from "./lib/rss.mjs";
-import { checkRelevance } from "./lib/relevance.mjs";
+import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle } from "./lib/markdown.mjs";
@@ -107,28 +107,42 @@ async function main() {
 
     let publishedFromSource = 0;
 
+    // Filter and score candidate fresh items according to Editorial Priorities
+    const candidates = [];
     for (const item of feedItems) {
-      if (publishedFromSource >= maxPerSource) {
-        break;
-      }
-
       const normUrl = normalizeUrl(item.link);
-      if (!normUrl) {
+      if (!normUrl || existingUrls.has(normUrl)) {
         continue;
       }
 
-      // 1. Deduplication Check
-      if (existingUrls.has(normUrl)) {
-        continue; // Already published or drafted
-      }
-
-      // 2. AI Relevance & Exclude Check
       const relevance = checkRelevance(item, src);
       if (!relevance.keep) {
         continue;
       }
 
-      console.log(`   ✨ Memproses sinyal baru: "${item.title}"`);
+      const priority = getEditorialPriority(item);
+      candidates.push({ item, normUrl, priority });
+    }
+
+    // Sort by priorityScore descending (Rilis Model, Fitur/Skills, Produk, Kerjasama first),
+    // then by pubDate descending (newest first)
+    candidates.sort((a, b) => {
+      if (b.priority.priorityScore !== a.priority.priorityScore) {
+        return b.priority.priorityScore - a.priority.priorityScore;
+      }
+      const dateA = a.item.date ? new Date(a.item.date).getTime() : 0;
+      const dateB = b.item.date ? new Date(b.item.date).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    for (const candidate of candidates) {
+      if (publishedFromSource >= maxPerSource) {
+        break;
+      }
+
+      const { item, normUrl, priority } = candidate;
+      const priorityTag = priority.categories.join(", ");
+      console.log(`   ✨ Memproses sinyal [${priorityTag} | Skor: ${priority.priorityScore}]: "${item.title}"`);
       console.log(`      Sumber: ${item.link}`);
 
       try {

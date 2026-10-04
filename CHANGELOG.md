@@ -19,6 +19,14 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   - Menambahkan modul filter cerdas berbasis pola regex untuk memisahkan pengumuman AI (LLM, GPT, reasoning, agentic, inference, DeepMind, dsb.) dari artikel non-AI pada feed umum korporat (Microsoft, NVIDIA).
   - Menyediakan filter penolakan kata kunci (`excludeKeywords`) untuk memblokir rilis gaming (misal: *GeForce NOW* / *GFN Thursday*).
   - Menandai feed spesifik riset AI (OpenAI, Google DeepMind, Google AI) dengan atribut `"aiFocused": true` agar tidak terkena pemotongan kuota.
+- **Sistem Prioritas Redaksi Berita ([`scripts/lib/relevance.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/relevance.mjs), [`scripts/generate-news.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/generate-news.mjs))**:
+  - Menetapkan 4 pilar prioritas editorial utama saat memilih dan menerbitkan rilis:
+    1. **Rilis Model Terbaru** (penalaran, frontier LLM, checkpoint, parameter).
+    2. **Fitur & Skills** (kemampuan agen baru, tool use, otomatisasi alur kerja, computer use).
+    3. **Produk Baru & Infrastruktur** (chip, hardware AI, SDK, ketersediaan API).
+    4. **Kerjasama & Kemitraan Industri AI** (aliansi strategis antar-perusahaan teknologi, integrasi, investasi).
+  - Mengurutkan kandidat rilis secara otomatis berdasarkan skor prioritas sebelum artikel diproduksi.
+  - Artikel di luar 4 pilar utama di atas diproses mengikuti standar publikasi umum (riset, evaluasi, kebijakan).
 - **Deduplikasi URL Sumber Berlapis ([`scripts/lib/dedupe.mjs`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/lib/dedupe.mjs))**:
   - Menormalisasi URL artikel (membersihkan parameter pelacak seperti `utm_*`, `fbclid`, trailing slash, skema www).
   - Memindai seluruh metadata frontmatter artikel yang ada di `src/content/news/`.

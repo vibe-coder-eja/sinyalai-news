@@ -104,3 +104,74 @@ export function checkRelevance(item, source = {}) {
   }
   return { keep: false, reason: "no AI signal" };
 }
+
+/**
+ * Priority patterns based on editorial guidelines:
+ * 1. Rilis Model Terbaru
+ * 2. Fitur dan Skills
+ * 3. Produk Terbaru / Hardware / API
+ * 4. Kerjasama & Kemitraan Industri AI
+ * 5. Standar Publish Umum
+ *
+ * @param {{ title?: string, summary?: string, link?: string }} item
+ * @returns {{ priorityScore: number, categories: string[], isTopPriority: boolean }}
+ */
+export function getEditorialPriority(item) {
+  const text = `${item.title || ""} ${item.summary || ""}`.toLowerCase();
+  let score = 0;
+  const categories = [];
+
+  // 1. Rilis Model Terbaru
+  const modelPatterns = [
+    /\b(?:new |frontier |foundation |reasoning )?models?\b/i,
+    /\b(?:gpt-[456]\w*|claude|gemini|grok|llama|deepseek|o1|o3)\b/i,
+    /\b(?:weights|checkpoints?|fine-tuning model)\b/i,
+  ];
+  if (modelPatterns.some((re) => re.test(text))) {
+    score += 50;
+    categories.push("Rilis Model");
+  }
+
+  // 2. Fitur & Skills
+  const skillPatterns = [
+    /\bskills?\b/i,
+    /\b(?:features?|capabilities|tool use|computer use|code execution|agentic|ai agents?)\b/i,
+    /\b(?:workflows?|prompt caching|voice mode|multimodal)\b/i,
+  ];
+  if (skillPatterns.some((re) => re.test(text))) {
+    score += 45;
+    categories.push("Fitur & Skills");
+  }
+
+  // 3. Produk Terbaru & Hardware
+  const productPatterns = [
+    /\b(?:introducing|announcing|launch(?:ing|ed|es)?|new product|hardware|dgx|blackwell|tpu|chip|copilot)\b/i,
+    /\b(?:api availability|sdk|workstation|supercomputing)\b/i,
+  ];
+  if (productPatterns.some((re) => re.test(text))) {
+    score += 40;
+    categories.push("Produk Baru");
+  }
+
+  // 4. Kerjasama & Kemitraan Industri
+  const partnershipPatterns = [
+    /\b(?:partners?|partnerships?|collaborat(?:e|ion|ing)|alliance|agreements?|joint|invest(?:ment|s|ing)?|enterprise deal)\b/i,
+  ];
+  if (partnershipPatterns.some((re) => re.test(text))) {
+    score += 40;
+    categories.push("Kerjasama Industri");
+  }
+
+  // Default baseline for general AI signals
+  if (score === 0) {
+    score = 10;
+    categories.push("Standar Umum");
+  }
+
+  return {
+    priorityScore: score,
+    categories,
+    isTopPriority: score >= 40,
+  };
+}
+

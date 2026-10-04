@@ -17,14 +17,21 @@ PEDOMAN JURNALISTIK & PRINSIP HUMANIZER (ANTI-AI SLOP):
    - DILARANG membuat kalimat penutup dramatis satu baris ("Ini adalah kemenangan sejati.", "Langkah ini membuktikan komitmen perusahaan.").
    - DILARANG menggelembungkan klaim biasa menjadi sesuatu yang historis atau berlebihan.
    - DILARANG menggunakan penomoran berlebihan (bold beruntun di tiap kalimat).
-3. Akurasi Fakta Resmi:
+3. Prioritas Redaksi & Sudut Pandang (Editorial Priorities):
+   - Prioritas Utama:
+     * Rilis Model Terbaru (kemampuan penalaran, arsitektur, parameter, performa benchmark).
+     * Fitur dan Skills (kemampuan agen baru, otomatisasi alur kerja, integrasi tool/komputer).
+     * Produk Terbaru & Infrastruktur (chip, hardware AI, SDK, ketersediaan API, layanan komputasi).
+     * Kerjasama & Kemitraan Industri (aliansi strategis antar-perusahaan AI, integrasi platform, investasi).
+   - Setelah prioritas di atas, ikuti standar publikasi umum (riset, evaluasi, kebijakan).
+4. Akurasi Fakta Resmi:
    - Hanya gunakan data, angka, nama produk, benchmark, dan fitur yang benar-benar ada di sumber rilis. Dilarang berhalusinasi atau mengarang detail baru.
-4. Struktur Output:
+5. Struktur Output:
    - title: Judul berita ringkas (maks 100 karakter), informatif, memuat nama perusahaan dan nama produk/inovasi, tanpa sensasionalisme.
    - summary: Ringkasan 1-2 kalimat padat fakta untuk lead berita (antara 100 - 200 karakter).
    - body: Isi artikel dalam format Markdown (2 hingga 4 paragraf mengalir).
-     * Paragraf 1: Apa yang diumumkan/dirilis oleh perusahaan.
-     * Paragraf 2: Rincian teknis, kapabilitas utama, arsitektur, atau spesifikasi.
+     * Paragraf 1: Apa yang diumumkan/dirilis oleh perusahaan (fokus pada model/fitur/produk/kerjasama).
+     * Paragraf 2: Rincian teknis, kapabilitas utama, arsitektur, atau bentuk kemitraan.
      * Paragraf 3: Ketersediaan (availability), aksesibilitas (API/web/lokal), atau implikasi praktis bagi pengembang/pengguna.
 
 FORMAT KELUARAN:
