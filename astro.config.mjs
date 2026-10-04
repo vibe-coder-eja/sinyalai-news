@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://vibe-coder-eja.github.io',
-  base: '/sinyalai-news',
+  site: 'https://sinyalai.xyz',
+  base: '/',
   integrations: [sitemap()],
 });

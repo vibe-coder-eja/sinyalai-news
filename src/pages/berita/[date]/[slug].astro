@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content } = await render(article);
 const { title, summary, company, source, author, publishedAt, updatedAt } = article.data;
-const siteUrl = Astro.site || new URL("https://vibe-coder-eja.github.io/sinyalai-news");
+const siteUrl = Astro.site || new URL("https://sinyalai.xyz");
 const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const modifiedAt = updatedAt ?? publishedAt;
 

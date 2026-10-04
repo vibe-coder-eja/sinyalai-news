@@ -240,7 +240,7 @@ async function convert() {
       
       <!-- Domain footer badge -->
       <text x="1120" y="565" text-anchor="end" font-family="monospace" font-size="16" font-weight="600" fill="#3dff9a" opacity="0.85">
-        vibe-coder-eja.github.io/sinyalai-news
+        sinyalai.xyz
       </text>
     </svg>
   `);

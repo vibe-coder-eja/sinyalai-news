@@ -173,7 +173,7 @@ export async function fetchFeed(url, timeoutMs = FETCH_TIMEOUT_MS) {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "SinyalAI-Bot/0.1 (+https://vibe-coder-eja.github.io/sinyalai-news/tentang; news draft pipeline)",
+        "User-Agent": "SinyalAI-Bot/0.1 (+https://sinyalai.xyz/tentang; news draft pipeline)",
         Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       },
     });

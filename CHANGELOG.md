@@ -4,6 +4,25 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.4.0] — 2026-10-04
+
+Migrasi dan integrasi Custom Domain resmi **`sinyalai.xyz`** menggantikan subfolder GitHub Pages default (`/sinyalai-news`).
+
+### 🌐 Konfigurasi Domain Kustom (`sinyalai.xyz`)
+- **DNS Records**:
+  - Konfigurasi 4 A Records di registrar IDWebhost mengarah ke alamat IP Anycast GitHub Pages (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`).
+  - Menambahkan CNAME record untuk `www` mengarah ke `vibe-coder-eja.github.io`.
+- **Astro & Routing**:
+  - Memperbarui `astro.config.mjs` dengan `site: 'https://sinyalai.xyz'` dan mengembalikan `base: '/'` (root path).
+  - Menambahkan file `public/CNAME` berisi `sinyalai.xyz` untuk deployment otomatis GitHub Pages.
+- **Metadata, SEO, & Bot Script**:
+  - Memperbarui `public/robots.txt` agar sitemap mengarah ke `https://sinyalai.xyz/sitemap-index.xml`.
+  - Memperbarui fallback `siteUrl` di `src/layouts/BaseLayout.astro`, `src/pages/berita/[date]/[slug].astro`, dan `src/pages/rss.xml.ts`.
+  - Menyesuaikan User-Agent bot RSS di `scripts/lib/rss.mjs` (`https://sinyalai.xyz/tentang`) dan OpenRouter referer di `scripts/lib/ai-writer.mjs`.
+  - Memperbarui footer badge Open Graph image di `scripts/convert-logos.mjs` dan meregenerasi `public/og-default.png` dengan branding `sinyalai.xyz`.
+
+---
+
 ## [0.3.0] — 2026-10-04
 
 Integrasi aset identitas visual resmi Sinyal AI News: konversi logo format PNG ke WebP performa tinggi, restrukturisasi varian logo semantik, serta implementasi ke seluruh komponen situs dan metadata web.

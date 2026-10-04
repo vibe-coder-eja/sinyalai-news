@@ -6,7 +6,7 @@ export const GET: APIRoute = async (context) => {
   const news = await getPublishedNews();
   const siteUrl = context.site
     ? new URL(import.meta.env.BASE_URL, context.site).toString()
-    : 'https://vibe-coder-eja.github.io/sinyalai-news/';
+    : 'https://sinyalai.xyz/';
 
   const baseSubpath = (import.meta.env.BASE_URL ?? '/').replace(/^\/+|\/+$/g, '');
   const itemPrefix = baseSubpath ? `${baseSubpath}/` : '';

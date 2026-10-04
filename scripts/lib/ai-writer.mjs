@@ -147,7 +147,7 @@ export async function generateArticleWithAI({
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://vibe-coder-eja.github.io/sinyalai-news/",
+          "HTTP-Referer": "https://sinyalai.xyz/",
           "X-Title": "Sinyal AI News",
         },
         body: JSON.stringify({
