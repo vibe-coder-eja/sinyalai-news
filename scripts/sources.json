@@ -62,11 +62,13 @@
     {
       "id": "xai",
       "company": "xAI",
-      "type": "page",
-      "url": "https://x.ai",
-      "home": "https://x.ai",
-      "enabled": false,
-      "notes": "Belum ada RSS publik yang stabil. Isi manual atau sambungkan scraper/API nanti."
+      "type": "rss",
+      "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_xainews.xml",
+      "home": "https://x.ai/news",
+      "enabled": true,
+      "trusted": false,
+      "aiFocused": true,
+      "notes": "Feed mirror komunitas dari x.ai/news; verifikasi manual sebelum publikasi."
     },
     {
       "id": "meta-ai",

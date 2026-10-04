@@ -44,7 +44,9 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   4. **Google DeepMind**: [DeepMind Rilis SynthID Bio: Metode Watermarking untuk Biologi Sintetis](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/google-introducing-synthid-bio.md)
   5. **Microsoft**: [Microsoft Rombak Copilot dengan Fitur Home, Code, dan Autopilot](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/microsoft-introducing-the-new-copilot-with-home-code-and-autopilot.md)
   6. **NVIDIA**: [NVIDIA Hadirkan DGX Spark 64GB untuk Komputasi Agen AI Lokal](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/nvidia-nvidia-dgx-spark-64gb-gives-developers-more-ways-to-build-and-scale.md)
-- **Manajemen Draft**: Menyimpan 6 draf berita lainnya dengan status `draft: true` untuk siap direview oleh tim redaksi.
+  7. **xAI**: [xAI Integrasikan Model Grok ke Lingkungan Koding OpenCode](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/xai-use-grok-in-opencode.md)
+- **Aktivasi Sumber xAI Resmi/Mirror**: Mengaktifkan feed RSS berita xAI melalui mirror feed komunitas di [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json) dengan ingest otomatis untuk rilis model Grok.
+- **Manajemen Draft**: Menyimpan 7 draf berita lainnya dengan status `draft: true` untuk siap direview oleh tim redaksi.
 
 ### 🧪 Pengujian Unit (Testing)
 - **Ekspansi Test Suite**: Menambahkan unit test baru dengan total melonjak dari **33 menjadi 67 unit test** (100% pass):
