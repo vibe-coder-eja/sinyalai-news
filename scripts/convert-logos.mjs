@@ -135,6 +135,71 @@ async function convert() {
     .png()
     .toFile(path.join(publicDir, "favicon-16x16.png"));
 
+  // Generate multi-size favicon.ico (16, 32, 48)
+  const icoSizes = [16, 32, 48];
+  const pngBuffers = [];
+  for (const size of icoSizes) {
+    const buf = await sharp(iconBuffer)
+      .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+    pngBuffers.push({ size, buf });
+  }
+
+  const headerSize = 6 + 16 * icoSizes.length;
+  let currentOffset = headerSize;
+  const icoEntries = [];
+  for (const item of pngBuffers) {
+    icoEntries.push({
+      width: item.size >= 256 ? 0 : item.size,
+      height: item.size >= 256 ? 0 : item.size,
+      size: item.buf.length,
+      offset: currentOffset,
+    });
+    currentOffset += item.buf.length;
+  }
+
+  const icoBuffer = Buffer.alloc(currentOffset);
+  icoBuffer.writeUInt16LE(0, 0); // reserved
+  icoBuffer.writeUInt16LE(1, 2); // 1 = ICO
+  icoBuffer.writeUInt16LE(icoSizes.length, 4); // image count
+
+  let eOffset = 6;
+  for (const e of icoEntries) {
+    icoBuffer.writeUInt8(e.width, eOffset);
+    icoBuffer.writeUInt8(e.height, eOffset + 1);
+    icoBuffer.writeUInt8(0, eOffset + 2);
+    icoBuffer.writeUInt8(0, eOffset + 3);
+    icoBuffer.writeUInt16LE(1, eOffset + 4);
+    icoBuffer.writeUInt16LE(32, eOffset + 6);
+    icoBuffer.writeUInt32LE(e.size, eOffset + 8);
+    icoBuffer.writeUInt32LE(e.offset, eOffset + 12);
+    eOffset += 16;
+  }
+
+  for (let i = 0; i < pngBuffers.length; i++) {
+    pngBuffers[i].buf.copy(icoBuffer, icoEntries[i].offset);
+  }
+  fs.writeFileSync(path.join(publicDir, "favicon.ico"), icoBuffer);
+  console.log("✅ Generated public/favicon.ico (multi-res 16, 32, 48)!");
+
+  // Generate public/favicon.svg with official emblem
+  const svgPngBase64 = (
+    await sharp(iconBuffer)
+      .resize(128, 128, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer()
+  ).toString("base64");
+
+  const faviconSvgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="28" fill="#07090c"/>
+  <rect x="3" y="3" width="122" height="122" rx="25" fill="none" stroke="#3dff9a" stroke-opacity="0.45" stroke-width="4"/>
+  <image href="data:image/png;base64,${svgPngBase64}" x="12" y="12" width="104" height="104"/>
+</svg>
+`;
+  fs.writeFileSync(path.join(publicDir, "favicon.svg"), faviconSvgContent);
+  console.log("✅ Generated public/favicon.svg with official logo emblem!");
+
   // 5. Generate high-quality 1200x630 og-default.png
   const width = 1200;
   const height = 630;
