@@ -53,7 +53,8 @@ Pembaruan besar (*major upgrade*) yang berfokus pada penyaringan relevansi AI ot
   5. **Microsoft**: [Microsoft Rombak Copilot dengan Fitur Home, Code, dan Autopilot](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/microsoft-introducing-the-new-copilot-with-home-code-and-autopilot.md)
   6. **NVIDIA**: [NVIDIA Hadirkan DGX Spark 64GB untuk Komputasi Agen AI Lokal](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/nvidia-nvidia-dgx-spark-64gb-gives-developers-more-ways-to-build-and-scale.md)
   7. **xAI**: [xAI Integrasikan Model Grok ke Lingkungan Koding OpenCode](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/xai-use-grok-in-opencode.md)
-- **Aktivasi Sumber xAI Resmi/Mirror**: Mengaktifkan feed RSS berita xAI melalui mirror feed komunitas di [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json) dengan ingest otomatis untuk rilis model Grok.
+  8. **Meta**: [Meta Rilis SAM Audio, Model Multimodal Pertama untuk Isolasi Suara](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/src/content/news/meta-meta-rilis-sam-audio-model-multimodal-pertama-untuk-isolasi-suara.md)
+- **Aktivasi Sumber Meta AI & xAI**: Mengaktifkan feed RSS berita Meta AI (`ai.meta.com`) dan xAI melalui mirror feed komunitas di [`scripts/sources.json`](file:///c:/Users/cber/hermes-agent-project-2026/sinyalai-news/scripts/sources.json), meningkatkan kapasitas produksi harian menjadi **hingga 16 berita per hari** (8 edisi pagi + 8 edisi malam).
 - **Manajemen Draft**: Menyimpan 7 draf berita lainnya dengan status `draft: true` untuk siap direview oleh tim redaksi.
 
 ### 🧪 Pengujian Unit (Testing)

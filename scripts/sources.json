@@ -73,11 +73,13 @@
     {
       "id": "meta-ai",
       "company": "Meta",
-      "type": "page",
-      "url": "https://ai.meta.com/blog/",
+      "type": "rss",
+      "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_meta_ai.xml",
       "home": "https://ai.meta.com/blog/",
-      "enabled": false,
-      "notes": "RSS resmi belum stabil (404 pada /blog/rss/). Manual dulu."
+      "enabled": true,
+      "trusted": false,
+      "aiFocused": true,
+      "notes": "Feed mirror komunitas dari ai.meta.com/blog; rilis model Llama, riset, dan arsitektur Meta AI."
     }
   ]
 }
