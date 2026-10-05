@@ -57,11 +57,12 @@ const sourceFilter = args.find((a) => a.startsWith("--source="))?.split("=")[1];
 // Default quota: 3 articles per edition (Pagi: 3, Malam: 3)
 const editionQuota = parseInt(args.find((a) => a.startsWith("--limit="))?.split("=")[1] || "3", 10);
 
-// Determine broadcast edition (Pagi: 10.30 WIB / 03:30 UTC, Malam: 22.00 WIB / 15:00 UTC)
+// Determine broadcast edition (Pagi: 10:35 WIB / 03:35 UTC, Malam: 22:05 WIB / 15:05 UTC)
 const currentUtcHour = new Date().getUTCHours();
 const defaultEdition = currentUtcHour < 12 ? "pagi" : "malam";
 const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || defaultEdition;
-const editionLabel = edition === "pagi" ? "Edisi Pagi (10:30 WIB)" : "Edisi Malam (22:00 WIB)";
+const editionLabel = edition === "pagi" ? "Edisi Pagi (10:35 WIB)" : "Edisi Malam (22:05 WIB)";
+const editionBatchTimestamp = new Date();
 
 async function main() {
   console.log(`\n======================================================`);
@@ -157,7 +158,7 @@ async function main() {
       });
 
       const slug = slugify(aiArticle.title, src.company);
-      const publishedDate = item.date && !Number.isNaN(item.date.valueOf()) ? item.date : new Date();
+      const publishedDate = editionBatchTimestamp;
 
       const result = await writePublishedArticle({
         outDir: CONTENT_DIR,

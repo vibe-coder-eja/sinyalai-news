@@ -2,8 +2,8 @@ name: Automated News Pipeline (RSAIN)
 
 on:
   schedule:
-    # 10:30 WIB (UTC+7) = 03:30 UTC
-    - cron: '30 3 * * *'
+    # 10:35 WIB (UTC+7) = 03:35 UTC (menghindari antrean padat di menit :00 dan :30)
+    - cron: '35 3 * * *'
     # 22:05 WIB (UTC+7) = 15:05 UTC (menghindari antrean padat di menit :00)
     - cron: '5 15 * * *'
   workflow_dispatch:

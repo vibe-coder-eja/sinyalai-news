@@ -4,6 +4,31 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.5.2] — 2026-10-05
+
+Optimasi penjadwalan cron edisi pagi (Anti-Drop GitHub Actions), mitigasi token leak bahasa Mandarin pada generator AI, standarisasi batch timestamp edisi rilis, dan penerbitan resmi Edisi Pagi 2026-10-05.
+
+### ⚙️ Pipeline Otomasi & Penjadwalan (GitHub Actions)
+- **Anti-Drop Cron Scheduler Edisi Pagi**:
+  - Menggeser jadwal siaran edisi pagi di `.github/workflows/auto-news.yml` dari `30 3 * * *` (10:30 WIB) ke `35 3 * * *` (10:35 WIB).
+  - *Akar Masalah*: Menit `:00` dan `:30` adalah titik puncak antrean global (*peak scheduler congestion*) pada infrastruktur GitHub Actions yang menyebabkan event pemicu sering tertunda puluhan menit atau terlewat (*dropped*). Sebelumnya pada v0.5.0 perbaikan baru diterapkan pada edisi malam (`15:05 UTC`), sedangkan jadwal pagi masih tertinggal pada menit `:30`. Dengan penyesuaian ini, kedua jadwal tayang (10:35 WIB dan 22:05 WIB) bebas dari antrean menit sibuk.
+
+### 🧠 Generator Berita & AI Redaksi (`scripts/`)
+- **Pemberantasan Token Leak Bahasa Asing**:
+  - Memperketat `SYSTEM_PROMPT` di `scripts/lib/ai-writer.mjs` untuk mewajibkan 100% Bahasa Indonesia baku tanpa menyisipkan aksara atau kata non-Latin/Mandarin dari model LLM Minimax.
+  - Memperbaiki artikel OpenAI terkait rilis GPT-6 Astra dari kebocoran karakter non-terjemahan.
+- **Konsistensi Batch Timestamp Edisi**:
+  - Memperbarui `scripts/generate-news.mjs` agar seluruh artikel yang digenerasi dalam satu sesi tayang menggunakan `editionBatchTimestamp` yang sama persis, memastikan pengurutan sekunder abjad A-Z (`src/lib/news.ts`) bekerja secara konsisten.
+
+### 📰 Penerbitan Edisi Pagi 2026-10-05
+- Menjalankan pipeline otomatis dan menerbitkan 3 artikel resmi terkurasi oleh Pemimpin Redaksi (RSAIN):
+  1. *Google*: "Google Rilis Model AI SL2T untuk Penerjemah Bahasa Isyarat"
+  2. *OpenAI*: "OpenAI Rilis GPT-6 Astra, Model dengan Kemampuan Computer Use dan Coding"
+  3. *xAI*: "xAI Rilis Grok 4.5 untuk Coding, Tugas Agen, dan Knowledge Work"
+- Seluruh artikel berhasil dipublikasikan dan live di `https://sinyalai.xyz`.
+
+---
+
 ## [0.5.1] — 2026-10-04
 
 Pengurutan berita hierarkis pada halaman berita (`/berita/`) berdasarkan waktu rilis (tanggal dan jam) descending serta alfabetis judul berita (A-Z) untuk artikel pada jadwal siaran yang sama.

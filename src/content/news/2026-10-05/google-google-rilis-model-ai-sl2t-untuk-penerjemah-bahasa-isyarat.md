@@ -4,7 +4,7 @@ summary: "Google DeepMind memperkenalkan model sign-language-to-text (SL2T) untu
 company: "Google"
 source: "https://deepmind.google/blog/putting-sign-language-ai-into-users-hands/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-05T04:22:34.756Z
+publishedAt: 2026-10-05T10:35:00+07:00
 draft: false
 ---
 

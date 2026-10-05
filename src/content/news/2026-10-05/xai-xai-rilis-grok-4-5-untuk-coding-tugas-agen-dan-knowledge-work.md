@@ -4,7 +4,7 @@ summary: "xAI memperkenalkan Grok 4.5 sebagai model AI paling pintar mereka, dir
 company: "xAI"
 source: "https://x.ai/news/grok-4-5"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-05T04:23:05.558Z
+publishedAt: 2026-10-05T10:35:00+07:00
 draft: false
 ---
 
