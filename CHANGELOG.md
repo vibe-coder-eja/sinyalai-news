@@ -15,6 +15,11 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
 - **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
 
+### 🔧 Perbaikan Teknis (Fase 5 rencana perbaikan)
+- `manifest.webmanifest`: `start_url` dan path ikon diperbaiki dari `/sinyalai-news/...` ke `/...` (domain `sinyalai.xyz`), ditambah `scope`.
+- JSON-LD artikel: `author` kini `Organization` (redaksi RSAIN), `publisher.name` menjadi "Sinyal AI News" dan memuat `url`.
+- `README.md`: deskripsi deployment diperbarui (GitHub Pages + `sinyalai.xyz`), catatan konten demo dan roadmap yang sudah terealisasi dibersihkan.
+
 ### 🧠 Keandalan Penulis AI (Fase 4 rencana perbaikan)
 - **Validasi keluaran LLM** (`scripts/lib/validate.mjs`): artikel ditolak dan diulang (1x) jika memuat aksara non-Latin (CJK dll.), teks placeholder, judul tanpa nama perusahaan atau lebih dari 120 karakter, ringkasan di luar 80–300 karakter, atau isi kurang dari 400 karakter / 2 paragraf.
 - **Konteks halaman sumber** (`scripts/lib/source-context.mjs`): teks halaman resmi (maks. 6.000 karakter) dikirim ke LLM di dalam tag `<sumber>` sebagai data, bukan perintah. Hanya HTTPS, dengan batas ukuran dan timeout; host lokal/IP literal ditolak (mitigasi SSRF).

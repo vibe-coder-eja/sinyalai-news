@@ -2,34 +2,35 @@
   "name": "Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi)",
   "short_name": "Sinyal AI News",
   "description": "Portal kurasi sinyal dan rilis resmi kecerdasan buatan global terpercaya dalam bahasa Indonesia.",
-  "start_url": "/sinyalai-news/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#07090c",
   "theme_color": "#07090c",
   "lang": "id-ID",
   "icons": [
     {
-      "src": "/sinyalai-news/favicon.svg",
+      "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "/sinyalai-news/favicon-32x32.png",
+      "src": "/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/sinyalai-news/apple-touch-icon.png",
+      "src": "/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "/sinyalai-news/logo.webp",
+      "src": "/logo.webp",
       "sizes": "512x512",
       "type": "image/webp"
     },
     {
-      "src": "/sinyalai-news/logo.png",
+      "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
