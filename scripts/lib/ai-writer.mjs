@@ -3,7 +3,7 @@
  * Adheres strictly to Humanizer writing rules and Indonesian journalistic standards.
  */
 
-import { assertValidArticle } from "./validate.mjs";
+import { assertValidArticle, ArticleValidationError } from "./validate.mjs";
 
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_MODEL = "minimax/minimax-m3";
@@ -45,6 +45,21 @@ Keluarkan HANYA teks JSON valid tanpa pembungkus teks tambahan, dengan skema:
   "summary": "string",
   "body": "string"
 }`;
+
+const MAX_ATTEMPTS = 3;
+
+/**
+ * Pesan umpan balik untuk percobaan berikutnya setelah keluaran ditolak.
+ * @param {string[]} problems
+ */
+function buildRetryFeedback(problems) {
+  return [
+    "Keluaran sebelumnya DITOLAK editor karena:",
+    ...problems.map((p) => `- ${p}`),
+    "",
+    "Tulis ulang artikel dari awal. Gunakan 100% Bahasa Indonesia dengan huruf Latin saja (tanpa aksara Mandarin, Jepang, Korea, atau lainnya), patuhi seluruh pedoman, dan keluarkan HANYA JSON valid sesuai skema.",
+  ].join("\n");
+}
 
 /**
  * Extracts and parses JSON from raw LLM output, handling markdown code fences.
@@ -108,7 +123,7 @@ export function parseAIJsonResponse(rawText) {
 
 /**
  * Calls OpenRouter to write an article with Minimax M3 adhering to Humanizer standards.
- * Includes automatic 1-time retry for transient network timeouts.
+ * Retries up to 3 attempts; rejected output is sent back to the model as feedback.
  * @param {object} params
  * @param {string} params.title - Original source title
  * @param {string} params.summary - Original source snippet
@@ -142,8 +157,13 @@ export async function generateArticleWithAI({
     ...(sourceText ? [`Isi Halaman Sumber:`, `<sumber>`, sourceText, `</sumber>`] : []),
   ].join("\n");
 
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: prompt },
+  ];
+
   let lastError;
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -160,10 +180,7 @@ export async function generateArticleWithAI({
         body: JSON.stringify({
           model,
           response_format: { type: "json_object" },
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: prompt },
-          ],
+          messages,
           temperature: 0.2,
         }),
       });
@@ -180,11 +197,21 @@ export async function generateArticleWithAI({
         throw new Error("Empty response choice received from OpenRouter");
       }
 
-      return assertValidArticle(parseAIJsonResponse(rawContent), { company });
+      try {
+        return assertValidArticle(parseAIJsonResponse(rawContent), { company });
+      } catch (err) {
+        // Beri tahu model apa yang salah agar percobaan berikutnya tidak mengulang kesalahan yang sama.
+        const problems = err instanceof ArticleValidationError ? err.problems : [err.message];
+        messages.push(
+          { role: "assistant", content: rawContent },
+          { role: "user", content: buildRetryFeedback(problems) },
+        );
+        throw err;
+      }
     } catch (err) {
       lastError = err;
-      if (attempt === 1) {
-        console.warn(`      ⚠️ Upaya 1 gagal (${err.message}). Mengulang kembali...`);
+      if (attempt < MAX_ATTEMPTS) {
+        console.warn(`      ⚠️ Upaya ${attempt}/${MAX_ATTEMPTS} gagal (${err.message}). Mengulang kembali...`);
       }
     } finally {
       clearTimeout(timer);

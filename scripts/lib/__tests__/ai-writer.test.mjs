@@ -155,4 +155,52 @@ describe("generateArticleWithAI validation and context", () => {
     expect(sent.messages[1].content).toContain("<sumber>\nTeks resmi dari halaman sumber.\n</sumber>");
     expect(sent.messages[0].content).toContain("DATA dari halaman web");
   });
+
+  it("sends the validation problems back to the model on the next attempt", async () => {
+    const bad = { title: "xAI 公布 Fitur", summary: VALID_SUMMARY, body: VALID_BODY };
+    const good = { title: "xAI Hadirkan Fitur Baru", summary: VALID_SUMMARY, body: VALID_BODY };
+    const fetchMock = vi.fn().mockResolvedValueOnce(reply(bad)).mockResolvedValueOnce(reply(good));
+    globalThis.fetch = fetchMock;
+
+    await generateArticleWithAI(params);
+
+    const first = JSON.parse(fetchMock.mock.calls[0][1].body).messages;
+    const second = JSON.parse(fetchMock.mock.calls[1][1].body).messages;
+    expect(first).toHaveLength(2);
+    expect(second).toHaveLength(4);
+    expect(second[2].role).toBe("assistant");
+    expect(second[3].role).toBe("user");
+    expect(second[3].content).toContain("DITOLAK");
+    expect(second[3].content).toContain("aksara non-Latin");
+  });
+
+  it("succeeds on the third attempt and stops after three attempts at most", async () => {
+    const bad = { title: "xAI 公布 Fitur", summary: VALID_SUMMARY, body: VALID_BODY };
+    const good = { title: "xAI Hadirkan Fitur Baru", summary: VALID_SUMMARY, body: VALID_BODY };
+
+    const okMock = vi.fn()
+      .mockResolvedValueOnce(reply(bad))
+      .mockResolvedValueOnce(reply(bad))
+      .mockResolvedValueOnce(reply(good));
+    globalThis.fetch = okMock;
+    await expect(generateArticleWithAI(params)).resolves.toMatchObject({ title: good.title });
+    expect(okMock).toHaveBeenCalledTimes(3);
+
+    const failMock = vi.fn().mockResolvedValue(reply(bad));
+    globalThis.fetch = failMock;
+    await expect(generateArticleWithAI(params)).rejects.toThrow(/Validasi artikel gagal/);
+    expect(failMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not add validation feedback after an HTTP error", async () => {
+    const good = { title: "xAI Hadirkan Fitur Baru", summary: VALID_SUMMARY, body: VALID_BODY };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 503, text: async () => "unavailable" })
+      .mockResolvedValueOnce(reply(good));
+    globalThis.fetch = fetchMock;
+
+    await generateArticleWithAI(params);
+    const second = JSON.parse(fetchMock.mock.calls[1][1].body).messages;
+    expect(second).toHaveLength(2);
+  });
 });

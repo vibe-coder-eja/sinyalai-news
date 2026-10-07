@@ -154,6 +154,9 @@ async function main() {
 
     try {
       const sourceText = await fetchSourceText(item.link);
+      console.log(
+        `      📄 Konteks: halaman sumber ${sourceText.length} karakter, cuplikan feed ${(item.summary || "").length} karakter`,
+      );
       const hasEnoughContext = sourceText.length >= 300 || (item.summary || "").length >= 120;
       if (!hasEnoughContext) {
         console.warn(`      ⏭️ Dilewati: konteks sumber terlalu tipis, berisiko halusinasi.`);
@@ -190,7 +193,11 @@ async function main() {
         dryRun,
       });
 
-      console.log(`      ✅ Berhasil diterbitkan: ${result.outPath}`);
+      console.log(
+        dryRun
+          ? `      ✅ Lolos validasi (dry run, tidak disimpan): ${result.outPath}`
+          : `      ✅ Berhasil diterbitkan: ${result.outPath}`,
+      );
       existingUrls.add(normUrl);
       totalPublished++;
     } catch (err) {
