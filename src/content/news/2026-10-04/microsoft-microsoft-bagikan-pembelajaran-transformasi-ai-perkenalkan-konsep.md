@@ -4,8 +4,8 @@ summary: "Microsoft mempublikasikan pembelajaran dari transformasi AI internal m
 company: "Microsoft"
 source: "https://blogs.microsoft.com/blog/2026/09/17/what-weve-learned-from-microsofts-own-ai-transformation/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04T10:30:00+07:00
-draft: false
+publishedAt: 2026-09-17
+draft: true
 ---
 
 Microsoft merilis publikasi bertajuk "What we've learned from Microsoft's own AI transformation" di blog resmi perusahaan pada 17 September 2026. Dalam rilis tersebut, Microsoft menilai bahwa kecerdasan buatan mengubah cara kerja lebih cepat daripada kemampuan organisasi untuk menguasainya secara menyeluruh.

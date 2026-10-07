@@ -72,6 +72,13 @@ jobs:
           fi
           node scripts/generate-news.mjs $ARGS
 
+      - name: Run test suite
+        run: npm run test
+
+      - name: Build static site with Astro
+        run: npm run build
+
+      # Commit hanya setelah test & build lulus, agar artikel rusak tidak masuk ke main.
       - name: Commit and push new articles to main branch
         if: ${{ inputs.dryRun != true }}
         run: |
@@ -84,12 +91,6 @@ jobs:
           else
             echo "Tidak ada artikel baru yang dihasilkan pada jadwal tayang ini."
           fi
-
-      - name: Run test suite
-        run: npm run test
-
-      - name: Build static site with Astro
-        run: npm run build
 
       - name: Upload GitHub Pages artifact
         if: ${{ inputs.dryRun != true }}

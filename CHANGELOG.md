@@ -4,6 +4,46 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Unreleased]
+
+### 🧠 Kurasi Berita (Fase 1 rencana perbaikan)
+- **Perbaikan bug tanggal kurasi**: `editor.mjs` dan `generate-news.mjs` membaca `item.date` yang tidak pernah ada (parser mengisi `publishedAt`), sehingga prioritas "Hari Ini" tidak pernah aktif dan rilis lama ikut tayang. Kini memakai `item.publishedAt`.
+- **Batas usia rilis 7 hari**: rilis lebih tua dari 7 hari, atau tanpa tanggal valid, tidak lagi tayang otomatis (opsi `--max-age-days=N`).
+- **Tanggal tayang mengikuti tanggal sumber**: `publishedAt` artikel dan folder tanggal kini berasal dari tanggal rilis sumber (tidak pernah di masa depan), bukan waktu generate.
+- Test baru untuk `isFreshEnough` dan filter usia pada `selectEditorialEdition`.
+
+### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
+- **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
+
+### 🧹 Kebersihan Repo (Fase 6 rencana perbaikan)
+- `audit_report.md`, `walkthrough_audit.md`, dan `implementation_plan.md` dipindah dari root ke `docs/`.
+- `.agents/skills` dipertahankan (masih dipakai).
+- Aset logo tidak dihapus: PNG bernomor `(1)…(7)` di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`, sehingga bukan duplikat yang aman dibuang.
+
+### 🔧 Perbaikan Teknis (Fase 5 rencana perbaikan)
+- `manifest.webmanifest`: `start_url` dan path ikon diperbaiki dari `/sinyalai-news/...` ke `/...` (domain `sinyalai.xyz`), ditambah `scope`.
+- JSON-LD artikel: `author` kini `Organization` (redaksi RSAIN), `publisher.name` menjadi "Sinyal AI News" dan memuat `url`.
+- `README.md`: deskripsi deployment diperbarui (GitHub Pages + `sinyalai.xyz`), catatan konten demo dan roadmap yang sudah terealisasi dibersihkan.
+
+### 🧠 Keandalan Penulis AI (Fase 4 rencana perbaikan)
+- **Validasi keluaran LLM** (`scripts/lib/validate.mjs`): artikel ditolak dan diulang (1x) jika memuat aksara non-Latin (CJK dll.), teks placeholder, judul tanpa nama perusahaan atau lebih dari 120 karakter, ringkasan di luar 80–300 karakter, atau isi kurang dari 400 karakter / 2 paragraf.
+- **Konteks halaman sumber** (`scripts/lib/source-context.mjs`): teks halaman resmi (maks. 6.000 karakter) dikirim ke LLM di dalam tag `<sumber>` sebagai data, bukan perintah. Hanya HTTPS, dengan batas ukuran dan timeout; host lokal/IP literal ditolak (mitigasi SSRF).
+- **Anti-halusinasi**: prompt melarang menambah detail di luar sumber; kandidat dengan konteks terlalu tipis (<300 karakter halaman dan <120 karakter cuplikan) dilewati.
+- **Kandidat cadangan**: kurasi mengambil 2x kuota kandidat; yang gagal validasi atau dilewati digantikan kandidat berikutnya sampai kuota edisi terpenuhi.
+- Sumber `trusted: false` tetap tayang otomatis sesuai keputusan redaksi.
+
+### 📰 Pembersihan Konten (Fase 3 rencana perbaikan)
+- 11 artikel yang tayang dengan tanggal palsu (stempel waktu generate, padahal rilis sumber jauh lebih lama) ditarik (`draft: true`) dan `publishedAt` dikoreksi ke tanggal sumber terverifikasi. Semuanya lebih tua dari batas 7 hari.
+  - Anthropic: Claude 3.5 Sonnet/Computer Use (2024-10-22), Enzim CRISPR-like (2026-09-23), Services Track & Partner Hub (2026-06-03)
+  - Meta: Llama 4 (2025-04-05), SAM Audio (2025-12-16), Omnilingual ASR (2025-11-10)
+  - xAI: Grok-1.5 (2024-03-28), Grok 4 (2025-07-09), Grok 4.5 (2026-07-16), Skills (2026-05-18)
+  - Microsoft: Pembelajaran transformasi AI (2026-09-17)
+- Verifikasi dilakukan terhadap feed mirror Anthropic/xAI/Meta dan tanggal pada URL sumber Microsoft. Artikel OpenAI, Google, dan NVIDIA belum dapat diverifikasi otomatis.
+- Artikel berbahasa Inggris yang tersisa sudah berstatus `draft: true` (tidak tayang).
+- Folder tanggal dan nama file tidak dipindah agar URL artikel lain tetap stabil.
+
+---
+
 ## [0.5.2] — 2026-10-05
 
 Optimasi penjadwalan cron edisi pagi (Anti-Drop GitHub Actions), mitigasi token leak bahasa Mandarin pada generator AI, standarisasi batch timestamp edisi rilis, dan penerbitan resmi Edisi Pagi 2026-10-05.

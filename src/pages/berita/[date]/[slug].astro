@@ -36,13 +36,14 @@ const jsonLd = {
   "about": company,
   "isBasedOn": source,
   "author": {
-    "@type": "Person",
+    "@type": "Organization",
     "name": author || "Redaktur Sinyal AI News (RSAIN)",
     "url": siteUrl.toString()
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Sinyal AI",
+    "name": "Sinyal AI News",
+    "url": siteUrl.toString(),
     "logo": {
       "@type": "ImageObject",
       "url": new URL(withBase("/logo.png"), siteUrl).toString(),

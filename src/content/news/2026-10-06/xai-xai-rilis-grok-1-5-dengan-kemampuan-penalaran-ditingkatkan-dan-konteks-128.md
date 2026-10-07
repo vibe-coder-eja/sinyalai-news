@@ -4,8 +4,8 @@ summary: "xAI mengumumkan Grok-1.5, pembaruan model bahasa besar mereka dengan k
 company: "xAI"
 source: "https://x.ai/news/grok-1.5"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-06T10:43:19.139Z
-draft: false
+publishedAt: 2024-03-28
+draft: true
 ---
 
 xAI secara resmi mengumumkan Grok-1.5 sebagai pembaruan terbaru dari model bahasa besar mereka. Rilis ini membawa peningkatan pada kemampuan penalaran model, sebuah aspek yang menjadi fokus pengembangan setelah peluncuran Grok generasi pertama. Peningkatan tersebut mencakup performa yang lebih baik dalam penyelesaian masalah matematika dan pemrograman.

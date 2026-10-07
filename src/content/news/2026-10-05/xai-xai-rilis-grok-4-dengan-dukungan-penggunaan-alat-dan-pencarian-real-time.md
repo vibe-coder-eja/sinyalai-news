@@ -4,8 +4,8 @@ summary: "xAI meluncurkan Grok 4, model dengan kemampuan penggunaan alat bawaan 
 company: "xAI"
 source: "https://x.ai/news/grok-4"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-05T21:58:16.802Z
-draft: false
+publishedAt: 2025-07-09
+draft: true
 ---
 
 xAI resmi memperkenalkan Grok 4 sebagai model kecerdasan buatan terbaru mereka. Model ini hadir dengan kemampuan penggunaan alat (native tool use) dan integrasi pencarian secara real-time yang sudah tertanam di dalam sistemnya. Peluncuran ini menandai ketersediaan umum Grok 4 bagi pengguna di tingkat SuperGrok dan Premium+, sekaligus dapat diakses oleh pengembang melalui API xAI.

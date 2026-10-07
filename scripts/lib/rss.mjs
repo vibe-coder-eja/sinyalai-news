@@ -126,7 +126,7 @@ export function parseFeed(xml) {
  * @param {Response} res
  * @param {number} limit
  */
-async function readBodyWithLimit(res, limit) {
+export async function readBodyWithLimit(res, limit) {
   if (!res.body) return "";
   const reader = res.body.getReader();
   const chunks = [];

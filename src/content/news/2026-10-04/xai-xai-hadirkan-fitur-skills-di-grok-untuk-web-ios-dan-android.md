@@ -4,8 +4,8 @@ summary: "xAI merilis fitur Skills di Grok untuk platform web, iOS, dan Android,
 company: "xAI"
 source: "https://x.ai/news/grok-skills"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-04T10:30:00+07:00
-draft: false
+publishedAt: 2026-05-18
+draft: true
 ---
 
 xAI mengumumkan peluncuran fitur Skills untuk Grok yang tersedia di platform web, iOS, dan Android. Fitur ini dirancang sebagai keahlian persisten (persistent expertise) yang dapat membantu pengguna dalam berbagai tugas produktivitas. Peluncuran ini menandai perluasan kapabilitas Grok dari asisten percakapan menjadi alat bantu kerja yang lebih komprehensif.

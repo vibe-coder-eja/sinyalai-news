@@ -71,14 +71,14 @@ public/               Aset statis, robots.txt, favicon, OG image
 
 ## Konfigurasi deployment
 
-URL canonical saat ini dikonfigurasi sebagai `https://sinyalai.vercel.app` di `astro.config.mjs`. Ganti nilai tersebut dan URL sitemap di `public/robots.txt` jika domain produksi berubah.
+Situs di-deploy ke GitHub Pages dengan domain kustom `https://sinyalai.xyz` (lihat `public/CNAME`). URL canonical dikonfigurasi di `astro.config.mjs` (`site`). Jika domain berubah, perbarui `site`, `public/CNAME`, URL sitemap di `public/robots.txt`, dan fallback URL di `src/pages/rss.xml.ts`.
 
-> Artikel yang tersedia saat ini merupakan konten awal/demo. Verifikasi setiap klaim dan tautan sumber sebelum peluncuran publik.
+Workflow: `ci.yml` (test dan build pada PR), `deploy.yml` (deploy saat push ke `main`), dan `auto-news.yml` (generate berita dua kali sehari lalu deploy).
+
+> Artikel diproduksi otomatis dari rilis resmi dengan penulis AI. Tanggal tayang mengikuti tanggal rilis sumber, rilis lebih tua dari 7 hari tidak tayang, dan keluaran AI divalidasi sebelum disimpan. Lihat `docs/rencana-perbaikan.md` untuk rencana perbaikan pipeline.
 
 ## Roadmap
 
-- Integrasi LLM untuk rewrite terstruktur dengan review manusia
-- Otomasi terjadwal melalui GitHub Actions
 - Pengukuran Lighthouse dan Core Web Vitals pada preview deployment
 
 Detail produk dan acceptance criteria tersedia di [`sinyalai_prd.md`](sinyalai_prd.md).
