@@ -4,8 +4,8 @@ summary: "Meta memperkenalkan Omnilingual ASR, serangkaian model pengenalan suar
 company: "Meta"
 source: "https://ai.meta.com/blog/omnilingual-asr-advancing-automatic-speech-recognition/"
 author: "Redaktur Sinyal AI News (RSAIN)"
-publishedAt: 2026-10-06T20:12:04.921Z
-draft: false
+publishedAt: 2025-11-10
+draft: true
 ---
 
 Meta meluncurkan Omnilingual Automatic Speech Recognition (ASR), sebuah paket model yang dirancang untuk menerjemahkan ucapan menjadi teks pada lebih dari 1.600 bahasa di seluruh dunia. Inisiatif ini ditujukan untuk memperluas akses teknologi pengenalan suara, khususnya bagi komunitas linguistik yang selama ini kurang terlayani oleh sistem ASR konvensional.

@@ -15,6 +15,16 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
 - **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
 
+### 📰 Pembersihan Konten (Fase 3 rencana perbaikan)
+- 11 artikel yang tayang dengan tanggal palsu (stempel waktu generate, padahal rilis sumber jauh lebih lama) ditarik (`draft: true`) dan `publishedAt` dikoreksi ke tanggal sumber terverifikasi. Semuanya lebih tua dari batas 7 hari.
+  - Anthropic: Claude 3.5 Sonnet/Computer Use (2024-10-22), Enzim CRISPR-like (2026-09-23), Services Track & Partner Hub (2026-06-03)
+  - Meta: Llama 4 (2025-04-05), SAM Audio (2025-12-16), Omnilingual ASR (2025-11-10)
+  - xAI: Grok-1.5 (2024-03-28), Grok 4 (2025-07-09), Grok 4.5 (2026-07-16), Skills (2026-05-18)
+  - Microsoft: Pembelajaran transformasi AI (2026-09-17)
+- Verifikasi dilakukan terhadap feed mirror Anthropic/xAI/Meta dan tanggal pada URL sumber Microsoft. Artikel OpenAI, Google, dan NVIDIA belum dapat diverifikasi otomatis.
+- Artikel berbahasa Inggris yang tersisa sudah berstatus `draft: true` (tidak tayang).
+- Folder tanggal dan nama file tidak dipindah agar URL artikel lain tetap stabil.
+
 ---
 
 ## [0.5.2] — 2026-10-05
