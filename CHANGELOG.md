@@ -4,7 +4,9 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
-## [Unreleased]
+## [0.6.0] — 2026-10-07
+
+Perbaikan kurasi berita otomatis (bug tanggal rilis, batas usia 7 hari), pengamanan alur AI dan workflow, pembersihan artikel bertanggal palsu, serta perbaikan teknis berdasarkan review proyek. Rencana lengkap: [`docs/rencana-perbaikan.md`](docs/rencana-perbaikan.md).
 
 ### 🧠 Kurasi Berita (Fase 1 rencana perbaikan)
 - **Perbaikan bug tanggal kurasi**: `editor.mjs` dan `generate-news.mjs` membaca `item.date` yang tidak pernah ada (parser mengisi `publishedAt`), sehingga prioritas "Hari Ini" tidak pernah aktif dan rilis lama ikut tayang. Kini memakai `item.publishedAt`.
@@ -15,23 +17,6 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
 - **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
 
-### 🧹 Kebersihan Repo (Fase 6 rencana perbaikan)
-- `audit_report.md`, `walkthrough_audit.md`, dan `implementation_plan.md` dipindah dari root ke `docs/`.
-- `.agents/skills` dipertahankan (masih dipakai).
-- Aset logo tidak dihapus: PNG bernomor `(1)…(7)` di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`, sehingga bukan duplikat yang aman dibuang.
-
-### 🔧 Perbaikan Teknis (Fase 5 rencana perbaikan)
-- `manifest.webmanifest`: `start_url` dan path ikon diperbaiki dari `/sinyalai-news/...` ke `/...` (domain `sinyalai.xyz`), ditambah `scope`.
-- JSON-LD artikel: `author` kini `Organization` (redaksi RSAIN), `publisher.name` menjadi "Sinyal AI News" dan memuat `url`.
-- `README.md`: deskripsi deployment diperbarui (GitHub Pages + `sinyalai.xyz`), catatan konten demo dan roadmap yang sudah terealisasi dibersihkan.
-
-### 🧠 Keandalan Penulis AI (Fase 4 rencana perbaikan)
-- **Validasi keluaran LLM** (`scripts/lib/validate.mjs`): artikel ditolak dan diulang (1x) jika memuat aksara non-Latin (CJK dll.), teks placeholder, judul tanpa nama perusahaan atau lebih dari 120 karakter, ringkasan di luar 80–300 karakter, atau isi kurang dari 400 karakter / 2 paragraf.
-- **Konteks halaman sumber** (`scripts/lib/source-context.mjs`): teks halaman resmi (maks. 6.000 karakter) dikirim ke LLM di dalam tag `<sumber>` sebagai data, bukan perintah. Hanya HTTPS, dengan batas ukuran dan timeout; host lokal/IP literal ditolak (mitigasi SSRF).
-- **Anti-halusinasi**: prompt melarang menambah detail di luar sumber; kandidat dengan konteks terlalu tipis (<300 karakter halaman dan <120 karakter cuplikan) dilewati.
-- **Kandidat cadangan**: kurasi mengambil 2x kuota kandidat; yang gagal validasi atau dilewati digantikan kandidat berikutnya sampai kuota edisi terpenuhi.
-- Sumber `trusted: false` tetap tayang otomatis sesuai keputusan redaksi.
-
 ### 📰 Pembersihan Konten (Fase 3 rencana perbaikan)
 - 11 artikel yang tayang dengan tanggal palsu (stempel waktu generate, padahal rilis sumber jauh lebih lama) ditarik (`draft: true`) dan `publishedAt` dikoreksi ke tanggal sumber terverifikasi. Semuanya lebih tua dari batas 7 hari.
   - Anthropic: Claude 3.5 Sonnet/Computer Use (2024-10-22), Enzim CRISPR-like (2026-09-23), Services Track & Partner Hub (2026-06-03)
@@ -41,6 +26,23 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 - Verifikasi dilakukan terhadap feed mirror Anthropic/xAI/Meta dan tanggal pada URL sumber Microsoft. Artikel OpenAI, Google, dan NVIDIA belum dapat diverifikasi otomatis.
 - Artikel berbahasa Inggris yang tersisa sudah berstatus `draft: true` (tidak tayang).
 - Folder tanggal dan nama file tidak dipindah agar URL artikel lain tetap stabil.
+
+### 🧠 Keandalan Penulis AI (Fase 4 rencana perbaikan)
+- **Validasi keluaran LLM** (`scripts/lib/validate.mjs`): artikel ditolak dan diulang (1x) jika memuat aksara non-Latin (CJK dll.), teks placeholder, judul tanpa nama perusahaan atau lebih dari 120 karakter, ringkasan di luar 80–300 karakter, atau isi kurang dari 400 karakter / 2 paragraf.
+- **Konteks halaman sumber** (`scripts/lib/source-context.mjs`): teks halaman resmi (maks. 6.000 karakter) dikirim ke LLM di dalam tag `<sumber>` sebagai data, bukan perintah. Hanya HTTPS, dengan batas ukuran dan timeout; host lokal/IP literal ditolak (mitigasi SSRF).
+- **Anti-halusinasi**: prompt melarang menambah detail di luar sumber; kandidat dengan konteks terlalu tipis (<300 karakter halaman dan <120 karakter cuplikan) dilewati.
+- **Kandidat cadangan**: kurasi mengambil 2x kuota kandidat; yang gagal validasi atau dilewati digantikan kandidat berikutnya sampai kuota edisi terpenuhi.
+- Sumber `trusted: false` tetap tayang otomatis sesuai keputusan redaksi.
+
+### 🔧 Perbaikan Teknis (Fase 5 rencana perbaikan)
+- `manifest.webmanifest`: `start_url` dan path ikon diperbaiki dari `/sinyalai-news/...` ke `/...` (domain `sinyalai.xyz`), ditambah `scope`.
+- JSON-LD artikel: `author` kini `Organization` (redaksi RSAIN), `publisher.name` menjadi "Sinyal AI News" dan memuat `url`.
+- `README.md`: deskripsi deployment diperbarui (GitHub Pages + `sinyalai.xyz`), catatan konten demo dan roadmap yang sudah terealisasi dibersihkan.
+
+### 🧹 Kebersihan Repo (Fase 6 rencana perbaikan)
+- `audit_report.md`, `walkthrough_audit.md`, dan `implementation_plan.md` dipindah dari root ke `docs/`.
+- `.agents/skills` dipertahankan (masih dipakai).
+- Aset logo tidak dihapus: PNG bernomor `(1)…(7)` di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`, sehingga bukan duplikat yang aman dibuang.
 
 ---
 
