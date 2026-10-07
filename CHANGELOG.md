@@ -15,6 +15,11 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
 - **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
 
+### 🧹 Kebersihan Repo (Fase 6 rencana perbaikan)
+- `audit_report.md`, `walkthrough_audit.md`, dan `implementation_plan.md` dipindah dari root ke `docs/`.
+- `.agents/skills` dipertahankan (masih dipakai).
+- Aset logo tidak dihapus: PNG bernomor `(1)…(7)` di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`, sehingga bukan duplikat yang aman dibuang.
+
 ### 🔧 Perbaikan Teknis (Fase 5 rencana perbaikan)
 - `manifest.webmanifest`: `start_url` dan path ikon diperbaiki dari `/sinyalai-news/...` ke `/...` (domain `sinyalai.xyz`), ditambah `scope`.
 - JSON-LD artikel: `author` kini `Organization` (redaksi RSAIN), `publisher.name` menjadi "Sinyal AI News" dan memuat `url`.
