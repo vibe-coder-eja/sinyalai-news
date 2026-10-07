@@ -17,6 +17,7 @@ import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
 import { selectEditorialEdition, isToday, DEFAULT_MAX_AGE_DAYS } from "./lib/editor.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
+import { fetchSourceText } from "./lib/source-context.mjs";
 
 /**
  * Basic .env loader (without external dependencies)
@@ -121,12 +122,13 @@ async function main() {
   const selectedArticles = selectEditorialEdition({
     allFeedItems,
     existingUrls,
-    limit: editionQuota,
+    // Ambil kandidat cadangan: yang gagal validasi/konteks tipis digantikan kandidat berikutnya.
+    limit: editionQuota * 2,
     referenceDate: new Date(),
     maxAgeDays,
   });
 
-  console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} / ${editionQuota} slot tayang):`);
+  console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} kandidat untuk ${editionQuota} slot tayang):`);
   if (selectedArticles.length === 0) {
     console.log(`   ℹ️ Tidak ada rilis baru yang layak tayang saat ini.`);
     console.log(`\n======================================================\n`);
@@ -146,15 +148,24 @@ async function main() {
   let totalPublished = 0;
 
   for (const candidate of selectedArticles) {
+    if (totalPublished >= editionQuota) break;
     const { item, source: src, normUrl, priority } = candidate;
     console.log(`\n   🧠 Menjalankan AI rewrite (Humanizer & Redaktur RSAIN) untuk [${src.company}]: "${item.title}"...`);
 
     try {
+      const sourceText = await fetchSourceText(item.link);
+      const hasEnoughContext = sourceText.length >= 300 || (item.summary || "").length >= 120;
+      if (!hasEnoughContext) {
+        console.warn(`      ⏭️ Dilewati: konteks sumber terlalu tipis, berisiko halusinasi.`);
+        continue;
+      }
+
       const aiArticle = await generateArticleWithAI({
         title: item.title,
         summary: item.summary || "",
         company: src.company,
         sourceUrl: item.link,
+        sourceText,
         apiKey: API_KEY,
         model: MODEL,
       });

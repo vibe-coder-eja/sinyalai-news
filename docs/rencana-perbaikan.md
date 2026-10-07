@@ -111,4 +111,4 @@ Fase 1 → 2 → 3 → 4 → 5 → 6. Fase 1 dan 2 dapat dikerjakan dalam satu b
 - **Fase 1** selesai: bug `item.date`, batas usia 7 hari, tanggal tayang mengikuti tanggal sumber.
 - **Fase 2** selesai: test dan build berjalan sebelum commit/push di `auto-news.yml`.
 - **Fase 3** selesai sebagian: 11 artikel bertanggal palsu ditarik (lihat `CHANGELOG.md`). Artikel OpenAI, Google, dan NVIDIA yang tayang 4–7 Okt 2026 masih bertanggal stempel generate dan **belum terverifikasi** terhadap tanggal sumbernya.
-- **Fase 4**: item "sumber `trusted: false` jadi draft" dicoret, karena tujuan adalah tayang otomatis untuk semua sumber. Pengaman yang tersisa: validasi keluaran LLM dan konteks halaman sumber.
+- **Fase 4** selesai: validasi keluaran LLM, konteks halaman sumber, anti-halusinasi, dan kandidat cadangan (lihat `CHANGELOG.md`). Item "sumber `trusted: false` jadi draft" dicoret, karena tujuan adalah tayang otomatis untuk semua sumber. Pengaman yang tersisa: validasi keluaran LLM dan konteks halaman sumber.

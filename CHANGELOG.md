@@ -15,6 +15,13 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
 - **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
 
+### 🧠 Keandalan Penulis AI (Fase 4 rencana perbaikan)
+- **Validasi keluaran LLM** (`scripts/lib/validate.mjs`): artikel ditolak dan diulang (1x) jika memuat aksara non-Latin (CJK dll.), teks placeholder, judul tanpa nama perusahaan atau lebih dari 120 karakter, ringkasan di luar 80–300 karakter, atau isi kurang dari 400 karakter / 2 paragraf.
+- **Konteks halaman sumber** (`scripts/lib/source-context.mjs`): teks halaman resmi (maks. 6.000 karakter) dikirim ke LLM di dalam tag `<sumber>` sebagai data, bukan perintah. Hanya HTTPS, dengan batas ukuran dan timeout; host lokal/IP literal ditolak (mitigasi SSRF).
+- **Anti-halusinasi**: prompt melarang menambah detail di luar sumber; kandidat dengan konteks terlalu tipis (<300 karakter halaman dan <120 karakter cuplikan) dilewati.
+- **Kandidat cadangan**: kurasi mengambil 2x kuota kandidat; yang gagal validasi atau dilewati digantikan kandidat berikutnya sampai kuota edisi terpenuhi.
+- Sumber `trusted: false` tetap tayang otomatis sesuai keputusan redaksi.
+
 ### 📰 Pembersihan Konten (Fase 3 rencana perbaikan)
 - 11 artikel yang tayang dengan tanggal palsu (stempel waktu generate, padahal rilis sumber jauh lebih lama) ditarik (`draft: true`) dan `publishedAt` dikoreksi ke tanggal sumber terverifikasi. Semuanya lebih tua dari batas 7 hari.
   - Anthropic: Claude 3.5 Sonnet/Computer Use (2024-10-22), Enzim CRISPR-like (2026-09-23), Services Track & Partner Hub (2026-06-03)
