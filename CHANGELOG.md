@@ -12,6 +12,9 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 - **Tanggal tayang mengikuti tanggal sumber**: `publishedAt` artikel dan folder tanggal kini berasal dari tanggal rilis sumber (tidak pernah di masa depan), bukan waktu generate.
 - Test baru untuk `isFreshEnough` dan filter usia pada `selectEditorialEdition`.
 
+### ⚙️ Pipeline Otomasi (Fase 2 rencana perbaikan)
+- **Urutan workflow `auto-news.yml`**: test dan build kini berjalan sebelum commit/push artikel ke `main`. Artikel yang merusak build tidak lagi masuk repo dan memblokir deploy berikutnya.
+
 ---
 
 ## [0.5.2] — 2026-10-05
