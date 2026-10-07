@@ -4,6 +4,16 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Unreleased]
+
+### 🧠 Kurasi Berita (Fase 1 rencana perbaikan)
+- **Perbaikan bug tanggal kurasi**: `editor.mjs` dan `generate-news.mjs` membaca `item.date` yang tidak pernah ada (parser mengisi `publishedAt`), sehingga prioritas "Hari Ini" tidak pernah aktif dan rilis lama ikut tayang. Kini memakai `item.publishedAt`.
+- **Batas usia rilis 7 hari**: rilis lebih tua dari 7 hari, atau tanpa tanggal valid, tidak lagi tayang otomatis (opsi `--max-age-days=N`).
+- **Tanggal tayang mengikuti tanggal sumber**: `publishedAt` artikel dan folder tanggal kini berasal dari tanggal rilis sumber (tidak pernah di masa depan), bukan waktu generate.
+- Test baru untuk `isFreshEnough` dan filter usia pada `selectEditorialEdition`.
+
+---
+
 ## [0.5.2] — 2026-10-05
 
 Optimasi penjadwalan cron edisi pagi (Anti-Drop GitHub Actions), mitigasi token leak bahasa Mandarin pada generator AI, standarisasi batch timestamp edisi rilis, dan penerbitan resmi Edisi Pagi 2026-10-05.

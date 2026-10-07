@@ -17,6 +17,26 @@
 
 import { normalizeUrl } from "./dedupe.mjs";
 
+/** Batas usia rilis yang layak tayang (hari). */
+export const DEFAULT_MAX_AGE_DAYS = 7;
+
+/** Toleransi selisih jam untuk tanggal sumber yang sedikit di masa depan (beda zona waktu). */
+const FUTURE_TOLERANCE_HOURS = 24;
+
+/**
+ * Cek apakah tanggal rilis sumber masih layak tayang: valid, tidak lebih tua dari
+ * `maxAgeDays`, dan tidak berada jauh di masa depan. Tanpa tanggal valid → tidak layak.
+ * @param {Date | null | undefined} date
+ * @param {Date} referenceDate
+ * @param {number} maxAgeDays
+ * @returns {boolean}
+ */
+export function isFreshEnough(date, referenceDate = new Date(), maxAgeDays = DEFAULT_MAX_AGE_DAYS) {
+  if (!(date instanceof Date) || Number.isNaN(date.valueOf())) return false;
+  const diffHours = (referenceDate.getTime() - date.getTime()) / (1000 * 60 * 60);
+  return diffHours >= -FUTURE_TOLERANCE_HOURS && diffHours <= maxAgeDays * 24;
+}
+
 /**
  * Cek apakah tanggal rilis masuk kategori "Hari Ini".
  * @param {Date | null | undefined} date
@@ -49,8 +69,8 @@ export function sortCandidatesByPriority(items) {
     if (scoreB !== scoreA) {
       return scoreB - scoreA;
     }
-    const timeA = a.item?.date ? new Date(a.item.date).getTime() : 0;
-    const timeB = b.item?.date ? new Date(b.item.date).getTime() : 0;
+    const timeA = a.item?.publishedAt ? new Date(a.item.publishedAt).getTime() : 0;
+    const timeB = b.item?.publishedAt ? new Date(b.item.publishedAt).getTime() : 0;
     return timeB - timeA;
   });
 }
@@ -97,10 +117,17 @@ function pickDiverse(candidates, quota, chosenCompanies) {
  * @param {Set<string>} params.existingUrls - Set URL yang sudah dinormalisasi dan pernah diterbitkan
  * @param {number} [params.limit=3] - Target kuota edisi (pagi: 3, malam: 3)
  * @param {Date} [params.referenceDate] - Waktu acuan sekarang (default: new Date())
+ * @param {number} [params.maxAgeDays=7] - Rilis lebih tua dari ini atau tanpa tanggal tidak tayang
  * @returns {Array<object>} Kandidat terpilih yang layak tayang
  */
 export function selectEditorialEdition(params) {
-  const { allFeedItems = [], existingUrls = new Set(), limit = 3, referenceDate = new Date() } = params;
+  const {
+    allFeedItems = [],
+    existingUrls = new Set(),
+    limit = 3,
+    referenceDate = new Date(),
+    maxAgeDays = DEFAULT_MAX_AGE_DAYS,
+  } = params;
 
   // 1. Saring kandidat: buang duplikasi dengan arsip dan URL yang tidak valid
   const seenUrlsInRun = new Set();
@@ -110,6 +137,7 @@ export function selectEditorialEdition(params) {
     const link = entry.item?.link;
     const normUrl = normalizeUrl(link);
     if (!normUrl) continue;
+    if (!isFreshEnough(entry.item?.publishedAt, referenceDate, maxAgeDays)) continue;
     if (existingUrls.has(normUrl)) continue;
     if (seenUrlsInRun.has(normUrl)) continue;
 
@@ -125,8 +153,7 @@ export function selectEditorialEdition(params) {
   const previousDaysCandidates = [];
 
   for (const cand of validCandidates) {
-    const itemDate = cand.item?.date ? new Date(cand.item.date) : null;
-    if (isToday(itemDate, referenceDate)) {
+    if (isToday(cand.item.publishedAt, referenceDate)) {
       todayCandidates.push(cand);
     } else {
       previousDaysCandidates.push(cand);
