@@ -40,6 +40,7 @@ Perbaikan kurasi berita otomatis (bug tanggal rilis, batas usia 7 hari), pengama
 - `README.md`: deskripsi deployment diperbarui (GitHub Pages + `sinyalai.xyz`), catatan konten demo dan roadmap yang sudah terealisasi dibersihkan.
 
 ### 🧹 Kebersihan Repo (Fase 6 rencana perbaikan)
+- Versi `package.json` dan `package-lock.json` disinkronkan ke `0.6.0` (sebelumnya `0.0.1`).
 - `audit_report.md`, `walkthrough_audit.md`, dan `implementation_plan.md` dipindah dari root ke `docs/`.
 - `.agents/skills` dipertahankan (masih dipakai).
 - Aset logo tidak dihapus: PNG bernomor `(1)…(7)` di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`, sehingga bukan duplikat yang aman dibuang.
