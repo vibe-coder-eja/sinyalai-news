@@ -4,6 +4,22 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.6.1] — 2026-10-07
+
+Penguatan penulis AI setelah dry run `auto-news` pertama: model menyisipkan aksara Mandarin pada sekitar 2 dari 3 artikel di percobaan pertama.
+
+### 🧠 Penulis AI (`scripts/`)
+- **Percobaan ulang dengan umpan balik**: maksimal 3 percobaan (sebelumnya 2). Keluaran yang ditolak validasi dan daftar masalahnya dikirim kembali ke model (pesan `assistant` + `user`) agar percobaan berikutnya memperbaiki kesalahan yang sama. Error HTTP/jaringan diulang tanpa umpan balik.
+- **`ArticleValidationError`** (`scripts/lib/validate.mjs`): kegagalan validasi kini bertipe khusus dengan daftar `problems`.
+- **Log konteks sumber**: tiap artikel mencetak panjang teks halaman sumber dan cuplikan feed.
+- **Pesan dry run jelas**: "Lolos validasi (dry run, tidak disimpan)" menggantikan "Berhasil diterbitkan" saat `--dry-run`.
+- 3 test baru (total 124).
+
+### ⚙️ Pipeline Otomasi
+- `timeout-minutes` job `auto-news.yml` dinaikkan dari 15 ke 20 menit karena kasus terburuk percobaan ulang bertambah.
+
+---
+
 ## [0.6.0] — 2026-10-07
 
 Perbaikan kurasi berita otomatis (bug tanggal rilis, batas usia 7 hari), pengamanan alur AI dan workflow, pembersihan artikel bertanggal palsu, serta perbaikan teknis berdasarkan review proyek. Rencana lengkap: [`docs/rencana-perbaikan.md`](docs/rencana-perbaikan.md).
