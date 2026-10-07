@@ -9,6 +9,15 @@ const FOREIGN_SCRIPT =
 
 const PLACEHOLDER = /(?<![A-Za-z])(?:TODO|Draft otomatis|Belum di-review|lorem ipsum)(?![A-Za-z])/i;
 
+/** Kegagalan validasi/parsing keluaran LLM; pesannya aman dikirim balik ke model sebagai umpan balik. */
+export class ArticleValidationError extends Error {
+  constructor(message, problems = []) {
+    super(message);
+    this.name = "ArticleValidationError";
+    this.problems = problems;
+  }
+}
+
 export const LIMITS = {
   titleMax: 120,
   summaryMin: 80,
@@ -60,7 +69,7 @@ export function findArticleProblems(article, { company }) {
 export function assertValidArticle(article, ctx) {
   const problems = findArticleProblems(article, ctx);
   if (problems.length) {
-    throw new Error(`Validasi artikel gagal: ${problems.join("; ")}`);
+    throw new ArticleValidationError(`Validasi artikel gagal: ${problems.join("; ")}`, problems);
   }
   return article;
 }
