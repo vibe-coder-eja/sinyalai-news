@@ -64,6 +64,15 @@ describe("getPublishedNews", () => {
           draft: true,
         },
       },
+      {
+        id: "6",
+        data: {
+          title: "Archived Story",
+          publishedAt: new Date("2026-10-06T00:00:00Z"),
+          draft: false,
+          archived: true,
+        },
+      },
     ];
 
     vi.mocked(getCollection).mockImplementation(async (_name: any, filter?: any) => {

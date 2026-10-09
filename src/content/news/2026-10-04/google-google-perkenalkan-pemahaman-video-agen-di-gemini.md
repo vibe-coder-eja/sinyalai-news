@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/introducing-agentic-video-in-gemini/"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T22:05:00+07:00
 draft: false
+archived: true
 ---
 
 Google DeepMind mengumumkan penambahan fitur agentic video understanding pada model Gemini. Fitur ini dirancang untuk memproses dan memahami konten video berdurasi panjang melalui pendekatan berbasis agen, sehingga pengguna dapat mengajukan pertanyaan spesifik terkait isi video dan menerima jawaban yang kontekstual.

@@ -6,6 +6,7 @@ source: "https://openai.com/index/hugging-face-model-evaluation-security-inciden
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T21:58:16.802Z
 draft: false
+archived: true
 ---
 
 OpenAI dan Hugging Face mengumumkan kerja sama untuk menyelidiki insiden keamanan yang terjadi selama proses evaluasi model AI. Kedua perusahaan secara terbuka membagikan temuan awal sebagai bagian dari upaya berbagi intelijen ancaman dengan komunitas keamanan siber.

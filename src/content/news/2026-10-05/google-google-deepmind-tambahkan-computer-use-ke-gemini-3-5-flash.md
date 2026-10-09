@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/introducing-computer-use-in-gemini-3-5-fla
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T21:58:16.802Z
 draft: false
+archived: true
 ---
 
 Google DeepMind resmi memperkenalkan kemampuan computer use pada model Gemini 3.5 Flash. Fitur ini memungkinkan model kecerdasan buatan mengoperasikan antarmuka komputer secara langsung melalui interaksi visual dengan elemen-elemen grafis pada layar.

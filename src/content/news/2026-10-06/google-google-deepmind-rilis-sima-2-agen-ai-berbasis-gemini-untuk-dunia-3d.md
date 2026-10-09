@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/sima-2-an-agent-that-plays-reasons-and-lea
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T20:12:04.921Z
 draft: false
+archived: true
 ---
 
 Google DeepMind memperkenalkan SIMA 2, agen kecerdasan buatan terbaru yang ditenagai oleh model Gemini. Agen ini dirancang untuk beroperasi di dalam dunia virtual tiga dimensi dengan kemampuan berpikir, memahami konteks, serta menjalankan instruksi dari pengguna secara langsung di lingkungan yang interaktif.

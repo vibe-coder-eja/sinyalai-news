@@ -6,6 +6,7 @@ source: "https://openai.com/index/gpt-6-astra"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T10:35:00+07:00
 draft: false
+archived: true
 ---
 
 OpenAI resmi memperkenalkan GPT-6 Astra sebagai model terbaru mereka. Peluncuran ini membawa kemampuan di empat area utama: penggunaan komputer (computer use), pemrograman (coding), keamanan siber (cybersecurity), dan sains. OpenAI menyebut Astra sebagai model paling cerdas dan paling selaras (aligned) yang pernah mereka rilis.

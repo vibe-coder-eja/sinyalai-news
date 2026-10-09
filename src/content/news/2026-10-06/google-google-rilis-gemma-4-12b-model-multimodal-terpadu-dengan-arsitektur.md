@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/introducing-gemma-4-12b-a-unified-encoder-
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T10:43:19.139Z
 draft: false
+archived: true
 ---
 
 Google DeepMind memperkenalkan Gemma 4 12B sebagai anggota terbaru dari keluarga model Gemma. Model ini dirancang dengan pendekatan unified atau terpadu, yang menggabungkan kemampuan memahami berbagai modalitas dalam satu arsitektur tunggal.

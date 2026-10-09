@@ -4,6 +4,21 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Belum dirilis]
+
+### 🗄️ Pengarsipan Berita Standar Lama
+- Field baru `archived` (default `false`) pada skema koleksi `news`. Artikel `archived: true` tetap tersimpan di repo tetapi tidak tayang di beranda, daftar berita, halaman detail, RSS, maupun sitemap. Penyaringan terpusat di `getPublishedNews()`.
+- 24 artikel yang tayang dengan tanggal rilis 6 Oktober 2026 dan sebelumnya diarsipkan karena dibuat dengan standar lama. Artikel `draft: true` tidak diubah.
+- Pengecekan duplikat pipeline tetap membaca artikel terarsip, sehingga berita yang sama tidak dibuat ulang.
+- URL artikel terarsip tidak lagi dapat diakses (404).
+
+### 🔗 URL Artikel Tanpa Awalan Sumber
+- Slug artikel kini hanya dari judul berita, tanpa awalan nama perusahaan (`/berita/2026-10-09/sophos-pangkas-waktu-...` bukan `/berita/2026-10-09/openai-sophos-pangkas-waktu-...`). Judul sudah memuat nama perusahaan, sehingga tidak ada lagi kata ganda seperti `anthropic-anthropic-...`.
+- 13 artikel yang sedang tayang diganti nama file/slug-nya. URL lama dialihkan otomatis ke URL baru lewat `redirects` di `astro.config.mjs` (peta di `src/data/legacy-redirects.json`).
+- `generate-news.mjs` membuat slug dari judul saja. Sitemap dan RSS ikut memakai URL baru saat build.
+
+---
+
 ## [0.6.1] — 2026-10-07
 
 Penguatan penulis AI setelah dry run `auto-news` pertama: model menyisipkan aksara Mandarin pada sekitar 2 dari 3 artikel di percobaan pertama.

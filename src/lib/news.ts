@@ -3,7 +3,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 export type NewsEntry = CollectionEntry<"news">;
 
 export async function getPublishedNews(): Promise<NewsEntry[]> {
-  const entries = await getCollection("news", ({ data }) => data.draft !== true);
+  const entries = await getCollection("news", ({ data }) => data.draft !== true && data.archived !== true);
   return entries.sort((a, b) => {
     // 1. Urutkan berdasarkan waktu rilis (tanggal, hari, jam) descending (terbaru lebih dulu)
     const timeDiff = b.data.publishedAt.getTime() - a.data.publishedAt.getTime();

@@ -6,6 +6,7 @@ source: "https://openai.com/index/the-eternal-complement"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
+archived: true
 ---
 
 OpenAI menerbitkan tulisan bertajuk "The Eternal Complement" yang menyoroti peran kecerdasan buatan dalam pekerjaan eksekusi sehari-hari. Esai ini mengangkat pandangan bahwa nilai terbesar AI tingkat lanjut mungkin justru terletak pada tugas-tugas rutin yang menopang terciptanya ide-ide terobosan, bukan pada penemuan besar itu sendiri.
