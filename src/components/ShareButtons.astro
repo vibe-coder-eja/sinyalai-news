@@ -1,0 +1,198 @@
+---
+import { siFacebook, siGmail, siTelegram, siWhatsapp } from "simple-icons";
+import { buildShareTargets } from "../lib/share";
+
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+const targets = buildShareTargets(url, title);
+const icons = {
+  whatsapp: siWhatsapp.path,
+  telegram: siTelegram.path,
+  facebook: siFacebook.path,
+  email: siGmail.path,
+};
+---
+
+<section class="share" aria-labelledby="share-heading" data-share data-url={url}>
+  <p class="label" id="share-heading">Bagikan berita ini</p>
+  <ul class="share-list">
+    {targets.map((target) => (
+      <li>
+        <a
+          class={`share-btn share-${target.id}`}
+          href={target.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Bagikan lewat ${target.label}`}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <path d={icons[target.id]} fill="currentColor" />
+          </svg>
+          <span>{target.label}</span>
+        </a>
+      </li>
+    ))}
+    <li>
+      <button type="button" class="share-btn share-copy" data-copy>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <path
+            d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+        <span data-copy-label>Salin tautan</span>
+      </button>
+    </li>
+  </ul>
+  <p class="share-status" role="status" aria-live="polite" data-copy-status></p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-share]").forEach((root) => {
+    const button = root.querySelector<HTMLButtonElement>("[data-copy]");
+    const label = root.querySelector<HTMLElement>("[data-copy-label]");
+    const status = root.querySelector<HTMLElement>("[data-copy-status]");
+    const url = root.dataset.url ?? window.location.href;
+    if (!button || !label || !status) return;
+
+    let timer: number | undefined;
+    const announce = (done: boolean) => {
+      label.textContent = done ? "Tautan disalin" : "Gagal menyalin";
+      status.textContent = done ? "Tautan berita disalin ke papan klip." : "Tautan tidak dapat disalin. Salin manual dari bilah alamat.";
+      button.classList.toggle("is-copied", done);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        label.textContent = "Salin tautan";
+        status.textContent = "";
+        button.classList.remove("is-copied");
+      }, 2200);
+    };
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        announce(true);
+      } catch {
+        const field = document.createElement("textarea");
+        field.value = url;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        let ok = false;
+        try {
+          ok = document.execCommand("copy");
+        } catch {
+          ok = false;
+        }
+        field.remove();
+        announce(ok);
+      }
+    });
+  });
+</script>
+
+<style>
+  .share {
+    margin-top: 2rem;
+  }
+
+  .share .label {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  .share-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      background var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+
+  .share-btn svg {
+    flex-shrink: 0;
+  }
+
+  .share-btn:active {
+    transform: scale(0.97);
+  }
+
+  .share-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .share-whatsapp svg { color: #25d366; }
+  .share-telegram svg { color: #26a5e4; }
+  .share-facebook svg { color: #1877f2; }
+  .share-email svg { color: #ea4335; }
+  .share-copy svg { color: var(--accent); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .share-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+  }
+
+  .share-copy.is-copied {
+    border-color: rgba(61, 255, 154, 0.5);
+    background: var(--accent-soft);
+    color: var(--accent-bright);
+  }
+
+  .share-status {
+    min-height: 1.2em;
+    margin: 0.5rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 480px) {
+    .share-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .share-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

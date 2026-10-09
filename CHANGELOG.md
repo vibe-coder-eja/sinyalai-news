@@ -6,6 +6,11 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### 📣 Tombol Berbagi Berita
+- Komponen `ShareButtons` di halaman detail berita: WhatsApp, Telegram, Facebook, Email (compose Gmail), dan Salin tautan, lengkap dengan ikon merek (paket `simple-icons`, dipakai saat build sehingga tidak menambah JavaScript di browser).
+- Tautan berbagi dibangun oleh `src/lib/share.ts` (dengan test). Tombol Salin tautan memberi umpan balik teks dan mendukung pembaca layar (`aria-live`); tersedia cadangan untuk browser tanpa Clipboard API.
+- Tampilan responsif: dua kolom di layar sempit.
+
 ### 🗄️ Pengarsipan Berita Standar Lama
 - Field baru `archived` (default `false`) pada skema koleksi `news`. Artikel `archived: true` tetap tersimpan di repo tetapi tidak tayang di beranda, daftar berita, halaman detail, RSS, maupun sitemap. Penyaringan terpusat di `getPublishedNews()`.
 - 24 artikel yang tayang dengan tanggal rilis 6 Oktober 2026 dan sebelumnya diarsipkan karena dibuat dengan standar lama. Artikel `draft: true` tidak diubah.
