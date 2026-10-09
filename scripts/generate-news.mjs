@@ -173,7 +173,8 @@ async function main() {
         model: MODEL,
       });
 
-      const slug = slugify(aiArticle.title, src.company);
+      // Judul sudah memuat nama perusahaan (divalidasi), jadi slug cukup dari judul.
+      const slug = slugify(aiArticle.title);
       // Tanggal tayang mengikuti tanggal rilis sumber (tidak pernah di masa depan).
       const now = new Date();
       const sourceDate = item.publishedAt;
