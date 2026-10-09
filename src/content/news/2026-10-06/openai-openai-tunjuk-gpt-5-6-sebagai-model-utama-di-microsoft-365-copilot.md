@@ -6,6 +6,7 @@ source: "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T10:43:19.139Z
 draft: false
+archived: true
 ---
 
 OpenAI resmi menetapkan GPT-5.6 sebagai model pilihan (preferred model) yang menopang Microsoft 365 Copilot. Integrasi ini menggantikan model sebelumnya dan berlaku di seluruh lini aplikasi produktivitas Microsoft, termasuk Word, Excel, PowerPoint, serta fitur Chat dan Cowork di dalam ekosistem Copilot.

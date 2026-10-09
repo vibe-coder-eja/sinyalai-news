@@ -4,6 +4,16 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Belum dirilis]
+
+### 🗄️ Pengarsipan Berita Standar Lama
+- Field baru `archived` (default `false`) pada skema koleksi `news`. Artikel `archived: true` tetap tersimpan di repo tetapi tidak tayang di beranda, daftar berita, halaman detail, RSS, maupun sitemap. Penyaringan terpusat di `getPublishedNews()`.
+- 24 artikel yang tayang dengan tanggal rilis 6 Oktober 2026 dan sebelumnya diarsipkan karena dibuat dengan standar lama. Artikel `draft: true` tidak diubah.
+- Pengecekan duplikat pipeline tetap membaca artikel terarsip, sehingga berita yang sama tidak dibuat ulang.
+- URL artikel terarsip tidak lagi dapat diakses (404).
+
+---
+
 ## [0.6.1] — 2026-10-07
 
 Penguatan penulis AI setelah dry run `auto-news` pertama: model menyisipkan aksara Mandarin pada sekitar 2 dari 3 artikel di percobaan pertama.

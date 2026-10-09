@@ -6,6 +6,7 @@ source: "https://blog.google/innovation-and-ai/technology/research/google-beam-e
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
+archived: true
 ---
 
 Google mengumumkan perluasan layanan komunikasi video Google Beam ke lima negara baru. Ekspansi ini juga mencakup kemitraan dengan Industrious, penyedia ruang kerja bersama, untuk membangun jaringan akses yang lebih luas bagi pengguna di berbagai lokasi.

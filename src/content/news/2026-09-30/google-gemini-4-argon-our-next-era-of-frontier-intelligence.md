@@ -5,6 +5,7 @@ company: "Google"
 source: "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/"
 publishedAt: 2026-09-30
 draft: false
+archived: true
 ---
 
 Google DeepMind mengumumkan tonggak baru dalam lini model fondasinya melalui peluncuran **Gemini 4 Argon**. Dirancang sebagai model generasi mutakhir (*frontier model*), varian Argon berfokus secara khusus pada penyelesaian persoalan rekayasa perangkat lunak skala besar, penalaran analitik korporat, serta automasi pertahanan siber proaktif.

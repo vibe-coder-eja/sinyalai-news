@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/advancing-private-ai-compute-with-secure-s
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
+archived: true
 ---
 
 Google DeepMind mengumumkan penambahan kapabilitas memori sisi-server (server-side memory) pada Private AI Compute. Pembaruan ini ditujukan untuk menghadirkan pengalaman AI personal yang dapat menyimpan serta menggunakan konteks pengguna dari waktu ke waktu.

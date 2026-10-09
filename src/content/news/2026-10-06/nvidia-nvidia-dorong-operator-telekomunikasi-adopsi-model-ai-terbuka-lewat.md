@@ -6,6 +6,7 @@ source: "https://blogs.nvidia.com/blog/telecom-operators-open-models/"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T13:00:19.000Z
 draft: false
+archived: true
 ---
 
 NVIDIA melaporkan bahwa operator telekomunikasi global semakin memposisikan model AI sumber terbuka sebagai pilar utama strategi kecerdasan buatan mereka. Temuan ini tertuang dalam laporan terbaru State of AI in Telecommunications, di mana 89% responden menyatakan bahwa model dan perangkat lunak sumber terbuka memegang peran penting dalam rencana AI perusahaan mereka.

@@ -27,6 +27,7 @@ const news = defineCollection({
     publishedAt: z.coerce.date(),
     updatedAt: z.coerce.date().optional(),
     draft: z.boolean().default(false),
+    archived: z.boolean().default(false),
   }),
 });
 

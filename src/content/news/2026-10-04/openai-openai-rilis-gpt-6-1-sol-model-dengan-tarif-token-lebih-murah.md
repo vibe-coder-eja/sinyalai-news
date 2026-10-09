@@ -6,6 +6,7 @@ source: "https://openai.com/index/introducing-gpt-6-1-sol"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T22:05:00+07:00
 draft: false
+archived: true
 ---
 
 OpenAI resmi memperkenalkan GPT-6.1 Sol, model bahasa terbaru yang dirancang untuk aktivitas coding, computer use, dan pekerjaan profesional. Model ini digadang memiliki tingkat kecerdasan mendekati lini Astra milik OpenAI, tetapi dipasarkan dengan struktur harga yang lebih rendah untuk penggunaan API.

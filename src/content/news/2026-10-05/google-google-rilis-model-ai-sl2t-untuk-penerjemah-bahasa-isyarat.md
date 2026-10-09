@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/putting-sign-language-ai-into-users-hands/
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T10:35:00+07:00
 draft: false
+archived: true
 ---
 
 Google DeepMind mengumumkan model kecerdasan buatan terbaru bernama sign-language-to-text (SL2T) yang dirancang untuk menerjemahkan gerakan bahasa isyarat secara langsung menjadi teks. Model ini menjadi komponen inti dari fitur aksesibilitas baru yang ditujukan bagi pengguna tunarungu dan sulit mendengar (Deaf and hard of hearing) di berbagai produk Google.

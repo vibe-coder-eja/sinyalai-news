@@ -5,6 +5,7 @@ company: "Anthropic"
 source: "https://www.anthropic.com/news/claude-frontier-academy"
 publishedAt: 2026-10-02
 draft: false
+archived: true
 ---
 
 Anthropic resmi mengumumkan inisiatif pendidikan dan talenta global bertajuk **Claude Frontier Academy**, didukung alokasi dana sebesar $100 juta. Program ini dirancang khusus untuk mengatasi kesenjangan tenaga ahli (*talent gap*) dalam implementasi AI tingkat enterprise, dengan target mencetak 10.000 *Frontier Deployed Engineers* (FDE) hingga akhir tahun 2027.

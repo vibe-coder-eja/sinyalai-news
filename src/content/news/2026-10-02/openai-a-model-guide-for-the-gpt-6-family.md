@@ -5,6 +5,7 @@ company: "OpenAI"
 source: "https://openai.com/index/practical-guide-building-gpt-6"
 publishedAt: 2026-10-02
 draft: false
+archived: true
 ---
 
 OpenAI merilis panduan teknis resmi bagi para pengembang perangkat lunak dan startup yang mulai mengintegrasikan ekosistem model frontier keluarga **GPT-6**. Panduan ini menitikberatkan pada pemilihan varian model, optimasi biaya komputasi, serta strategi deployment sistem berbasis agen (*agentic workflows*).

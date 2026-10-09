@@ -5,6 +5,7 @@ company: "Microsoft"
 source: "https://blogs.microsoft.com/blog/2026/09/25/introducing-the-new-copilot-with-home-code-and-autopilot/"
 publishedAt: 2026-09-25
 draft: false
+archived: true
 ---
 
 Microsoft mengumumkan pembaruan mendasar pada arsitektur produk **Copilot** untuk menghubungkan perangkat kerja harian dengan ekosistem agen AI otonom. Pembaruan ini memperkenalkan tiga pilar utama: antarmuka personal **Copilot Home**, lingkungan rekayasa kode **Copilot Code**, serta mode otomatisasi tugas berantai **Autopilot**.

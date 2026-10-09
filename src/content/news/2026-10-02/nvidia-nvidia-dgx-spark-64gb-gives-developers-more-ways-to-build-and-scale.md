@@ -5,6 +5,7 @@ company: "NVIDIA"
 source: "https://blogs.nvidia.com/blog/local-ai-dgx-spark-64gb-sync/"
 publishedAt: 2026-10-02
 draft: false
+archived: true
 ---
 
 NVIDIA resmi memperkenalkan varian perangkat keras **DGX Spark** dengan kapasitas memori terpadu (*unified memory*) sebesar **64GB**. Inovasi ini ditujukan bagi kalangan peneliti dan pengembang yang membutuhkan daya komputasi tinggi untuk mengeksekusi model sumber terbuka (*open models*) dan agen AI secara mandiri di workstation desktop tanpa bergantung sepenuhnya pada cloud publik.

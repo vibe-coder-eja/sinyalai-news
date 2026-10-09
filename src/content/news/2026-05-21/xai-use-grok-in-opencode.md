@@ -5,6 +5,7 @@ company: "xAI"
 source: "https://x.ai/news/grok-opencode"
 publishedAt: 2026-05-21
 draft: false
+archived: true
 ---
 
 Perusahaan kecerdasan buatan bentukan Elon Musk, **xAI**, mengumumkan integrasi resmi model reasoning **Grok** ke dalam **OpenCode**, sebuah platform editor dan lingkungan pengembangan perangkat lunak (*IDE*) sumber terbuka. Integrasi ini memungkinkan pengguna memanfaatkan langganan aktif SuperGrok maupun X Premium secara langsung dari dalam alur kerja rekayasa kode.

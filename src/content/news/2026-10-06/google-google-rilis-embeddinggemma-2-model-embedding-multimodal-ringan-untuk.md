@@ -6,6 +6,7 @@ source: "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multi
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T19:57:04.000Z
 draft: false
+archived: true
 ---
 
 Google DeepMind meluncurkan EmbeddingGemma 2, model embedding multimodal sumber terbuka yang dirancang untuk pemrosesan langsung pada perangkat keras konsumen. Model ini dibangun di atas arsitektur Gemma 4 dan dirilis di bawah lisensi Apache 2.0, memiliki 740 juta parameter, serta mampu memetakan kombinasi teks, gambar, audio, dan video ke dalam ruang embedding terpadu. Peluncuran ini melanjutkan versi sebelumnya yang telah diunduh lebih dari 20 juta kali oleh komunitas developer.

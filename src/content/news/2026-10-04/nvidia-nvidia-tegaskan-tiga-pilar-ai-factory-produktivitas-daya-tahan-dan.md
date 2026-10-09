@@ -6,6 +6,7 @@ source: "https://blogs.nvidia.com/blog/productive-durable-fungible-ai-factories/
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-04T10:30:00+07:00
 draft: false
+archived: true
 ---
 
 NVIDIA menjelaskan konsep AI factory sebagai infrastruktur komputasi berskala besar yang dibangun berdasarkan kapasitas daya, mulai dari megawatt hingga gigawatt. Setiap megawatt AI factory memerlukan investasi sekitar 60 juta dolar AS, sehingga operator perlu perhitungan matang atas potensi pendapatan sebelum menanamkan modal pada skala tersebut.

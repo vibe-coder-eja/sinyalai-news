@@ -5,6 +5,7 @@ company: "Google"
 source: "https://deepmind.google/blog/introducing-synthid-bio/"
 publishedAt: 2026-09-30
 draft: false
+archived: true
 ---
 
 Google DeepMind memperluas portofolio keselamatan AI dengan meluncurkan **SynthID Bio**, sebuah kerangka kerja penandaan digital (*watermarking*) yang dirancang khusus untuk bidang biologi sintetis. Teknologi ini memungkinkan peneliti menyematkan tanda pengenal tak kasat mata pada sekuens asam amino dan struktur protein yang dihasilkan model generatif, tanpa mengubah fungsi biologis aslinya.

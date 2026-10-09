@@ -6,6 +6,7 @@ source: "https://openai.com/index/introducing-gpt-rosalind"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T20:12:04.921Z
 draft: false
+archived: true
 ---
 
 OpenAI resmi memperkenalkan GPT-Rosalind, sebuah model penalaran frontier yang dirancang khusus untuk bidang ilmu hayati. Model ini menyasar empat area utama riset, yaitu penemuan obat (drug discovery), analisis genomik, penalaran terkait protein, serta alur kerja penelitian ilmiah secara umum.

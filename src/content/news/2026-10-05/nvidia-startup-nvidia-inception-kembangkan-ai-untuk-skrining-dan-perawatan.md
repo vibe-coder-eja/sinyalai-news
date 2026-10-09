@@ -6,6 +6,7 @@ source: "https://blogs.nvidia.com/blog/ai-breast-cancer-startups/"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T13:00:57.000Z
 draft: false
+archived: true
 ---
 
 Tiga startup yang tergabung dalam program NVIDIA Inception memperkenalkan solusi kecerdasan buatan untuk berbagai tahapan penanganan kanker-payudara. Perusahaan-perusahaan tersebut adalah iSono Health, Whiterabbit.ai, dan Ataraxis AI, yang masing-masing menangani permasalahan mulai dari skrining, penilaian risiko, hingga perencanaan terapi pasien.
