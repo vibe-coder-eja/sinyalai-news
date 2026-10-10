@@ -1,6 +1,7 @@
 ---
 import { render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ShareButtons from "../../../components/ShareButtons.astro";
 import { formatDate, getPublishedNews, toIsoDate } from "../../../lib/news";
 import { withBase } from "../../../lib/url";
 
@@ -75,6 +76,8 @@ const jsonLd = {
     <div class="prose article-body">
       <Content />
     </div>
+
+    <ShareButtons url={pageUrl} title={title} />
 
     <div class="source-box">
       <p class="label">Sumber resmi</p>

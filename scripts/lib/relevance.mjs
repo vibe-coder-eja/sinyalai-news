@@ -105,73 +105,81 @@ export function checkRelevance(item, source = {}) {
   return { keep: false, reason: "no AI signal" };
 }
 
+/** Skor dasar tiap kategori editorial. */
+export const CATEGORY_SCORES = {
+  "Rilis Model": 50,
+  "Fitur & Skills": 45,
+  "Produk Baru": 40,
+  "Kerjasama Industri": 40,
+  "Penerapan Industri": 35,
+  "Riset & Kebijakan": 35,
+  "Standar Umum": 10,
+};
+
+/** Bonus kecil untuk tiap kategori tambahan di luar yang tertinggi, dibatasi agar skor tidak menumpuk. */
+const EXTRA_CATEGORY_BONUS = 5;
+const MAX_EXTRA_BONUS = 10;
+
 /**
- * Priority patterns based on editorial guidelines:
- * 1. Rilis Model Terbaru
- * 2. Fitur dan Skills
- * 3. Produk Terbaru / Hardware / API
- * 4. Kerjasama & Kemitraan Industri AI
- * 5. Standar Publish Umum
+ * Kata kunci per kategori. Pola "Rilis Model" sengaja sempit: kata "model" saja
+ * terlalu umum ("business model", "model guide") sehingga hampir semua berita menyala.
+ * Rilis model dikenali dari nama keluarga model atau frasa "new/frontier/... model".
+ */
+const CATEGORY_PATTERNS = {
+  "Rilis Model": [
+    /\b(?:new|frontier|foundation|reasoning|open(?:-weight)?|multimodal|language|embedding|speech|vision|video|image) models?\b/i,
+    /\b(?:gpt-?\d[\w.-]*|claude|gemini|gemma|grok|llama|deepseek|qwen|mistral|nemotron|sora|o1|o3|o4)\b/i,
+    /\b(?:weights|checkpoints?)\b/i,
+  ],
+  "Fitur & Skills": [
+    /\bskills?\b/i,
+    /\b(?:features?|capabilities|tool use|computer use|code execution|agentic|ai agents?)\b/i,
+    /\b(?:workflows?|prompt caching|voice mode|multimodal)\b/i,
+  ],
+  "Produk Baru": [
+    /\b(?:introducing|announcing|launch(?:ing|ed|es)?|new product|hardware|dgx|blackwell|tpu|chip|copilot)\b/i,
+    /\b(?:api availability|sdk|workstation|supercomputing)\b/i,
+  ],
+  "Kerjasama Industri": [
+    /\b(?:partners?|partnerships?|collaborat(?:e|ion|ing)|alliance|agreements?|joint|invest(?:ment|s|ing)?|enterprise deal)\b/i,
+  ],
+  "Penerapan Industri": [
+    /\b(?:customers?|case study|startups?|enterprises?)\b/i,
+    /\b(?:scales?|scaling|cuts?|halves|saves?|speeds? up|accelerates?|streamlines?)\b.*\b(?:with|using|on)\b/i,
+  ],
+  "Riset & Kebijakan": [
+    /\b(?:research|study|studies|paper|safety|security|policy|regulations?|governance|alignment|evaluations?|benchmarks?|risks?)\b/i,
+  ],
+};
+
+/**
+ * Hitung skor prioritas editorial dari judul dan cuplikan.
+ *
+ * Skor = skor kategori tertinggi + 5 per kategori tambahan (maks +10). Skor tidak
+ * lagi dijumlahkan penuh, agar satu berita tidak mengungguli yang lain hanya karena
+ * menyentuh banyak kata kunci. Penyetelan lanjutan (bonus edisi, keseimbangan kategori)
+ * dilakukan saat seleksi di editor.mjs.
  *
  * @param {{ title?: string, summary?: string, link?: string }} item
  * @returns {{ priorityScore: number, categories: string[], isTopPriority: boolean }}
  */
 export function getEditorialPriority(item) {
   const text = `${item.title || ""} ${item.summary || ""}`.toLowerCase();
-  let score = 0;
-  const categories = [];
+  const categories = Object.keys(CATEGORY_PATTERNS).filter((name) =>
+    CATEGORY_PATTERNS[name].some((re) => re.test(text)),
+  );
 
-  // 1. Rilis Model Terbaru
-  const modelPatterns = [
-    /\b(?:new |frontier |foundation |reasoning )?models?\b/i,
-    /\b(?:gpt-[456]\w*|claude|gemini|grok|llama|deepseek|o1|o3)\b/i,
-    /\b(?:weights|checkpoints?|fine-tuning model)\b/i,
-  ];
-  if (modelPatterns.some((re) => re.test(text))) {
-    score += 50;
-    categories.push("Rilis Model");
+  if (categories.length === 0) {
+    return { priorityScore: CATEGORY_SCORES["Standar Umum"], categories: ["Standar Umum"], isTopPriority: false };
   }
 
-  // 2. Fitur & Skills
-  const skillPatterns = [
-    /\bskills?\b/i,
-    /\b(?:features?|capabilities|tool use|computer use|code execution|agentic|ai agents?)\b/i,
-    /\b(?:workflows?|prompt caching|voice mode|multimodal)\b/i,
-  ];
-  if (skillPatterns.some((re) => re.test(text))) {
-    score += 45;
-    categories.push("Fitur & Skills");
-  }
-
-  // 3. Produk Terbaru & Hardware
-  const productPatterns = [
-    /\b(?:introducing|announcing|launch(?:ing|ed|es)?|new product|hardware|dgx|blackwell|tpu|chip|copilot)\b/i,
-    /\b(?:api availability|sdk|workstation|supercomputing)\b/i,
-  ];
-  if (productPatterns.some((re) => re.test(text))) {
-    score += 40;
-    categories.push("Produk Baru");
-  }
-
-  // 4. Kerjasama & Kemitraan Industri
-  const partnershipPatterns = [
-    /\b(?:partners?|partnerships?|collaborat(?:e|ion|ing)|alliance|agreements?|joint|invest(?:ment|s|ing)?|enterprise deal)\b/i,
-  ];
-  if (partnershipPatterns.some((re) => re.test(text))) {
-    score += 40;
-    categories.push("Kerjasama Industri");
-  }
-
-  // Default baseline for general AI signals
-  if (score === 0) {
-    score = 10;
-    categories.push("Standar Umum");
-  }
+  const scores = categories.map((c) => CATEGORY_SCORES[c]).sort((x, y) => y - x);
+  const extra = Math.min(MAX_EXTRA_BONUS, (scores.length - 1) * EXTRA_CATEGORY_BONUS);
+  const priorityScore = scores[0] + extra;
 
   return {
-    priorityScore: score,
+    priorityScore,
     categories,
-    isTopPriority: score >= 40,
+    isTopPriority: priorityScore >= 40,
   };
 }
-

@@ -2,7 +2,8 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { truncateAtWord } from "./text.mjs";
 
-const MAX_SUMMARY_LENGTH = 220;
+// Sama dengan batas validator (validate.mjs), agar ringkasan yang lolos validasi tidak terpotong.
+const MAX_SUMMARY_LENGTH = 400;
 
 /**
  * Escape string for YAML double-quoted scalars.
@@ -146,6 +147,8 @@ export async function writeDraftArticle(params) {
  * @param {string} [params.author]
  * @param {Date | null} [params.publishedAt]
  * @param {string} params.body
+ * @param {string} [params.sourceTitle] - Judul asli di sumber (untuk pembanding topik)
+ * @param {string[]} [params.categories] - Kategori editorial (untuk keseimbangan kategori)
  * @param {boolean} [params.dryRun]
  */
 export async function writePublishedArticle(params) {
@@ -169,6 +172,8 @@ export async function writePublishedArticle(params) {
     `author: "${yamlQuote(author)}"`,
     `publishedAt: ${publishedAt}`,
     `draft: false`,
+    ...(params.sourceTitle ? [`sourceTitle: "${yamlQuote(params.sourceTitle)}"`] : []),
+    ...(params.categories?.length ? [`categories: ${JSON.stringify(params.categories)}`] : []),
     `---`,
     ``,
     params.body.trim(),

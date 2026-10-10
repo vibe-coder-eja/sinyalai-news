@@ -26,3 +26,15 @@ export function truncateAtWord(text, limit) {
   // Avoid dangling punctuation such as "foo, …" or "bar —…".
   return cut.replace(/[\s,;:\-–—(]+$/u, "") + ELLIPSIS;
 }
+
+/**
+ * Format tanggal sebagai "dd/mm" (UTC, sama dengan folder tanggal artikel).
+ * Dipakai untuk atribusi sumber di dalam artikel, misalnya "OpenAI (07/10)".
+ *
+ * @param {Date} date
+ * @returns {string}
+ */
+export function formatDayMonth(date) {
+  const iso = date.toISOString();
+  return `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+}

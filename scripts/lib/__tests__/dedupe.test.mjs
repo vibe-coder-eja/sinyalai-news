@@ -80,6 +80,27 @@ describe("loadExistingArticles", () => {
     expect(sources.has(normalizeUrl("https://anthropic.com/news/nested"))).toBe(true);
   });
 
+  it("reads article metadata (title, sourceTitle, company, categories, flags) into entries", async () => {
+    const { mkdir } = await import("node:fs/promises");
+    const subDir = path.join(dir, "2026-10-05");
+    await mkdir(subDir, { recursive: true });
+    await writeFile(
+      path.join(subDir, "meta.md"),
+      '---\ntitle: "Judul \\"Kutipan\\" Berita"\nsummary: "S"\ncompany: "OpenAI"\nsource: "https://openai.com/index/meta"\npublishedAt: 2026-10-05T10:00:00.000Z\ndraft: false\narchived: true\nsourceTitle: "Original Title"\ncategories: ["Rilis Model", "Fitur & Skills"]\n---\n',
+    );
+    const { entries } = await loadExistingArticles(dir);
+    const e = entries.find((x) => x.slug === "2026-10-05/meta");
+    expect(e).toMatchObject({
+      title: 'Judul "Kutipan" Berita',
+      sourceTitle: "Original Title",
+      company: "OpenAI",
+      draft: false,
+      archived: true,
+      categories: ["Rilis Model", "Fitur & Skills"],
+    });
+    expect(e.publishedAt.toISOString()).toBe("2026-10-05T10:00:00.000Z");
+  });
+
   it("returns empty sets for a missing directory", async () => {
     const { slugs, sources } = await loadExistingArticles(path.join(dir, "missing"));
     expect(slugs.size).toBe(0);

@@ -87,10 +87,25 @@ jobs:
             git config --global user.email "rsain@sinyalai.users.noreply.github.com"
             git add src/content/news/
             git commit -m "chore(news): automated edition broadcast [skip ci]"
-            git push origin main
+            # main bisa berubah selama job berjalan (mis. PR di-merge). Tarik dulu dengan rebase
+            # agar push tidak ditolak dan artikel edisi ini tidak hilang. Ulangi bila ada yang menyela.
+            for attempt in 1 2 3; do
+              git pull --rebase origin main && git push origin main && exit 0
+              echo "Push gagal pada percobaan $attempt, mengulang..."
+              git rebase --abort 2>/dev/null || true
+              sleep $((attempt * 5))
+            done
+            echo "Push ke main gagal setelah 3 percobaan."
+            exit 1
           else
             echo "Tidak ada artikel baru yang dihasilkan pada jadwal tayang ini."
           fi
+
+      # Setelah rebase, main mungkin memuat perubahan kode baru. Bangun ulang agar situs yang
+      # di-deploy sama dengan isi main, bukan snapshot saat job dimulai.
+      - name: Rebuild site from synced main
+        if: ${{ inputs.dryRun != true }}
+        run: npm run build
 
       - name: Upload GitHub Pages artifact
         if: ${{ inputs.dryRun != true }}

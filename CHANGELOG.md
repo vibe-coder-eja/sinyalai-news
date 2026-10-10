@@ -6,6 +6,30 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### 🧭 Seleksi Redaksi dan Keandalan Pipeline (hasil tinjauan 10 Oktober 2026)
+- **Validasi gaya otomatis** (`validate.mjs`): artikel ditolak jika memuat formula "bukan sekadar X melainkan Y", klise (mis. "lompatan revolusioner", "game-changer"), kata sifat penilai (mis. "luar biasa", "mengesankan"), atau kalimat Inggris yang belum diterjemahkan.
+- **Pembanding topik** (`topic.mjs`): berita bertopik sama dengan artikel yang sudah ada atau kandidat lain dibuang walaupun URL-nya berbeda. Artikel baru menyimpan `sourceTitle` dan `categories` di front matter (field opsional di skema).
+- **Skor prioritas disetel**: pola "Rilis Model" dipersempit (kata "model" saja tidak lagi cukup); kategori baru "Penerapan Industri" dan "Riset & Kebijakan"; skor tidak lagi dijumlahkan penuh (kategori tertinggi + 5 per kategori tambahan, maks +10).
+- **Keseimbangan kategori otomatis**: kategori yang mendominasi 24 artikel terbaru diturunkan skornya hingga 30 poin, sehingga pilihan redaksi menyesuaikan diri seiring bertambahnya artikel berkategori.
+- **Fokus edisi berbeda** (`editions.mjs`): pagi untuk kabar besar semalam (model, produk, kemitraan), malam untuk bacaan lebih mendalam (fitur, studi kasus, riset, keamanan, kebijakan). Fokus penulisan edisi ikut dikirim ke penulis AI.
+- **Informasi pendamping** kini diminta di paragraf terakhir atau dua kalimat terakhir.
+- **Tanda `trusted: false` dihapus** dari `sources.json` (tidak pernah dibaca kode). Sumber tetap tayang otomatis seperti sebelumnya.
+- **`auto-news.yml`**: `git pull --rebase` dan ulangi hingga 3 kali sebelum push ke `main`, lalu bangun ulang situs dari `main` hasil sinkronisasi sebelum deploy. Artikel edisi tidak lagi hilang jika `main` berubah selama job berjalan.
+
+### ✍️ Aturan Penulisan Berita Baru (penulis AI)
+Berlaku untuk berita yang dibuat setelah perubahan ini. Artikel yang sudah terbit tidak ditulis ulang.
+- **Straight news dengan piramida terbalik**, **atribusi sumber (by line)** berformat "Berdasarkan rilis resmi {Sumber} ({dd/mm}), ...", sikap **netral dan independen**, **informasi pendamping** yang relevan (dengan larangan menambah angka, tanggal, harga, spesifikasi, atau rencana di luar sumber), serta gaya bercerita yang manusiawi tanpa hiperbola. Prompt `SYSTEM_PROMPT` ditulis ulang untuk pembaca umum Indonesia.
+- **Panjang isi bebas**: batas minimal 400 karakter dan 2 paragraf dihapus. Penulis menentukan panjang agar padat dan tidak membosankan.
+- **Prompt dan validator diseragamkan**: judul maks 120 karakter (sebelumnya prompt 100, validator 120); ringkasan 40–400 karakter (sebelumnya prompt 100–200, validator 80–300, dan dipotong ke 220 saat disimpan). Pemotongan ringkasan kini 400, sama dengan validator, sehingga ringkasan yang lolos tidak lagi terpotong.
+- **Validator memeriksa by line**: isi harus menyebut nama sumber dan tanggal rilis `dd/mm` (tanggal rilis sumber, UTC). Jika tidak, artikel ditolak dan penulis diminta mengulang dengan umpan balik.
+- **Dry run menampilkan artikel lengkap** di log (`--dry-run`), agar redaksi bisa menilai hasil tulisan tanpa menerbitkan.
+- `scripts/README.md`: bagian "Roadmap AI rewrite" yang sudah usang diganti dengan aturan penulisan ini.
+
+### 📣 Tombol Berbagi Berita
+- Komponen `ShareButtons` di halaman detail berita: WhatsApp, Telegram, Facebook, Email (compose Gmail), dan Salin tautan, lengkap dengan ikon merek (paket `simple-icons`, dipakai saat build sehingga tidak menambah JavaScript di browser).
+- Tautan berbagi dibangun oleh `src/lib/share.ts` (dengan test). Tombol Salin tautan memberi umpan balik teks dan mendukung pembaca layar (`aria-live`); tersedia cadangan untuk browser tanpa Clipboard API.
+- Tampilan responsif: dua kolom di layar sempit.
+
 ### 🗄️ Pengarsipan Berita Standar Lama
 - Field baru `archived` (default `false`) pada skema koleksi `news`. Artikel `archived: true` tetap tersimpan di repo tetapi tidak tayang di beranda, daftar berita, halaman detail, RSS, maupun sitemap. Penyaringan terpusat di `getPublishedNews()`.
 - 24 artikel yang tayang dengan tanggal rilis 6 Oktober 2026 dan sebelumnya diarsipkan karena dibuat dengan standar lama. Artikel `draft: true` tidak diubah.

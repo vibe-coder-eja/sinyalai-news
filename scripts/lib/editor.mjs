@@ -13,9 +13,15 @@
  *    - Kerjasama / Kemitraan Industri (40)
  *    - Standar Umum (10)
  * 5. Menjaga keberagaman industri (diversifikasi perusahaan/sumber) dalam satu edisi tayang.
+ * 6. Menyetel skor otomatis: bonus fokus edisi (editions.mjs) dan penalti keseimbangan
+ *    kategori, yaitu kategori yang sudah mendominasi artikel terbaru diturunkan skornya.
+ * 7. Membuang berita yang topiknya sama dengan artikel yang sudah ada atau kandidat
+ *    lain yang lebih tinggi (topic.mjs), walaupun URL sumbernya berbeda.
  */
 
 import { normalizeUrl } from "./dedupe.mjs";
+import { editionBoost } from "./editions.mjs";
+import { buildTopic, makeWeigher, findSameTopic } from "./topic.mjs";
 
 /** Batas usia rilis yang layak tayang (hari). */
 export const DEFAULT_MAX_AGE_DAYS = 7;
@@ -64,8 +70,8 @@ export function isToday(date, referenceDate = new Date()) {
  */
 export function sortCandidatesByPriority(items) {
   return items.slice().sort((a, b) => {
-    const scoreA = a.priority?.priorityScore ?? 10;
-    const scoreB = b.priority?.priorityScore ?? 10;
+    const scoreA = a.effectiveScore ?? a.priority?.priorityScore ?? 10;
+    const scoreB = b.effectiveScore ?? b.priority?.priorityScore ?? 10;
     if (scoreB !== scoreA) {
       return scoreB - scoreA;
     }
@@ -109,6 +115,41 @@ function pickDiverse(candidates, quota, chosenCompanies) {
   return selected;
 }
 
+/** Banyaknya artikel terbaru yang dipakai untuk membaca keseimbangan kategori. */
+export const BALANCE_WINDOW = 24;
+/** Penalti maksimum (poin) jika satu kategori menguasai seluruh artikel terbaru. */
+export const BALANCE_PENALTY = 30;
+/** Jumlah minimum artikel berkategori sebelum penyetelan keseimbangan aktif. */
+export const BALANCE_MIN_HISTORY = 6;
+
+/**
+ * Porsi tiap kategori pada artikel tayang terbaru (hanya yang menyimpan `categories`).
+ * @param {Array<{ categories?: string[], publishedAt?: Date | null, draft?: boolean, archived?: boolean }>} entries
+ * @returns {Record<string, number>} porsi 0..1; kosong jika riwayat belum cukup
+ */
+export function computeCategoryShares(entries = [], { window = BALANCE_WINDOW, minHistory = BALANCE_MIN_HISTORY } = {}) {
+  const recent = entries
+    .filter((e) => !e.draft && !e.archived && e.categories?.length && e.publishedAt instanceof Date && !Number.isNaN(e.publishedAt.valueOf()))
+    .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+    .slice(0, window);
+  if (recent.length < minHistory) return {};
+  const counts = {};
+  for (const e of recent) for (const c of new Set(e.categories)) counts[c] = (counts[c] || 0) + 1;
+  return Object.fromEntries(Object.entries(counts).map(([c, n]) => [c, n / recent.length]));
+}
+
+/**
+ * Skor efektif = skor dasar + bonus edisi - penalti keseimbangan kategori.
+ * Penalti = BALANCE_PENALTY x porsi kategori terbesar milik kandidat.
+ */
+export function effectiveScore(priority, { edition, shares = {} } = {}) {
+  const base = priority?.priorityScore ?? 10;
+  const cats = priority?.categories || [];
+  const boost = editionBoost(edition, cats);
+  const penalty = BALANCE_PENALTY * cats.reduce((max, c) => Math.max(max, shares[c] || 0), 0);
+  return Math.round((base + boost - penalty) * 10) / 10;
+}
+
 /**
  * Seleksi Pemimpin Redaksi untuk 1 jadwal tayang (default: 3 berita).
  *
@@ -118,6 +159,9 @@ function pickDiverse(candidates, quota, chosenCompanies) {
  * @param {number} [params.limit=3] - Target kuota edisi (pagi: 3, malam: 3)
  * @param {Date} [params.referenceDate] - Waktu acuan sekarang (default: new Date())
  * @param {number} [params.maxAgeDays=7] - Rilis lebih tua dari ini atau tanpa tanggal tidak tayang
+ * @param {object} [params.edition] - Profil edisi (editions.mjs) untuk bonus skor
+ * @param {Array<object>} [params.existingEntries] - Metadata artikel yang sudah ada (dedupe.mjs `entries`)
+ * @param {(info: { reason: string, candidate: object, match?: object }) => void} [params.onSkip]
  * @returns {Array<object>} Kandidat terpilih yang layak tayang
  */
 export function selectEditorialEdition(params) {
@@ -127,6 +171,9 @@ export function selectEditorialEdition(params) {
     limit = 3,
     referenceDate = new Date(),
     maxAgeDays = DEFAULT_MAX_AGE_DAYS,
+    edition,
+    existingEntries = [],
+    onSkip = () => {},
   } = params;
 
   // 1. Saring kandidat: buang duplikasi dengan arsip dan URL yang tidak valid
@@ -148,11 +195,46 @@ export function selectEditorialEdition(params) {
     });
   }
 
-  // 2. Pisahkan ke dalam 2 bucket: "Hari Ini" vs "Hari Sebelumnya (Backlog)"
+  // 2. Setel skor (bonus edisi, keseimbangan kategori), lalu buang topik kembar:
+  //    pembanding adalah artikel yang sudah ada dan kandidat dengan skor lebih tinggi.
+  const shares = computeCategoryShares(existingEntries);
+  for (const cand of validCandidates) {
+    cand.effectiveScore = effectiveScore(cand.priority, { edition, shares });
+  }
+  const ranked = sortCandidatesByPriority(validCandidates);
+
+  const topicOf = (cand) => ({
+    topic: buildTopic({ title: cand.item?.title, link: cand.item?.link }),
+    company: cand.source?.company || "",
+  });
+  const existingTopics = existingEntries
+    .filter((e) => e.title || e.sourceTitle)
+    .map((e) => ({
+      topic: buildTopic({ title: e.sourceTitle || e.title, link: e.source }),
+      company: e.company,
+      label: e.title || e.sourceTitle,
+    }));
+  const rankedTopics = ranked.map(topicOf);
+  const weight = makeWeigher([...existingTopics.map((e) => e.topic), ...rankedTopics.map((r) => r.topic)]);
+
+  const keptPool = [];
+  const dedupedCandidates = [];
+  ranked.forEach((cand, i) => {
+    const current = rankedTopics[i];
+    const match = findSameTopic(current, [...existingTopics, ...keptPool], weight);
+    if (match) {
+      onSkip({ reason: "topik sama", candidate: cand, match });
+      return;
+    }
+    keptPool.push({ ...current, label: cand.item?.title || cand.normUrl });
+    dedupedCandidates.push(cand);
+  });
+
+  // 3. Pisahkan ke dalam 2 bucket: "Hari Ini" vs "Hari Sebelumnya (Backlog)"
   const todayCandidates = [];
   const previousDaysCandidates = [];
 
-  for (const cand of validCandidates) {
+  for (const cand of dedupedCandidates) {
     if (isToday(cand.item.publishedAt, referenceDate)) {
       todayCandidates.push(cand);
     } else {
@@ -160,18 +242,18 @@ export function selectEditorialEdition(params) {
     }
   }
 
-  // 3. Urutkan masing-masing bucket berdasarkan prioritas editorial
+  // 4. Urutkan masing-masing bucket berdasarkan prioritas editorial
   const sortedToday = sortCandidatesByPriority(todayCandidates);
   const sortedPrevious = sortCandidatesByPriority(previousDaysCandidates);
 
   const selected = [];
   const chosenCompanies = new Set();
 
-  // 4. Ambil dari rilis Hari Ini terlebih dahulu (dengan diversifikasi sumber)
+  // 5. Ambil dari rilis Hari Ini terlebih dahulu (dengan diversifikasi sumber)
   const pickedToday = pickDiverse(sortedToday, limit, chosenCompanies);
   selected.push(...pickedToday);
 
-  // 5. Jika rilis Hari Ini < limit, kurasi mundur ke rilis Hari Sebelumnya (tetap berprioritas & anti-duplikat)
+  // 6. Jika rilis Hari Ini < limit, kurasi mundur ke rilis Hari Sebelumnya (tetap berprioritas & anti-duplikat)
   const slotsRemaining = limit - selected.length;
   if (slotsRemaining > 0) {
     const pickedPrevious = pickDiverse(sortedPrevious, slotsRemaining, chosenCompanies);

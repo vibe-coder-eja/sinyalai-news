@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { isFreshEnough, isToday, sortCandidatesByPriority, selectEditorialEdition } from "../editor.mjs";
+import { isFreshEnough, isToday, sortCandidatesByPriority, selectEditorialEdition, computeCategoryShares, effectiveScore } from "../editor.mjs";
+import { EDITIONS, getEdition, editionBoost } from "../editions.mjs";
 
 describe("isToday", () => {
   it("detects same ISO calendar date as today", () => {
@@ -247,5 +248,99 @@ describe("selectEditorialEdition freshness", () => {
       referenceDate: refDate,
     });
     expect(selected[0].source.company).toBe("xAI");
+  });
+});
+
+
+describe("topic de-duplication in selection", () => {
+  const ref = new Date("2026-10-08T03:35:00Z");
+  const cand = (company, title, link, score, hoursAgo = 3, categories = ["Rilis Model"]) => ({
+    source: { company },
+    item: { link, title, publishedAt: new Date(ref.getTime() - hoursAgo * 3600 * 1000) },
+    priority: { priorityScore: score, categories },
+  });
+
+  it("drops a candidate whose topic matches an existing article under a different URL", () => {
+    const skipped = [];
+    const selected = selectEditorialEdition({
+      allFeedItems: [
+        cand("Google", "Introducing Gemma 4 12B, a unified multimodal model", "https://deepmind.google/blog/introducing-gemma-4-12b/", 50),
+        cand("Meta", "Meta releases Llama 5 Scout", "https://ai.meta.com/blog/llama-5-scout/", 45),
+      ],
+      existingEntries: [
+        { title: "Google Rilis Gemma 4 12B, Model Multimodal Terpadu", sourceTitle: "", company: "Google", source: "https://blog.google/technology/ai/introducing-gemma-4-12b-a-unified-model/", categories: [] },
+      ],
+      limit: 3,
+      referenceDate: ref,
+      onSkip: (info) => skipped.push(info),
+    });
+    expect(selected.map((s) => s.source.company)).toEqual(["Meta"]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].reason).toBe("topik sama");
+    expect(skipped[0].candidate.item.title).toMatch(/Gemma 4 12B/);
+  });
+
+  it("keeps only the higher-priority candidate when two feeds carry the same story", () => {
+    const selected = selectEditorialEdition({
+      allFeedItems: [
+        cand("Google", "Gemini 4 Argon: our next era of frontier intelligence", "https://blog.google/technology/ai/gemini-4-argon/", 40),
+        cand("Google", "Gemini 4 Argon our next era of frontier intelligence", "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/", 50),
+      ],
+      limit: 3,
+      referenceDate: ref,
+    });
+    expect(selected).toHaveLength(1);
+    expect(selected[0].priority.priorityScore).toBe(50);
+  });
+});
+
+describe("edition focus and category balance", () => {
+  const ref = new Date("2026-10-08T03:35:00Z");
+  const cand = (company, title, score, categories) => ({
+    source: { company },
+    item: { link: `https://${company.toLowerCase()}.com/${title.replace(/\W+/g, "-")}`, title, publishedAt: new Date(ref.getTime() - 3600 * 1000) },
+    priority: { priorityScore: score, categories },
+  });
+
+  it("gives different editions different boosts", () => {
+    expect(getEdition("pagi").id).toBe("pagi");
+    expect(getEdition("malam").id).toBe("malam");
+    expect(editionBoost(EDITIONS.pagi, ["Rilis Model"])).toBe(10);
+    expect(editionBoost(EDITIONS.malam, ["Rilis Model"])).toBe(0);
+    expect(editionBoost(EDITIONS.malam, ["Penerapan Industri", "Standar Umum"])).toBe(10);
+  });
+
+  it("lets the evening edition prefer a customer story over a slightly higher model release", () => {
+    const items = [
+      cand("OpenAI", "Alpha model release", 50, ["Rilis Model"]),
+      cand("Anthropic", "Customer case study", 45, ["Penerapan Industri"]),
+    ];
+    const pagi = selectEditorialEdition({ allFeedItems: items, limit: 1, referenceDate: ref, edition: EDITIONS.pagi });
+    const malam = selectEditorialEdition({ allFeedItems: items, limit: 1, referenceDate: ref, edition: EDITIONS.malam });
+    expect(pagi[0].source.company).toBe("OpenAI");
+    expect(malam[0].source.company).toBe("Anthropic");
+  });
+
+  it("computes category shares only once enough categorized history exists", () => {
+    const at = (day, categories, extra = {}) => ({ categories, publishedAt: new Date(`2026-10-${day}T00:00:00Z`), ...extra });
+    expect(computeCategoryShares([at("01", ["Rilis Model"])])).toEqual({});
+    const history = [
+      at("01", ["Rilis Model"]), at("02", ["Rilis Model"]), at("03", ["Rilis Model"]),
+      at("04", ["Rilis Model", "Produk Baru"]), at("05", ["Fitur & Skills"]), at("06", ["Penerapan Industri"]),
+      at("07", ["Rilis Model"], { archived: true }),
+    ];
+    const shares = computeCategoryShares(history);
+    expect(shares["Rilis Model"]).toBeCloseTo(4 / 6);
+    expect(shares["Produk Baru"]).toBeCloseTo(1 / 6);
+  });
+
+  it("lowers the score of a dominant category so other categories can surface", () => {
+    const shares = { "Rilis Model": 0.8, "Fitur & Skills": 0.1 };
+    const model = effectiveScore({ priorityScore: 50, categories: ["Rilis Model"] }, { shares });
+    const feature = effectiveScore({ priorityScore: 45, categories: ["Fitur & Skills"] }, { shares });
+    expect(model).toBe(26);
+    expect(feature).toBe(42);
+    expect(feature).toBeGreaterThan(model);
+    expect(effectiveScore({ priorityScore: 50, categories: ["Rilis Model"] }, {})).toBe(50);
   });
 });
