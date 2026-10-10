@@ -4,7 +4,9 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
-## [Belum dirilis]
+## [0.8.0] — 2026-10-10
+
+Rilis dengan lima sumber berita baru yang aktif otomatis (OpenClaw, Hermes Agent, Hugging Face, Kimi, DeepSeek) dan parser HTML yang mengenali dua pola halaman baru.
 
 ### 📡 Sumber Berita Baru
 - **Aktif otomatis:** OpenClaw (blog dan rilis versi harness), Hermes Agent (rilis versi harness), Hugging Face (blog), Kimi (`kimi.ai/blog`), dan DeepSeek (`deepseek.com/en/news`).
