@@ -9,7 +9,7 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 ### 🔧 Perbaikan Sumber dan Rilis GitHub (pipeline berita)
 - **Sumber HTML kini benar-benar dipakai.** `generate-news.mjs` sebelumnya mengirim semua sumber ke `fetchFeed` tanpa memeriksa `type` dan `enabled`, sehingga sumber `html` (Anthropic, DeepSeek, Kimi) menghasilkan 0 item dan sumber `page` serta `enabled: false` tidak dihormati. Kini `selectActiveSources` (`lib/sources.mjs`) mengambil `rss` dan `html` (html lewat `fetchHtmlListing`), dan melewati `page` dan `enabled: false` dengan catatan di log. Dampak: Anthropic, DeepSeek, dan Kimi mulai terbit otomatis.
 - **Berita kembar dari tag rilis GitHub ditangani** (`lib/release-tags.mjs`): tag kandidat/pra-rilis (`rc`, `alpha`, `beta`, `canary`, `nightly`, `abandoned`, `snapshot`, `dev`, `preview`) dibuang; rilis GitHub hanya layak bila cuplikan feed memuat catatan rilis minimal 120 huruf; topik rilis GitHub dihitung dari nama repo dan nomor versi, sehingga `rc.8-v0.21.7`, `rc.9-v0.21.7`, dan `v0.21.7` dianggap satu topik. Artikel lama dari tag kandidat tidak menghalangi rilis stabilnya.
-- Artikel Nous Research yang sudah terbit dari tag `rc.8` dan `rc.9` tidak ditarik otomatis.
+- Dua artikel Nous Research yang sudah terbit dari tag `abandoned-rc.8-v0.21.7` dan `rc.9-v0.21.7` ditarik dari terbitan (`draft: true`). File tetap di repo sehingga URL sumbernya tetap dikenali pengecekan duplikat.
 - 15 test baru (total 186).
 
 ### 📚 Dokumentasi Alur Redaksi

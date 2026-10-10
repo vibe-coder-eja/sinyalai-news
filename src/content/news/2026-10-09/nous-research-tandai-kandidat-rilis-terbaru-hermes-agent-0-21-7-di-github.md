@@ -5,7 +5,7 @@ company: "Nous Research"
 source: "https://github.com/NousResearch/hermes-agent/releases/tag/rc.9-v0.21.7"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-09T20:33:32.000Z
-draft: false
+draft: true
 sourceTitle: "rc.9-v0.21.7"
 categories: ["Standar Umum"]
 ---
