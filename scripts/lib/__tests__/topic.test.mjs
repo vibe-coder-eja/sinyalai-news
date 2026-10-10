@@ -24,6 +24,26 @@ describe("slugTextFromUrl", () => {
   });
 });
 
+describe("GitHub release tags", () => {
+  const url = (tag) => `https://github.com/NousResearch/hermes-agent/releases/tag/${tag}`;
+  const entryFor = (tag) => ({ topic: buildTopic({ title: tag, link: url(tag) }), company: "Nous Research", label: tag });
+
+  it("treats rc.8, rc.9, and the stable tag of one version as the same topic", () => {
+    const pool = [entryFor("abandoned-rc.8-v0.21.7")];
+    const cand = entryFor("rc.9-v0.21.7");
+    const weight = makeWeigher([...pool.map((e) => e.topic), cand.topic]);
+    expect(findSameTopic(cand, pool, weight)?.label).toBe("abandoned-rc.8-v0.21.7");
+    const stable = entryFor("v0.21.7");
+    expect(findSameTopic(stable, pool, makeWeigher([...pool.map((e) => e.topic), stable.topic]))).not.toBeNull();
+  });
+
+  it("keeps different versions of the same repo apart", () => {
+    const pool = [entryFor("v0.21.7")];
+    const cand = entryFor("v0.21.8");
+    expect(findSameTopic(cand, pool, makeWeigher([...pool.map((e) => e.topic), cand.topic]))).toBeNull();
+  });
+});
+
 describe("findSameTopic", () => {
   const existing = [
     entry("Google Rilis Gemma 4 12B, Model Multimodal Terpadu", "https://blog.google/technology/ai/introducing-gemma-4-12b-a-unified-model/", "Google", "Gemma 4 12B"),

@@ -344,3 +344,37 @@ describe("edition focus and category balance", () => {
     expect(effectiveScore({ priorityScore: 50, categories: ["Rilis Model"] }, {})).toBe(50);
   });
 });
+
+
+describe("GitHub release tags in selection", () => {
+  const ref = new Date("2026-10-10T03:35:00Z");
+  const tagUrl = (tag) => `https://github.com/NousResearch/hermes-agent/releases/tag/${tag}`;
+  const cand = (tag) => ({
+    source: { company: "Nous Research" },
+    item: { link: tagUrl(tag), title: tag, publishedAt: new Date(ref.getTime() - 3600 * 1000) },
+    priority: { priorityScore: 10, categories: ["Standar Umum"] },
+  });
+
+  it("drops a stable tag whose version already has a published stable article", () => {
+    const skipped = [];
+    const selected = selectEditorialEdition({
+      allFeedItems: [cand("v0.21.7")],
+      existingEntries: [{ title: "Nous Research Rilis Hermes Agent 0.21.7", sourceTitle: "v0.21.7", company: "Nous Research", source: tagUrl("v0.21.7"), categories: [] }],
+      limit: 3,
+      referenceDate: ref,
+      onSkip: (i) => skipped.push(i),
+    });
+    expect(selected).toHaveLength(0);
+    expect(skipped[0].reason).toBe("topik sama");
+  });
+
+  it("does not let an old release-candidate article block the stable release", () => {
+    const selected = selectEditorialEdition({
+      allFeedItems: [cand("v0.21.7")],
+      existingEntries: [{ title: "Nous Research Tandai Kandidat Rilis 0.21.7", sourceTitle: "rc.9-v0.21.7", company: "Nous Research", source: tagUrl("rc.9-v0.21.7"), categories: [] }],
+      limit: 3,
+      referenceDate: ref,
+    });
+    expect(selected).toHaveLength(1);
+  });
+});
