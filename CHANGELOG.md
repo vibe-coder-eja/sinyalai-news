@@ -6,6 +6,9 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### 🔎 Verifikasi Bing Webmaster Tools
+- `public/BingSiteAuth.xml` ditambahkan untuk verifikasi kepemilikan situs di Bing Webmaster Tools (tersedia di `https://sinyalai.xyz/BingSiteAuth.xml` setelah deploy).
+
 ### 🧭 Seleksi Redaksi dan Keandalan Pipeline (hasil tinjauan 10 Oktober 2026)
 - **Validasi gaya otomatis** (`validate.mjs`): artikel ditolak jika memuat formula "bukan sekadar X melainkan Y", klise (mis. "lompatan revolusioner", "game-changer"), kata sifat penilai (mis. "luar biasa", "mengesankan"), atau kalimat Inggris yang belum diterjemahkan.
 - **Pembanding topik** (`topic.mjs`): berita bertopik sama dengan artikel yang sudah ada atau kandidat lain dibuang walaupun URL-nya berbeda. Artikel baru menyimpan `sourceTitle` dan `categories` di front matter (field opsional di skema).
