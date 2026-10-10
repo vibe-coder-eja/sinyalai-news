@@ -74,7 +74,7 @@ function extractLink(block) {
 /**
  * @param {string} value
  */
-function isSecureUrl(value) {
+export function isSecureUrl(value) {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password;
