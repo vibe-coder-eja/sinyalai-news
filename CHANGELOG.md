@@ -4,6 +4,21 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Belum dirilis]
+
+### 📡 Sumber Berita Baru
+- **Aktif otomatis:** OpenClaw (blog dan rilis versi harness), Hermes Agent (rilis versi harness), Hugging Face (blog), Kimi (`kimi.ai/blog`), dan DeepSeek (`deepseek.com/en/news`).
+- **Tercatat manual (`type: page`, belum di-fetch):** Nous Research (blog dan rilis), AMD (siaran pers), Qwen (halaman dirender JavaScript), dan Z.ai (blog model hanya tertaut dari docs).
+- Feed Atom GitHub (OpenClaw dan Hermes Agent) belum pernah diuji dari lingkungan pengembangan; kualitas artikel dari rilis beta perlu dipantau, dan sumber dapat dimatikan dengan `enabled: false`.
+- MiniMax, Perplexity, Xiaomi (MiMo), dan Tencent (Hunyuan) dilewati karena belum ada jalur otomatis yang bisa dipakai.
+
+### 🛠️ Parser HTML (`scripts/lib/html.mjs`)
+- Mengenali kartu dengan anchor overlay (`<a href aria-label>` kosong dengan elemen `date` di sebelahnya), seperti di kimi.ai.
+- Mengenali tanggal teks biasa tanpa tag `<time>` (mis. "September 10, 2026"), seperti di deepseek.com; ringkasan diambil dari paragraf terpanjang bila ada beberapa `<p>` dalam satu kartu.
+- Pola `<a><time>` yang lama tidak berubah. Tes baru ditambahkan di `html.test.mjs`.
+
+---
+
 ## [0.7.0] — 2026-10-10
 
 Rilis dengan aturan penulisan berita baru (straight news dan by line sumber), seleksi redaksi yang lebih cerdas (pembanding topik, fokus edisi pagi dan malam, penyetelan skor otomatis), tombol berbagi berita, pengarsipan berita standar lama, URL artikel yang lebih bersih, serta pendaftaran situs ke mesin pencari.
