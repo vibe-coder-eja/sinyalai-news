@@ -4,6 +4,13 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Belum dirilis]
+
+### 📚 Dokumentasi Alur Redaksi
+- `docs/alur-redaksi/`: diagram alur redaksi (pemicu sampai penerbitan), tabel aturan teknis, dan status tinjauan, disimpan per versi sebagai HTML mandiri (`v0.7.0.html`) beserta pembuatnya (`generate.py`) dan indeks versi (`README.md`).
+
+---
+
 ## [0.8.0] — 2026-10-10
 
 Rilis dengan lima sumber berita baru yang aktif otomatis (OpenClaw, Hermes Agent, Hugging Face, Kimi, DeepSeek) dan parser HTML yang mengenali dua pola halaman baru.
