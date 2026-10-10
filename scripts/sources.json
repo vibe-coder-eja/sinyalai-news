@@ -175,6 +175,16 @@
       "enabled": true,
       "aiFocused": true,
       "notes": "Blog riset Kimi (tanpa RSS), di-parse dari HTML kartu oleh scripts/lib/html.mjs. Domain resmi kimi.ai (bukan kimi.com); tambahkan *.kimi.ai ke allowlist. Ringkasan kosong di halaman daftar."
+    },
+    {
+      "id": "zai",
+      "company": "Z.ai",
+      "type": "page",
+      "url": "https://docs.z.ai/llms.txt",
+      "home": "https://docs.z.ai/guides/overview/overview",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Belum ada daftar blog publik (z.ai/blog 404). Blog tiap model (mis. z.ai/blog/glm-5.3-flash) berupa halaman SPA kosong tanpa indeks; tautannya hanya ada di halaman panduan model di docs.z.ai. Manual sampai ada fetcher yang membaca docs.z.ai/llms.txt untuk mendeteksi model baru."
     }
   ]
 }
