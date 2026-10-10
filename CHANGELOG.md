@@ -6,8 +6,15 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### 🔧 Perbaikan Sumber dan Rilis GitHub (pipeline berita)
+- **Sumber HTML kini benar-benar dipakai.** `generate-news.mjs` sebelumnya mengirim semua sumber ke `fetchFeed` tanpa memeriksa `type` dan `enabled`, sehingga sumber `html` (Anthropic, DeepSeek, Kimi) menghasilkan 0 item dan sumber `page` serta `enabled: false` tidak dihormati. Kini `selectActiveSources` (`lib/sources.mjs`) mengambil `rss` dan `html` (html lewat `fetchHtmlListing`), dan melewati `page` dan `enabled: false` dengan catatan di log. Dampak: Anthropic, DeepSeek, dan Kimi mulai terbit otomatis.
+- **Berita kembar dari tag rilis GitHub ditangani** (`lib/release-tags.mjs`): tag kandidat/pra-rilis (`rc`, `alpha`, `beta`, `canary`, `nightly`, `abandoned`, `snapshot`, `dev`, `preview`) dibuang; rilis GitHub hanya layak bila cuplikan feed memuat catatan rilis minimal 120 huruf; topik rilis GitHub dihitung dari nama repo dan nomor versi, sehingga `rc.8-v0.21.7`, `rc.9-v0.21.7`, dan `v0.21.7` dianggap satu topik. Artikel lama dari tag kandidat tidak menghalangi rilis stabilnya.
+- Artikel Nous Research yang sudah terbit dari tag `rc.8` dan `rc.9` tidak ditarik otomatis.
+- 22 test baru (total 186).
+
 ### 📚 Dokumentasi Alur Redaksi
-- `docs/alur-redaksi/`: diagram alur redaksi (pemicu sampai penerbitan), tabel aturan teknis, dan status tinjauan, disimpan per versi sebagai HTML mandiri (`v0.7.0.html`) beserta pembuatnya (`generate.py`) dan indeks versi (`README.md`).
+- `docs/alur-redaksi/`: diagram alur redaksi (pemicu sampai penerbitan), tabel aturan teknis, dan status tinjauan, disimpan per versi sebagai HTML mandiri (`v0.7.0.html`, `v0.8.0.html`, `v0.8.1.html`) beserta pembuatnya (`generate.py`) dan indeks versi (`README.md`).
+- Tahap baru "Sumber dan pengambilan" menggambarkan jalur RSS/Atom, HTML, dan manual. `v0.8.0.html` menandai bagian yang belum tersambung ke pipeline; `v0.8.1.html` menggambarkan keadaan setelah perbaikan di atas.
 
 ---
 

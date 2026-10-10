@@ -1,6 +1,7 @@
 """Pembuat halaman "Alur Redaksi Sinyal AI" (diagram alur redaksi, tabel aturan, status tinjauan).
 
-Pemakaian:  python3 docs/alur-redaksi/generate.py docs/alur-redaksi/v0.8.0.html
+Pemakaian:  python3 docs/alur-redaksi/generate.py docs/alur-redaksi/v0.8.1.html 0.8.1
+            (argumen ke-2: "0.8.0" = kode v0.8.0 apa adanya, "0.8.1" = v0.8.0 + perbaikan sumber HTML dan tag rilis GitHub)
 
 Hasilnya satu berkas HTML mandiri yang bisa dibuka langsung di browser (memuat font dari
 Google Fonts bila online). Untuk memperbarui: ubah isi di bawah (figs, rules, issues, teks
@@ -8,6 +9,9 @@ pengantar), jalankan skrip dengan nama berkas versi baru, lalu catat di README.m
 """
 import html
 import sys
+
+VERSION = sys.argv[2] if len(sys.argv) > 2 else "0.8.1"
+FIXED = VERSION != "0.8.0"  # True: sumber HTML tersambung dan tag rilis GitHub ditangani
 E=html.escape
 def txt(x,y,lines,cls='t',anchor='middle',lh=16):
     n=len(lines); y0=y-(n-1)*lh/2
@@ -46,9 +50,36 @@ for cy in (32,90,148):
 b+=arr([(550,90),(595,90)])
 FA=svg(770,180,'Tiga pemicu (jadwal pagi, jadwal malam, manual) masuk ke satu job yang menjalankan generate-news.mjs',b)
 
+# ---- FIG S: sumber dan pengambilan
+b=''
+b+=box(20,20,230,64,['RSS dan Atom · 11 sumber','blog resmi dan feed rilis GitHub'])
+b+=box(20,140,230,64,['HTML · 3 sumber','Anthropic · DeepSeek · Kimi'])
+b+=box(20,260,230,64,['Manual (page) · 5 sumber','Nous ×2 · AMD · Qwen · Z.ai'])
+b+=box(610,20,140,304,['Item mentah','lanjut ke','saring relevansi'],'n hi')
+b+=arr([(250,52),(285,52)])
+b+=box(285,20,130,64,['fetchFeed','RSS dan Atom'])
+if FIXED:
+    b+=arr([(415,52),(440,52)])
+    b+=dia(505,52,130,76,['Tag kandidat','GitHub?'])
+    b+=arr([(570,52),(610,52)],'tidak',590,44)
+    b+=arr([(505,90),(505,112)],'ya',517,106,anchor='start')
+    b+=pill(440,112,130,30,['Dibuang'])
+    b+=arr([(250,172),(285,172)])
+    b+=box(285,140,130,64,['fetchHtmlListing','parser halaman HTML'])
+    b+=arr([(415,172),(610,172)])
+    b+=arr([(250,292),(285,292)])
+    b+=pill(285,272,300,40,['Dilewati: tipe "page" tidak diambil otomatis'])
+else:
+    b+=arr([(415,52),(610,52)])
+    b+=arr([(250,172),(285,172)])
+    b+=pill(285,147,300,50,['Dikirim ke fetchFeed, yang tak bisa','membaca HTML: hasilnya 0 item'])
+    b+=arr([(250,292),(285,292)])
+    b+=pill(285,267,300,50,['fetchFeed membaca halaman biasa: 0 item.','Tipe "page" dan enabled:false tidak dicek'])
+FS=svg(770,345,'Tiga jenis sumber: RSS dan Atom diambil lewat fetchFeed, HTML lewat parser halaman, dan sumber manual dilewati' if FIXED else 'Pada v0.8.0 semua sumber dikirim ke fetchFeed: RSS dan Atom jalan, tetapi sumber HTML dan manual menghasilkan 0 item',b)
+
 # ---- FIG B: kumpul & saring
 b=''
-b+=box(20,114,150,104,['8 feed RSS','OpenAI · Anthropic','NVIDIA · Microsoft','Google ×2 · xAI · Meta'])
+b+=box(20,114,150,104,['Item mentah','dari sumber aktif','(RSS, Atom, HTML)'])
 b+=note(20,244,170,50,['Feed gagal ditarik:','peringatan, sumber dilewati'])
 b+=box(400,12,350,48,['Lolos → hitung skor prioritas','model 50 · fitur 45 · produk 40 · mitra 40'],'n hi')
 b+=dia(290,166,150,76,['Kata','kecualian?'])
@@ -87,7 +118,10 @@ b+=arr([(210,342),(210,370),(110,370),(110,386)],'ya',222,362,anchor='start')
 b+=arr([(210,370),(310,370),(310,386)])
 b+=box(15,386,190,52,['Hari ini','≤ 24 jam / tanggal UTC sama'],'n')
 b+=box(215,386,190,52,['Hari sebelumnya','sampai 7 hari'],'n')
-b+=note(470,372,280,64,['Topik sama = kata kunci judul dan slug','URL (nama produk, versi) cocok dengan','artikel ada atau kandidat berskor lebih tinggi.'])
+if FIXED:
+    b+=note(470,364,280,82,['Topik sama = kata kunci judul dan slug','URL (nama produk, versi) cocok dengan','artikel ada atau kandidat berskor lebih tinggi.','Rilis GitHub: topik = repo + versi.'])
+else:
+    b+=note(470,372,280,64,['Topik sama = kata kunci judul dan slug','URL (nama produk, versi) cocok dengan','artikel ada atau kandidat berskor lebih tinggi.'])
 b+=arr([(110,438),(110,458),(210,458),(210,474)])
 b+=arr([(310,438),(310,458),(210,458)])
 b+=box(20,474,380,56,['Urut: skor efektif tertinggi, lalu paling baru','isi dari Hari ini dulu, sisa slot dari Sebelumnya'],'n')
@@ -124,6 +158,8 @@ b+=arr([(675,368),(675,404)],'ya',687,392,anchor='start')
 b+=arr([(740,330),(762,330),(762,22),(97,22),(97,40)],'tidak: ambil kandidat berikutnya',430,15)
 b+='<text x="751" y="348" text-anchor="middle" class="lab">tidak</text>'
 b=b.replace('x="600" y="306"','x="745" y="318" ') if False else b
+if FIXED:
+    b+=note(10,150,180,52,['Rilis GitHub: butuh catatan','rilis ≥ 120 huruf di feed.'])
 FD=svg(770,460,'Setiap kandidat diambil halaman sumbernya, ditulis AI, divalidasi dengan hingga tiga percobaan, lalu disimpan sampai kuota terpenuhi',b)
 
 # ---- FIG E: penerbitan
@@ -161,11 +197,17 @@ FF=svg(770,200,'Jalur perubahan manual: branch, pull request, CI, merge ke main,
 
 figs=[
  ('1','Pemicu','Tiga pintu masuk, satu job. Edisi pagi dan malam punya fokus berbeda: pagi untuk kabar besar semalam, malam untuk bacaan yang lebih mendalam.',FA),
- ('2','Kumpul dan saring sinyal','Delapan feed RSS ditarik satu per satu. Hanya item yang lolos tiga pemeriksaan ini yang dihitung skornya.',FB),
- ('3','Seleksi Pemimpin Redaksi','Dari semua item yang lolos, kandidat disaring, diberi skor efektif, dicek kembar topik, lalu dipilih. Hasilnya dua kali kuota agar ada cadangan.',FC),
- ('4','Penulisan oleh AI','Berjalan per kandidat sampai tiga artikel terbit. Validasi kini juga memeriksa by line (sumber dan tanggal rilis). Kandidat yang gagal atau dilewati digantikan kandidat berikutnya.',FD),
- ('5','Penerbitan','Artikel baru baru masuk ke repo setelah test dan build lolos.',FE),
+ ('2','Sumber dan pengambilan','Sources.json memuat 19 sumber dalam tiga jenis. ' + ('Tiap jenis punya jalurnya: feed RSS dan Atom, halaman HTML, dan catatan manual yang dilewati. Tag kandidat rilis GitHub dibuang di sini.' if FIXED else 'Kode v0.8.0 mengirim semuanya ke fetchFeed, jadi hanya RSS dan Atom yang benar-benar menghasilkan item. Bagian yang tidak tersambung ditandai merah.'),FS),
+ ('3','Saring sinyal','Item mentah dari semua sumber aktif melewati tiga pemeriksaan. Hanya yang lolos yang dihitung skornya.',FB),
+ ('4','Seleksi Pemimpin Redaksi','Dari semua item yang lolos, kandidat disaring, diberi skor efektif, dicek kembar topik, lalu dipilih. Hasilnya dua kali kuota agar ada cadangan.',FC),
+ ('5','Penulisan oleh AI','Berjalan per kandidat sampai tiga artikel terbit. Validasi juga memeriksa by line (sumber dan tanggal rilis). Kandidat yang gagal atau dilewati digantikan kandidat berikutnya.',FD),
+ ('6','Penerbitan','Artikel baru baru masuk ke repo setelah test dan build lolos.',FE),
 ]
+LEAD = ('Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode v0.8.0 ditambah perbaikan sumber HTML dan tag rilis GitHub (belum dirilis, akan menjadi v0.8.1). Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.' if FIXED else
+        'Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode di cabang main pada rilis v0.8.0 (10 Oktober 2026), termasuk sumber HTML dan feed Atom GitHub. Bagian yang belum tersambung ke pipeline ditandai merah. Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.')
+VERSION_NOTE = 'v0.8.0 + perbaikan, belum dirilis' if FIXED else 'rilis 10 Okt 2026'
+STATUS_CAP = ('Delapan butir hasil tinjauan Mas Reza (10 Okt 2026), rilis v0.7.0, perbaikan sesudah v0.8.0, dan catatan yang masih terbuka.' if FIXED else
+              'Delapan butir hasil tinjauan Mas Reza (10 Okt 2026), rilis v0.7.0, temuan baru pada v0.8.0, dan catatan yang masih terbuka.')
 figs_html=''
 for n,t,c,f in figs:
     figs_html+=f'<section class="stage" id="t{n}"><h2><span class="num">{n}</span>{t}</h2><p class="cap">{c}</p><div class="scroll"><figure>{f}</figure></div></section>'
@@ -175,7 +217,8 @@ rules=[
  ('Kuota per edisi','3 artikel (bisa diubah saat run manual)','generate-news.mjs'),
  ('Batas usia rilis','7 hari; tanpa tanggal valid tidak tayang; toleransi masa depan 24 jam','editor.mjs'),
  ('Kelompok “Hari ini”','selisih ≤ 24 jam atau tanggal UTC sama','editor.mjs'),
- ('Sumber','8 feed RSS aktif; semua tayang otomatis (tanda trusted dihapus)','sources.json'),
+ ('Sumber','19 di sources.json: 11 RSS/Atom, 3 HTML, 5 manual (page). '+('Page dan enabled:false dilewati; HTML diambil lewat parser HTML' if FIXED else 'Pipeline berita hanya memanggil fetchFeed untuk semuanya, jadi HTML dan page menghasilkan 0 item'),'sources.json · sources.mjs' if FIXED else 'sources.json · generate-news.mjs'),
+ ('Tag rilis GitHub','tag rc, alpha, beta, canary, nightly, abandoned, snapshot, dev, preview dibuang; rilis GitHub butuh cuplikan feed ≥ 120 huruf; topik = repo + versi' if FIXED else 'tidak ada penanganan khusus: tag rc.8 dan rc.9 satu versi terbit sebagai dua berita','release-tags.mjs' if FIXED else 'generate-news.mjs'),
  ('Relevansi AI','sumber aiFocused lolos; lainnya perlu kata kunci AI; kata kecualian selalu menggugurkan','relevance.mjs'),
  ('Skor prioritas','model 50, fitur 45, produk 40, kemitraan 40, penerapan 35, riset & kebijakan 35, umum 10; kategori tertinggi + 5 per kategori tambahan (maks +10)','relevance.mjs'),
  ('Fokus edisi','pagi: bonus model +10, produk +10, kemitraan +5; malam: bonus fitur, penerapan, riset & kebijakan +10','editions.mjs'),
@@ -199,7 +242,15 @@ rules=[
 ]
 rows=''.join(f'<tr><th scope="row">{E(a)}</th><td>{E(b)}</td><td class="mono">{E(c)}</td></tr>' for a,b,c in rules)
 
-issues=[
+HEAD_FIXED=[ ('Selesai','Sumber HTML kini dipakai pipeline berita.','generate-news.mjs memilih sumber lewat selectActiveSources: rss dan html diambil (html lewat fetchHtmlListing), page dan enabled:false dilewati dan dicatat di log. Sebelumnya semuanya dikirim ke fetchFeed sehingga Anthropic, DeepSeek, dan Kimi menghasilkan 0 item.','Anthropic, DeepSeek, dan Kimi akan mulai terbit otomatis setelah perbaikan ini tayang.'),
+ ('Selesai','Berita kembar dari tag rilis GitHub ditangani.','Tag rc, beta, abandoned, dan sejenisnya dibuang. Rilis GitHub butuh cuplikan feed minimal 120 huruf. Topik rilis GitHub = repo + versi, jadi satu versi tidak terbit dua kali, dan artikel kandidat lama tidak menghalangi rilis stabilnya.','Dua artikel Nous Research (rc.8 dan rc.9) yang sudah terbit tidak ditarik otomatis.'),
+ ('Terbuka','Parser HTML dan feed Atom GitHub belum teruji di lapangan.','Pengujian memakai jaringan tiruan. Bentuk halaman Anthropic, DeepSeek, dan Kimi bisa berubah dan membuat sumbernya kosong tanpa peringatan.','Pantau jumlah entri per sumber di log.')
+]
+HEAD_OLD=[ ('Terbuka','Sumber HTML dan page tidak dipakai pipeline berita.','generate-news.mjs memanggil fetchFeed untuk semua sumber tanpa memeriksa type dan enabled. Anthropic, DeepSeek, dan Kimi (html) menghasilkan 0 item, sedangkan sumber page dan enabled:false tidak dihormati. Parser HTML hanya dipakai fetch-signals.mjs (jalur draft manual).','Hubungkan fetchHtmlListing di generate-news.mjs.'),
+ ('Terbuka','Kandidat rilis GitHub terbit sebagai berita.','Tag rc.8 dan rc.9 dari satu versi terbit sebagai dua artikel tanpa catatan rilis. Pembanding topik tidak menangkapnya karena judul sumbernya hanya nama tag.','Buang tag kandidat dan samakan topik per versi.'),
+ ('Terbuka','Feed Atom GitHub belum teruji dari lingkungan pengembangan.','Changelog 0.8.0 sendiri mencatat bahwa mutu artikel dari rilis beta perlu dipantau.','Pantau hasil edisi berikutnya.')
+]
+issues=(HEAD_FIXED if FIXED else HEAD_OLD)+[
  ('Selesai','Aturan gaya divalidasi otomatis.','Formula “bukan sekadar”, klise, kata sifat penilai, dan kalimat Inggris yang belum diterjemahkan kini membuat artikel ditolak dan penulis diminta mengulang.','Netralitas dan batas informasi pendamping masih hanya dijaga prompt.'),
  ('Selesai','Pembanding topik ditambahkan.','Berita bertopik sama dengan artikel yang ada, atau dengan kandidat berskor lebih tinggi, dibuang walau URL berbeda. Yang dibuang dicatat di log beserta kata yang cocok.','Bila ada berita sah yang ikut terbuang, ambang di topic.mjs bisa dilonggarkan.'),
  ('Selesai','Skor “Rilis Model” dipersempit dan disetel otomatis.','Pola “model” saja tidak lagi cukup. Skor tidak dijumlahkan penuh. Kategori dominan di 24 artikel terakhir otomatis diturunkan skornya.','Penyetelan berjalan dari data artikel berkategori, jadi baru terasa setelah beberapa edisi.'),
@@ -280,17 +331,18 @@ ol.issues{{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.75rem}}
 <main class="wrap">
 <p class="eyebrow">Sinyal AI News · tinjauan aturan redaksi</p>
 <h1>Alur Redaksi Sinyal AI</h1>
-<p class="lead">Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode di cabang main pada rilis v0.7.0 (10 Oktober 2026), termasuk aturan penulisan baru, seleksi redaksi yang disetel, dan jalur rilis. Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.</p>
+<p class="lead">{LEAD}</p>
 <ul class="facts">
 <li><b>2×/hari</b><span>10.35 (pagi) dan 22.05 (malam) WIB</span></li>
 <li><b>3</b><span>artikel per edisi</span></li>
 <li><b>7 hari</b><span>usia rilis maksimum</span></li>
 <li><b>3×</b><span>percobaan tulis per artikel</span></li>
-<li><b>v0.7.0</b><span>rilis terbaru, 10 Okt 2026</span></li>
+<li><b>19</b><span>sumber: 11 RSS/Atom, 3 HTML, 5 manual</span></li>
+<li><b>v{VERSION}</b><span>{VERSION_NOTE}</span></li>
 </ul>
 <p class="legend"><span><i class="k1"></i>langkah yang menghasilkan atau menerbitkan</span><span><i class="k2"></i>dibuang atau dilewati</span><span><i class="k3"></i>keputusan ya/tidak</span></p>
 <nav class="idx" aria-label="Tahap">
-<a href="#t1">1 Pemicu</a><a href="#t2">2 Saring</a><a href="#t3">3 Seleksi</a><a href="#t4">4 Penulisan</a><a href="#t5">5 Penerbitan</a><a href="#jalur">Jalur manual</a><a href="#aturan">Tabel aturan</a><a href="#catatan">Status tinjauan</a>
+<a href="#t1">1 Pemicu</a><a href="#t2">2 Sumber</a><a href="#t3">3 Saring</a><a href="#t4">4 Seleksi</a><a href="#t5">5 Penulisan</a><a href="#t6">6 Penerbitan</a><a href="#jalur">Jalur manual</a><a href="#aturan">Tabel aturan</a><a href="#catatan">Status tinjauan</a>
 </nav>
 {figs_html}
 <section class="stage" id="jalur"><h2><span class="num">+</span>Jalur perubahan manual</h2><p class="cap">Di luar pipeline berita. Kode dan fitur situs lewat jalur ini. Deploy dan pipeline berita berbagi grup <span class="mono">pages</span>, jadi dua deploy tidak berjalan bersamaan. Rilis versi baru memakai tag <span class="mono">vX.Y.Z</span> yang memicu <span class="mono">release.yml</span>.</p><div class="scroll"><figure>{FF}</figure></div></section>
@@ -298,7 +350,7 @@ ol.issues{{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.75rem}}
 <p class="cap">Nilai diambil dari kode, bukan dari dokumen. Kolom kanan menunjuk berkas tempat aturan itu diubah.</p>
 <div class="tablewrap"><table><thead><tr><th>Aturan</th><th>Nilai sekarang</th><th>Berkas</th></tr></thead><tbody>{rows}</tbody></table></div>
 <h2 class="sec" id="catatan">Status tinjauan</h2>
-<p class="cap">Delapan butir hasil tinjauan Mas Reza pada 10 Oktober 2026, rilis v0.7.0, dan catatan yang masih terbuka.</p>
+<p class="cap">{STATUS_CAP}</p>
 <ol class="issues">{iss}</ol>
 </main>
 '''

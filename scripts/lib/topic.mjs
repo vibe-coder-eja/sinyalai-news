@@ -13,6 +13,8 @@
  * `sourceTitle` (judul asli sumber) agar pembandingan berikutnya Inggris-Inggris.
  */
 
+import { parseGithubReleaseUrl, releaseTopicTokens } from "./release-tags.mjs";
+
 const STOPWORDS = new Set(
   (
     // Inggris
@@ -77,6 +79,10 @@ export function topicTokens(text) {
  * @returns {Set<string>}
  */
 export function buildTopic({ title = "", link = "" }) {
+  // Rilis GitHub: topiknya adalah repo + nomor versi, bukan penanda kandidat (rc.8, rc.9, ...).
+  const gh = parseGithubReleaseUrl(link);
+  if (gh) return releaseTopicTokens(gh);
+
   const tokens = topicTokens(title);
   for (const t of topicTokens(slugTextFromUrl(link))) tokens.add(t);
   return tokens;

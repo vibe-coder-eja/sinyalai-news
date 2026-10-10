@@ -22,6 +22,7 @@
 import { normalizeUrl } from "./dedupe.mjs";
 import { editionBoost } from "./editions.mjs";
 import { buildTopic, makeWeigher, findSameTopic } from "./topic.mjs";
+import { releaseSkipReason } from "./release-tags.mjs";
 
 /** Batas usia rilis yang layak tayang (hari). */
 export const DEFAULT_MAX_AGE_DAYS = 7;
@@ -207,8 +208,9 @@ export function selectEditorialEdition(params) {
     topic: buildTopic({ title: cand.item?.title, link: cand.item?.link }),
     company: cand.source?.company || "",
   });
+  // Artikel lama dari tag kandidat (rc, beta, ...) tidak memblokir rilis stabilnya.
   const existingTopics = existingEntries
-    .filter((e) => e.title || e.sourceTitle)
+    .filter((e) => (e.title || e.sourceTitle) && !releaseSkipReason({ link: e.source }))
     .map((e) => ({
       topic: buildTopic({ title: e.sourceTitle || e.title, link: e.source }),
       company: e.company,

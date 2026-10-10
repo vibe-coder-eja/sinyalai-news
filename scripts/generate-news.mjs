@@ -11,6 +11,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fetchFeed } from "./lib/rss.mjs";
+import { fetchHtmlListing } from "./lib/html.mjs";
+import { selectActiveSources, fetchSourceItems } from "./lib/sources.mjs";
+import { releaseSkipReason, parseGithubReleaseUrl, MIN_RELEASE_NOTES_CHARS } from "./lib/release-tags.mjs";
 import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
@@ -101,22 +104,36 @@ async function main() {
   const { sources: existingUrls, entries: existingEntries } = await loadExistingArticles(CONTENT_DIR);
   console.log(`Terdeteksi ${existingUrls.size} URL rilis resmi yang sudah ada sebelumnya.\n`);
 
-  // 1. Fetch and pool candidate signals from all sources
-  console.log(`🔍 Mengumpulkan sinyal rilis dari ${sources.length} sumber resmi...`);
+  // 1. Fetch and pool candidate signals from all active sources (rss + html; page = manual, dilewati)
+  const { active: activeSources, skipped: skippedSources } = selectActiveSources(sources);
+  console.log(`🔍 Mengumpulkan sinyal rilis dari ${activeSources.length} sumber resmi...`);
+  for (const { source, reason } of skippedSources) {
+    console.log(`   ⏭️ [${source.id}] dilewati: ${reason}`);
+  }
   const allFeedItems = [];
 
-  for (const src of sources) {
+  for (const src of activeSources) {
     try {
-      const feedItems = await fetchFeed(src.url, 15000);
+      const feedItems = await fetchSourceItems(src, { fetchFeed, fetchHtmlListing }, 15000);
       let relevantCount = 0;
+      let prereleaseCount = 0;
       for (const item of feedItems) {
+        // Tag kandidat/pra-rilis GitHub (rc, beta, abandoned, ...) bukan berita.
+        if (releaseSkipReason(item)) {
+          prereleaseCount++;
+          continue;
+        }
         const relevance = checkRelevance(item, src);
         if (!relevance.keep) continue;
         const priority = getEditorialPriority(item);
         allFeedItems.push({ item, source: src, priority });
         relevantCount++;
       }
-      console.log(`   • [${src.company}] ${feedItems.length} entri (${relevantCount} sinyal relevan)`);
+      console.log(
+        `   • [${src.company}] ${feedItems.length} entri (${relevantCount} sinyal relevan` +
+          (prereleaseCount ? `, ${prereleaseCount} kandidat rilis dibuang` : "") +
+          `)`,
+      );
     } catch (err) {
       console.warn(`   ⚠️ Gagal menarik feed ${src.id}: ${err.message}`);
     }
@@ -169,7 +186,10 @@ async function main() {
       console.log(
         `      📄 Konteks: halaman sumber ${sourceText.length} karakter, cuplikan feed ${(item.summary || "").length} karakter`,
       );
-      const hasEnoughContext = sourceText.length >= 300 || (item.summary || "").length >= 120;
+      // Rilis GitHub hanya layak bila feed memuat catatan rilis; halaman GitHub penuh teks antarmuka.
+      const hasEnoughContext = parseGithubReleaseUrl(item.link)
+        ? (item.summary || "").length >= MIN_RELEASE_NOTES_CHARS
+        : sourceText.length >= 300 || (item.summary || "").length >= 120;
       if (!hasEnoughContext) {
         console.warn(`      ⏭️ Dilewati: konteks sumber terlalu tipis, berisiko halusinasi.`);
         continue;
