@@ -79,11 +79,12 @@ Edit `scripts/sources.json`:
 Berlaku untuk berita otomatis `generate-news.mjs`, sumber kebenarannya ada di `SYSTEM_PROMPT` (`lib/ai-writer.mjs`) dan `lib/validate.mjs`. Artikel yang sudah terbit tidak ditulis ulang.
 
 - **Straight news, piramida terbalik**: paragraf pertama memuat inti berita, paragraf berikutnya dari yang terpenting ke pelengkap.
-- **Atribusi sumber (by line)**: isi memuat nama sumber dan tanggal rilis `(dd/mm)`, misalnya "Berdasarkan rilis resmi OpenAI (07/10), ...". Validator menolak artikel tanpa keduanya.
+- **Atribusi sumber (by line)**: paragraf pertama atau kedua memuat nama sumber dengan tanggal rilis `(dd/mm)` berdekatan, misalnya "Berdasarkan rilis resmi OpenAI (07/10), ...". Validator menolak artikel tanpa itu, termasuk tanggal yang terselip jauh dari nama sumber.
 - **Netral dan independen**: fakta, bukan penilaian. Klaim dan angka perusahaan ditulis sebagai klaim perusahaan.
 - **Informasi pendamping**: boleh menambah penjelasan istilah dan konteks umum yang stabil. Dilarang menambah angka, tanggal, harga, spesifikasi, ketersediaan, atau rencana yang tidak ada di sumber.
 - **Bercerita yang relevan**: hangat dan manusiawi tanpa hiperbola, tanpa tokoh, kutipan, atau adegan fiktif.
-- **Panjang bebas**: tidak ada batas huruf atau paragraf untuk isi; penulis menjaga agar padat dan tidak membosankan.
+- **Panjang bebas**: tidak ada batas huruf atau paragraf untuk isi. Pedoman di prompt: rilis biasa 3 sampai 5 paragraf pendek (sekitar 250 sampai 450 kata), informasi pendamping cukup satu paragraf pendek.
+- **Tanpa penutup baku**: kalimat "rilis tidak menyebutkan ... Indonesia" ditolak otomatis agar artikel tidak seragam.
 - **Informasi pendamping** diletakkan di paragraf terakhir atau dua kalimat terakhir (kaidah piramida terbalik).
 - **Batas teknis**: judul maks 120 karakter dan memuat nama perusahaan; ringkasan 40–400 karakter; tanpa aksara non-Latin dan tanpa teks placeholder.
 - **Validasi gaya otomatis** (`STYLE_RULES` di `lib/validate.mjs`): artikel ditolak jika memuat formula "bukan sekadar X melainkan Y", klise ("lompatan revolusioner", "game-changer", dll.), kata sifat penilai ("luar biasa", "mengesankan", dll.), atau kalimat Inggris yang belum diterjemahkan. Aturan netralitas lain dan batas informasi pendamping tetap hanya dijaga prompt.
