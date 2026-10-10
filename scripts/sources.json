@@ -165,6 +165,16 @@
       "enabled": true,
       "aiFocused": true,
       "notes": "HTML dirender JavaScript; parser html biasa kemungkinan gagal."
+    },
+    {
+      "id": "kimi",
+      "company": "Moonshot AI",
+      "type": "html",
+      "url": "https://www.kimi.ai/blog/",
+      "home": "https://www.kimi.ai/blog/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Blog riset Kimi (tanpa RSS), di-parse dari HTML kartu oleh scripts/lib/html.mjs. Domain resmi kimi.ai (bukan kimi.com); tambahkan *.kimi.ai ke allowlist. Ringkasan kosong di halaman daftar."
     }
   ]
 }

@@ -128,7 +128,51 @@ export function parseListing(html, baseUrl) {
     }
   }
 
+  if (byLink.size === 0) {
+    for (const item of parseOverlayCards(html, baseUrl)) byLink.set(item.link, item);
+  }
+
   return [...byLink.values()];
+}
+
+/**
+ * Pola kartu dengan "stretched link": `<a href aria-label="Judul"></a>` kosong
+ * (overlay), lalu elemen ber-class "date" sebagai saudaranya.
+ * Dipakai bila pola `<a><time>` tidak menemukan apa pun (mis. kimi.ai/blog).
+ * @param {string} html
+ * @param {string} baseUrl
+ */
+function parseOverlayCards(html, baseUrl) {
+  const items = [];
+  const overlay = /<a\b[^>]*\bhref="([^"]*)"[^>]*\baria-label="([^"]*)"[^>]*>\s*<\/a>/gi;
+  const starts = [...html.matchAll(overlay)];
+
+  starts.forEach((match, i) => {
+    const chunk = html.slice(
+      match.index + match[0].length,
+      starts[i + 1]?.index ?? match.index + match[0].length + 3000,
+    );
+    const date = chunk.match(/<(\w+)\b[^>]*class="[^"]*\bdate\b[^"]*"[^>]*>([\s\S]*?)<\/\1>/i);
+    if (!date) return;
+
+    let link;
+    try {
+      link = new URL(decodeHtml(match[1]), baseUrl).toString();
+    } catch {
+      return;
+    }
+    const title = decodeHtml(match[2]);
+    if (!title || !isSecureUrl(link)) return;
+
+    items.push({
+      title,
+      link,
+      publishedAt: parseListingDate(decodeHtml(date[2])),
+      summary: "",
+    });
+  });
+
+  return items;
 }
 
 /**
