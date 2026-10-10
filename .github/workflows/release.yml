@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Catatan rilis diambil dari bagian versi yang sama di CHANGELOG.md (tag v0.7.0 -> "## [0.7.0]").
       - name: Extract release notes from CHANGELOG
