@@ -140,12 +140,12 @@
     {
       "id": "deepseek",
       "company": "DeepSeek",
-      "type": "page",
-      "url": "https://deepseek.com/en/news/",
-      "home": "https://deepseek.com/en/news/",
+      "type": "html",
+      "url": "https://www.deepseek.com/en/news/",
+      "home": "https://www.deepseek.com/en/news/",
       "enabled": true,
       "aiFocused": true,
-      "notes": "HTML tanpa RSS. Manual sampai struktur halaman dicek untuk parser html."
+      "notes": "Halaman resmi (tanpa RSS), di-parse dari HTML oleh scripts/lib/html.mjs. Memuat berita dan daftar makalah riset (tautan arXiv/GitHub). Domain www.deepseek.com; pastikan *.deepseek.com ada di allowlist."
     },
     {
       "id": "amd-ir",

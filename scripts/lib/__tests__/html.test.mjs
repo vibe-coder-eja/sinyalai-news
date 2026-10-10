@@ -70,3 +70,17 @@ describe("parseListing (kartu overlay)", () => {
     expect(items[1].publishedAt?.toISOString()).toBe("2026-02-09T00:00:00.000Z");
   });
 });
+
+describe("parseListing (tanggal tanpa <time>)", () => {
+  it("membaca tanggal dari span teks dan ringkasan dari <p> terpanjang", () => {
+    const html = `
+      <a class="item" href="/en/news/v4-preview/"><p><span>News</span><span>April 24, 2026</span></p>
+        <h3>DeepSeek-V4 Preview</h3><p>Model baru dengan konteks 1 juta token resmi dirilis.</p></a>
+      <a href="/en/news/"><span>News</span></a>`;
+    const items = parseListing(html, "https://www.deepseek.com/en/news/");
+    expect(items).toHaveLength(1);
+    expect(items[0].title).toBe("DeepSeek-V4 Preview");
+    expect(items[0].publishedAt?.toISOString()).toBe("2026-04-24T00:00:00.000Z");
+    expect(items[0].summary).toContain("konteks 1 juta token");
+  });
+});
