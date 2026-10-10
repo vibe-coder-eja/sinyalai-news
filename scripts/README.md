@@ -84,7 +84,16 @@ Berlaku untuk berita otomatis `generate-news.mjs`, sumber kebenarannya ada di `S
 - **Informasi pendamping**: boleh menambah penjelasan istilah dan konteks umum yang stabil. Dilarang menambah angka, tanggal, harga, spesifikasi, ketersediaan, atau rencana yang tidak ada di sumber.
 - **Bercerita yang relevan**: hangat dan manusiawi tanpa hiperbola, tanpa tokoh, kutipan, atau adegan fiktif.
 - **Panjang bebas**: tidak ada batas huruf atau paragraf untuk isi; penulis menjaga agar padat dan tidak membosankan.
+- **Informasi pendamping** diletakkan di paragraf terakhir atau dua kalimat terakhir (kaidah piramida terbalik).
 - **Batas teknis**: judul maks 120 karakter dan memuat nama perusahaan; ringkasan 40–400 karakter; tanpa aksara non-Latin dan tanpa teks placeholder.
+- **Validasi gaya otomatis** (`STYLE_RULES` di `lib/validate.mjs`): artikel ditolak jika memuat formula "bukan sekadar X melainkan Y", klise ("lompatan revolusioner", "game-changer", dll.), kata sifat penilai ("luar biasa", "mengesankan", dll.), atau kalimat Inggris yang belum diterjemahkan. Aturan netralitas lain dan batas informasi pendamping tetap hanya dijaga prompt.
+
+## Seleksi redaksi
+
+- **Skor prioritas** (`lib/relevance.mjs`): kategori Rilis Model 50, Fitur & Skills 45, Produk Baru 40, Kerjasama Industri 40, Penerapan Industri 35, Riset & Kebijakan 35, Umum 10. Skor = kategori tertinggi + 5 per kategori tambahan (maks +10), tidak dijumlahkan penuh. Pola "Rilis Model" hanya cocok dengan nama keluarga model atau frasa seperti "new model", bukan kata "model" saja.
+- **Fokus edisi** (`lib/editions.mjs`): pagi memberi bonus pada Rilis Model (+10), Produk Baru (+10), Kerjasama (+5); malam pada Fitur & Skills, Penerapan Industri, dan Riset & Kebijakan (+10 masing-masing). Fokus penulisan edisi juga dikirim ke penulis AI.
+- **Keseimbangan kategori otomatis** (`computeCategoryShares` di `lib/editor.mjs`): dari 24 artikel tayang terbaru yang menyimpan `categories`, kategori yang mendominasi dikurangi skornya (hingga 30 poin). Aktif setelah ada minimal 6 artikel berkategori; artikel lama tanpa `categories` diabaikan.
+- **Pembanding topik** (`lib/topic.mjs`): berita yang topiknya sama dengan artikel yang sudah ada, atau dengan kandidat berskor lebih tinggi, dibuang walaupun URL-nya berbeda. Dasarnya kata kunci judul dan slug URL (nama produk, versi) dengan bobot kelangkaan. Artikel baru menyimpan `sourceTitle` (judul asli sumber) agar pembandingan berikutnya Inggris-ke-Inggris. Kandidat yang dibuang dicatat di log beserta kata yang cocok.
 
 Untuk menilai hasil tanpa menerbitkan, jalankan `node scripts/generate-news.mjs --dry-run`. Mode ini mencetak artikel lengkap ke log dan tidak menyimpan file.
 

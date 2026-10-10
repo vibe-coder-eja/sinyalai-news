@@ -28,6 +28,9 @@ const news = defineCollection({
     updatedAt: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     archived: z.boolean().default(false),
+    // Metadata pipeline (tidak ditampilkan): judul asli sumber dan kategori editorial.
+    sourceTitle: z.string().optional(),
+    categories: z.array(z.string()).optional(),
   }),
 });
 

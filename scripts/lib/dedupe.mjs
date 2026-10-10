@@ -48,20 +48,50 @@ export function readSourceFromFrontmatter(markdown) {
 }
 
 /**
- * Load slugs and normalized source URLs of every article (draft or not).
+ * Read simple `key: value` pairs from Markdown front matter.
+ * Values are unquoted; inline arrays (`["a", "b"]`) are parsed as JSON.
+ * @param {string} markdown
+ * @returns {Record<string, any>}
+ */
+export function readFrontmatter(markdown) {
+  const fm = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const out = {};
+  if (!fm) return out;
+  for (const line of fm[1].split(/\r?\n/)) {
+    const m = line.match(/^([A-Za-z][\w-]*):\s*(.*)$/);
+    if (!m) continue;
+    let value = m[2].trim();
+    if (value.startsWith("[")) {
+      try {
+        out[m[1]] = JSON.parse(value);
+        continue;
+      } catch {
+        /* fall through to plain string */
+      }
+    }
+    out[m[1]] = value.replace(/^["']|["']$/g, "").replace(/\\"/g, '"');
+  }
+  return out;
+}
+
+/**
+ * Load slugs, normalized source URLs, and article metadata of every article
+ * (published, draft, or archived). `entries` feeds topic de-duplication and
+ * category balancing.
  *
  * @param {string} dir
- * @returns {Promise<{ slugs: Set<string>, sources: Set<string> }>}
+ * @returns {Promise<{ slugs: Set<string>, sources: Set<string>, entries: object[] }>}
  */
 export async function loadExistingArticles(dir) {
   const slugs = new Set();
   const sources = new Set();
+  const entries = [];
 
   let files = [];
   try {
     files = await readdir(dir, { recursive: true });
   } catch {
-    return { slugs, sources };
+    return { slugs, sources, entries };
   }
 
   for (const file of files) {
@@ -71,13 +101,26 @@ export async function loadExistingArticles(dir) {
     const relSlug = file.replace(/\\/g, "/").replace(/\.mdx?$/i, "");
     slugs.add(relSlug);
     try {
-      const source = readSourceFromFrontmatter(await readFile(path.join(dir, file), "utf8"));
+      const raw = await readFile(path.join(dir, file), "utf8");
+      const fm = readFrontmatter(raw);
+      const source = readSourceFromFrontmatter(raw);
       const normalized = source && normalizeUrl(source);
       if (normalized) sources.add(normalized);
+      entries.push({
+        slug: relSlug,
+        title: fm.title || "",
+        sourceTitle: fm.sourceTitle || "",
+        company: fm.company || "",
+        source: source || "",
+        publishedAt: fm.publishedAt ? new Date(fm.publishedAt) : null,
+        draft: fm.draft === "true",
+        archived: fm.archived === "true",
+        categories: Array.isArray(fm.categories) ? fm.categories : [],
+      });
     } catch {
       /* unreadable file: slug is still tracked */
     }
   }
 
-  return { slugs, sources };
+  return { slugs, sources, entries };
 }

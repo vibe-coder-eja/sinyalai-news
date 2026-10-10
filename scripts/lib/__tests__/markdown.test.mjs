@@ -122,6 +122,25 @@ describe("writeDraftArticle", () => {
 });
 
 describe("writePublishedArticle", () => {
+  it("writes sourceTitle and categories to the front matter when given", async () => {
+    const { writePublishedArticle } = await import("../markdown.mjs");
+    const result = await writePublishedArticle({
+      outDir: "dummy",
+      slug: "meta",
+      title: "Judul",
+      summary: "Ringkasan",
+      company: "Google",
+      source: "https://blog.google/x",
+      publishedAt: new Date("2026-10-04T12:00:00Z"),
+      body: "Isi.",
+      sourceTitle: 'Introducing "X"',
+      categories: ["Rilis Model", "Fitur & Skills"],
+      dryRun: true,
+    });
+    expect(result.markdown).toContain('sourceTitle: "Introducing \\"X\\""');
+    expect(result.markdown).toContain('categories: ["Rilis Model","Fitur & Skills"]');
+  });
+
   it("keeps a validated summary of up to 400 characters without truncating it", async () => {
     const { writePublishedArticle } = await import("../markdown.mjs");
     const summary = ("Ringkasan panjang yang tetap utuh. ").repeat(11).trim().slice(0, 390);

@@ -17,6 +17,7 @@ import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
 import { formatDayMonth } from "./lib/text.mjs";
 import { selectEditorialEdition, isToday, DEFAULT_MAX_AGE_DAYS } from "./lib/editor.mjs";
+import { getEdition } from "./lib/editions.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 import { fetchSourceText } from "./lib/source-context.mjs";
 
@@ -64,7 +65,8 @@ const editionQuota = parseInt(args.find((a) => a.startsWith("--limit="))?.split(
 const currentUtcHour = new Date().getUTCHours();
 const defaultEdition = currentUtcHour < 12 ? "pagi" : "malam";
 const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || defaultEdition;
-const editionLabel = edition === "pagi" ? "Edisi Pagi (10:35 WIB)" : "Edisi Malam (22:05 WIB)";
+const editionProfile = getEdition(edition);
+const editionLabel = editionProfile.label;
 
 async function main() {
   console.log(`\n======================================================`);
@@ -73,6 +75,7 @@ async function main() {
   console.log(`Model: ${MODEL}`);
   console.log(`Target Direktori: ${CONTENT_DIR}`);
   console.log(`Target Kuota Tayang: ${editionQuota} berita`);
+  console.log(`Fokus edisi: ${editionProfile.focus}`);
   console.log(`Batas usia rilis: ${maxAgeDays} hari (tanggal tayang mengikuti tanggal sumber)`);
   console.log(`Dry run: ${dryRun ? "YA (tidak menyimpan file)" : "TIDAK (publikasi langsung)"}`);
 
@@ -95,7 +98,7 @@ async function main() {
   }
 
   // Load existing published URLs for deduplication
-  const { sources: existingUrls } = await loadExistingArticles(CONTENT_DIR);
+  const { sources: existingUrls, entries: existingEntries } = await loadExistingArticles(CONTENT_DIR);
   console.log(`Terdeteksi ${existingUrls.size} URL rilis resmi yang sudah ada sebelumnya.\n`);
 
   // 1. Fetch and pool candidate signals from all sources
@@ -127,6 +130,14 @@ async function main() {
     limit: editionQuota * 2,
     referenceDate: new Date(),
     maxAgeDays,
+    edition: editionProfile,
+    existingEntries,
+    onSkip: ({ reason, candidate, match }) => {
+      console.log(
+        `   ⏭️ Dilewati (${reason}): "${candidate.item.title}"` +
+          (match ? ` mirip dengan "${match.label}" (kecocokan ${Math.round(match.score * 100)}%, kata: ${match.shared.join(", ")})` : ""),
+      );
+    },
   });
 
   console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} kandidat untuk ${editionQuota} slot tayang):`);
@@ -139,7 +150,7 @@ async function main() {
   selectedArticles.forEach((cand, idx) => {
     const isCurToday = isToday(cand.item.publishedAt);
     const tag = cand.priority.categories.join(", ");
-    console.log(`   ${idx + 1}. [${isCurToday ? "HARI INI" : "HARI SEBELUMNYA"} | ${cand.source.company} | ${tag} (Skor: ${cand.priority.priorityScore})]:`);
+    console.log(`   ${idx + 1}. [${isCurToday ? "HARI INI" : "HARI SEBELUMNYA"} | ${cand.source.company} | ${tag} (Skor: ${cand.priority.priorityScore}, efektif: ${cand.effectiveScore})]:`);
     console.log(`      "${cand.item.title}"`);
     console.log(`      Sumber: ${cand.item.link}`);
   });
@@ -177,6 +188,7 @@ async function main() {
         sourceText,
         // Atribusi sumber di isi artikel memakai tanggal ini (dd/mm).
         releaseDate: formatDayMonth(publishedDate),
+        editionFocus: editionProfile.writerFocus,
         apiKey: API_KEY,
         model: MODEL,
       });
@@ -195,6 +207,8 @@ async function main() {
         author: "Redaktur Sinyal AI News (RSAIN)",
         publishedAt: publishedDate,
         body: aiArticle.body,
+        sourceTitle: item.title,
+        categories: priority.categories,
         dryRun,
       });
 

@@ -119,8 +119,8 @@ describe("getEditorialPriority", () => {
   it("falls back to standard publish priority for generic articles", async () => {
     const { getEditorialPriority } = await import("../relevance.mjs");
     const item = {
-      title: "Quarterly review of computational biology research",
-      summary: "An overview of scientific publications and domain observations.",
+      title: "Quarterly overview of company updates",
+      summary: "Observations from the past three months at the company.",
     };
     const res = getEditorialPriority(item);
     expect(res.isTopPriority).toBe(false);
@@ -129,3 +129,32 @@ describe("getEditorialPriority", () => {
   });
 });
 
+describe("getEditorialPriority tuning", () => {
+  it("does not treat the bare word 'model' as a model release", async () => {
+    const { getEditorialPriority } = await import("../relevance.mjs");
+    const res = getEditorialPriority({ title: "A practical guide to the model of customer success", summary: "Office hours and updates." });
+    expect(res.categories).not.toContain("Rilis Model");
+  });
+
+  it("recognizes model families and qualified 'new model' phrases", async () => {
+    const { getEditorialPriority } = await import("../relevance.mjs");
+    expect(getEditorialPriority({ title: "Google releases Gemma 4 12B", summary: "" }).categories).toContain("Rilis Model");
+    expect(getEditorialPriority({ title: "Meta unveils a new multimodal model", summary: "" }).categories).toContain("Rilis Model");
+  });
+
+  it("recognizes customer stories and research or policy items", async () => {
+    const { getEditorialPriority } = await import("../relevance.mjs");
+    expect(getEditorialPriority({ title: "Oracle cuts workflow time with ChatGPT", summary: "" }).categories).toContain("Penerapan Industri");
+    expect(getEditorialPriority({ title: "A new safety study on model evaluation", summary: "" }).categories).toContain("Riset & Kebijakan");
+  });
+
+  it("does not add category scores together (highest score plus a capped bonus)", async () => {
+    const { getEditorialPriority } = await import("../relevance.mjs");
+    const res = getEditorialPriority({
+      title: "OpenAI launches GPT-6 with new agent features through a partnership",
+      summary: "Research, safety, and customer benchmarks included.",
+    });
+    expect(res.categories.length).toBeGreaterThanOrEqual(4);
+    expect(res.priorityScore).toBe(60);
+  });
+});

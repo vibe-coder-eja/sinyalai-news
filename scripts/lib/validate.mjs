@@ -9,6 +9,27 @@ const FOREIGN_SCRIPT =
 
 const PLACEHOLDER = /(?<![A-Za-z])(?:TODO|Draft otomatis|Belum di-review|lorem ipsum)(?![A-Za-z])/i;
 
+/**
+ * Aturan gaya yang bisa diperiksa mesin. Isinya sama dengan larangan di SYSTEM_PROMPT.
+ * Tiap entri: [pola, nama aturan untuk umpan balik ke model].
+ */
+export const STYLE_RULES = [
+  [/\bbukan\s+(?:hanya|sekadar|sekedar|semata)\b[^.!?\n]{0,80}?\b(?:tetapi|tapi|melainkan)\b/i, 'formula kontras "bukan sekadar X melainkan Y"'],
+  [/\blompatan revolusioner\b/i, 'klise "lompatan revolusioner"'],
+  [/\bmerombak lanskap\b/i, 'klise "merombak lanskap"'],
+  [/\bgame[- ]changer\b/i, 'klise "game-changer"'],
+  [/\bmenandai era baru\b/i, 'klise "menandai era baru"'],
+  [/\btonggak (?:penting|sejarah)\b/i, 'klise "tonggak penting"'],
+  [/\bpada intinya\b/i, 'klise "pada intinya"'],
+  [/\bdi era sekarang\b/i, 'klise "di era sekarang"'],
+  [/\bt(?:ak|idak) dapat dimungkiri\b/i, 'klise "tak dapat dimungkiri"'],
+  [/\b(?:luar biasa|mengesankan|menakjubkan|mengagumkan|spektakuler|fantastis|brilian|revolusioner|mengecewakan|hebat)\b/i, "kata sifat penilai (menggiring opini)"],
+];
+
+/** Kata Inggris yang tidak mungkin muncul di kalimat Indonesia; kemunculannya berulang berarti teks belum diterjemahkan. */
+const ENGLISH_MARKERS = /\b(?:the|and|with|that|this|from|which|are|your|our|their)\b/gi;
+const ENGLISH_MAX = { title: 1, summary: 1, body: 2 };
+
 /** Kegagalan validasi/parsing keluaran LLM; pesannya aman dikirim balik ke model sebagai umpan balik. */
 export class ArticleValidationError extends Error {
   constructor(message, problems = []) {
@@ -42,6 +63,16 @@ export function findArticleProblems(article, { company, releaseDate }) {
     const m = value.match(FOREIGN_SCRIPT);
     if (m) problems.push(`${field} memuat aksara non-Latin ("${m[0]}")`);
     if (PLACEHOLDER.test(value)) problems.push(`${field} memuat teks placeholder`);
+  }
+
+  for (const [field, value] of [["title", title], ["summary", summary], ["body", body]]) {
+    for (const [pattern, name] of STYLE_RULES) {
+      if (pattern.test(value)) problems.push(`${field} melanggar aturan gaya: ${name}`);
+    }
+    const english = value.match(ENGLISH_MARKERS) || [];
+    if (english.length > ENGLISH_MAX[field]) {
+      problems.push(`${field} memuat kalimat berbahasa Inggris yang belum diterjemahkan ("${english.slice(0, 3).join(" ")}")`);
+    }
   }
 
   if (title.length > LIMITS.titleMax) {

@@ -70,6 +70,32 @@ describe("findArticleProblems", () => {
   });
 });
 
+describe("automatic style rules", () => {
+  const ctx = { company: "OpenAI" };
+  const withBody = (extra) => ({ ...ok, body: body + "\n\n" + extra });
+
+  it("rejects the 'bukan sekadar X melainkan Y' contrast formula", () => {
+    const p = findArticleProblems(withBody("Rilis ini bukan sekadar pembaruan, melainkan perubahan besar."), ctx);
+    expect(p.join()).toMatch(/formula kontras/);
+  });
+
+  it("rejects cliche phrases and evaluative adjectives", () => {
+    expect(findArticleProblems(withBody("OpenAI menyebut ini lompatan revolusioner."), ctx).join()).toMatch(/lompatan revolusioner/);
+    expect(findArticleProblems(withBody("Hasilnya sangat mengesankan bagi pengembang."), ctx).join()).toMatch(/kata sifat penilai/);
+    expect(findArticleProblems({ ...ok, summary: summary + " Ini game-changer." }, ctx).join()).toMatch(/summary melanggar aturan gaya/);
+  });
+
+  it("does not flag neutral wording or attributed claims", () => {
+    expect(findArticleProblems(withBody("Menurut OpenAI, tarif input turun 40 persen."), ctx)).toEqual([]);
+  });
+
+  it("rejects untranslated English passages but tolerates a stray word", () => {
+    const english = "The model is available from the API and that is what the company said about this release.";
+    expect(findArticleProblems(withBody(english), ctx).join()).toMatch(/berbahasa Inggris/);
+    expect(findArticleProblems(withBody("Fitur ini memakai arsitektur with unik."), ctx)).toEqual([]);
+  });
+});
+
 describe("assertValidArticle", () => {
   it("returns the article when valid and throws otherwise", () => {
     expect(assertValidArticle(ok, { company: "OpenAI" })).toBe(ok);
