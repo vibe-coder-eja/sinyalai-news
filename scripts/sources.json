@@ -77,6 +77,114 @@
       "enabled": true,
       "aiFocused": true,
       "notes": "Feed mirror komunitas dari ai.meta.com/blog; rilis model Llama, riset, dan arsitektur Meta AI."
+    },
+    {
+      "id": "openclaw-blog",
+      "company": "OpenClaw",
+      "type": "rss",
+      "url": "https://openclaw.ai/rss.xml",
+      "home": "https://openclaw.ai/",
+      "enabled": true,
+      "aiFocused": true
+    },
+    {
+      "id": "openclaw-releases",
+      "company": "OpenClaw",
+      "type": "rss",
+      "url": "https://github.com/openclaw/openclaw/releases.atom",
+      "home": "https://github.com/openclaw/openclaw/releases",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Feed Atom rilis versi harness (tag terbaru v2026.10.1-beta.2). Belum bisa dibuka dari sesi pengecekan; verifikasi saat pipeline pertama jalan."
+    },
+    {
+      "id": "nous-research-blog",
+      "company": "Nous Research",
+      "type": "page",
+      "url": "https://nousresearch.com/blog",
+      "home": "https://nousresearch.com/blog",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "HTML tanpa RSS. Manual sampai struktur halaman dicek untuk parser html."
+    },
+    {
+      "id": "nous-research-releases",
+      "company": "Nous Research",
+      "type": "page",
+      "url": "https://nousresearch.com/releases",
+      "home": "https://nousresearch.com/releases",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "HTML tanpa RSS. Manual sampai struktur halaman dicek untuk parser html."
+    },
+    {
+      "id": "hermes-agent-releases",
+      "company": "Nous Research",
+      "type": "rss",
+      "url": "https://github.com/NousResearch/hermes-agent/releases.atom",
+      "home": "https://github.com/NousResearch/hermes-agent/releases",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Feed Atom rilis versi harness Hermes Agent (tag terbaru v2026.9.24). Belum bisa dibuka dari sesi pengecekan; verifikasi saat pipeline pertama jalan."
+    },
+    {
+      "id": "huggingface-blog",
+      "company": "Hugging Face",
+      "type": "rss",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "home": "https://huggingface.co/blog",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Volume besar (876 item); dibatasi limit per sumber, pantau relevansi."
+    },
+    {
+      "id": "deepseek",
+      "company": "DeepSeek",
+      "type": "html",
+      "url": "https://www.deepseek.com/en/news/",
+      "home": "https://www.deepseek.com/en/news/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Halaman resmi (tanpa RSS), di-parse dari HTML oleh scripts/lib/html.mjs. Memuat berita dan daftar makalah riset (tautan arXiv/GitHub). Domain www.deepseek.com; pastikan *.deepseek.com ada di allowlist."
+    },
+    {
+      "id": "amd-ir",
+      "company": "AMD",
+      "type": "page",
+      "url": "https://ir.amd.com/news-events/press-releases",
+      "home": "https://ir.amd.com/news-events/press-releases",
+      "enabled": true,
+      "notes": "Siaran pers investor relations, HTML tanpa RSS. Umum (bukan hanya AI), perlu penyaringan kata kunci saat diaktifkan."
+    },
+    {
+      "id": "qwen",
+      "company": "Qwen",
+      "type": "page",
+      "url": "https://qwen.ai/blog",
+      "home": "https://qwen.ai/blog",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "HTML dirender JavaScript; parser html biasa kemungkinan gagal."
+    },
+    {
+      "id": "kimi",
+      "company": "Moonshot AI",
+      "type": "html",
+      "url": "https://www.kimi.ai/blog/",
+      "home": "https://www.kimi.ai/blog/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Blog riset Kimi (tanpa RSS), di-parse dari HTML kartu oleh scripts/lib/html.mjs. Domain resmi kimi.ai (bukan kimi.com); tambahkan *.kimi.ai ke allowlist. Ringkasan kosong di halaman daftar."
+    },
+    {
+      "id": "zai",
+      "company": "Z.ai",
+      "type": "page",
+      "url": "https://docs.z.ai/llms.txt",
+      "home": "https://docs.z.ai/guides/overview/overview",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Belum ada daftar blog publik (z.ai/blog 404). Blog tiap model (mis. z.ai/blog/glm-5.3-flash) berupa halaman SPA kosong tanpa indeks; tautannya hanya ada di halaman panduan model di docs.z.ai. Manual sampai ada fetcher yang membaca docs.z.ai/llms.txt untuk mendeteksi model baru."
     }
   ]
 }

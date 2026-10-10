@@ -55,3 +55,32 @@ describe("parseListing", () => {
     expect(parseListing(html, BASE)).toEqual([]);
   });
 });
+
+describe("parseListing (kartu overlay)", () => {
+  it("membaca kartu dengan anchor overlay aria-label dan card-date", () => {
+    const html = `
+      <div class="menu-card"><a href="/blog/kimi-k3" aria-label="Kimi K3" class="absolute inset-0"></a>
+        <h4 class="card-title">Kimi K3</h4><p class="card-date">2026-07-16</p></div>
+      <div class="menu-card"><a href="/blog/agent-swarm" aria-label="Agent Swarm" class="absolute"></a>
+        <h4 class="card-title">Agent Swarm</h4><p class="card-date">2026-02-09</p></div>`;
+    const items = parseListing(html, "https://www.kimi.ai/blog/");
+    expect(items).toHaveLength(2);
+    expect(items[0].title).toBe("Kimi K3");
+    expect(items[0].link).toBe("https://www.kimi.ai/blog/kimi-k3");
+    expect(items[1].publishedAt?.toISOString()).toBe("2026-02-09T00:00:00.000Z");
+  });
+});
+
+describe("parseListing (tanggal tanpa <time>)", () => {
+  it("membaca tanggal dari span teks dan ringkasan dari <p> terpanjang", () => {
+    const html = `
+      <a class="item" href="/en/news/v4-preview/"><p><span>News</span><span>April 24, 2026</span></p>
+        <h3>DeepSeek-V4 Preview</h3><p>Model baru dengan konteks 1 juta token resmi dirilis.</p></a>
+      <a href="/en/news/"><span>News</span></a>`;
+    const items = parseListing(html, "https://www.deepseek.com/en/news/");
+    expect(items).toHaveLength(1);
+    expect(items[0].title).toBe("DeepSeek-V4 Preview");
+    expect(items[0].publishedAt?.toISOString()).toBe("2026-04-24T00:00:00.000Z");
+    expect(items[0].summary).toContain("konteks 1 juta token");
+  });
+});

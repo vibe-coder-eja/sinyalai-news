@@ -87,6 +87,31 @@ function extractTitle(inner) {
 }
 
 /**
+ * Tanggal tanpa <time>: elemen `<span>`/`<p>`/`<div>` yang seluruh teksnya berupa tanggal
+ * ("September 10, 2026"). Mengembalikan bentuk yang sama dengan hasil match <time>.
+ * @param {string} anchor
+ * @returns {RegExpMatchArray | null}
+ */
+function matchPlainDate(anchor) {
+  for (const m of anchor.matchAll(/<(span|p|div)\b[^>]*>([^<]{6,40})<\/\1>/gi)) {
+    const text = decodeHtml(m[2]);
+    if (parseListingDate(text) && text.length <= 30) return ["", "", text];
+  }
+  return null;
+}
+
+/**
+ * Ringkasan: `<p>` pertama untuk pola <time>; bila ada beberapa `<p>`
+ * (mis. label + tanggal + ringkasan), ambil yang terpanjang yang bukan baris tanggal.
+ * @param {string} anchor
+ */
+function extractSummary(anchor) {
+  const texts = [...anchor.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].map((m) => decodeHtml(m[1]));
+  if (texts.length <= 1) return texts[0] || "";
+  return texts.reduce((best, t) => (t.length > best.length ? t : best), "");
+}
+
+/**
  * @param {string} html
  * @param {string} baseUrl
  * @returns {{ title: string, link: string, publishedAt: Date | null, summary: string }[]}
@@ -97,7 +122,8 @@ export function parseListing(html, baseUrl) {
   const byLink = new Map();
 
   for (const anchor of anchors) {
-    const time = anchor.match(/<time\b([^>]*)>([\s\S]*?)<\/time>/i);
+    const time =
+      anchor.match(/<time\b([^>]*)>([\s\S]*?)<\/time>/i) || matchPlainDate(anchor);
     if (!time) continue;
 
     const href = anchor.match(/\bhref="([^"]*)"/i)?.[1];
@@ -118,8 +144,7 @@ export function parseListing(html, baseUrl) {
     const publishedAt =
       parseListingDate(datetime || "") || parseListingDate(decodeHtml(time[2]));
 
-    const paragraph = anchor.match(/<p\b[^>]*>([\s\S]*?)<\/p>/i);
-    const summary = paragraph ? truncateAtWord(decodeHtml(paragraph[1]), MAX_SUMMARY_LENGTH) : "";
+    const summary = truncateAtWord(extractSummary(anchor), MAX_SUMMARY_LENGTH);
 
     // Artikel yang sama bisa muncul di blok unggulan dan daftar; pertahankan yang berringkasan.
     const existing = byLink.get(link);
@@ -128,7 +153,51 @@ export function parseListing(html, baseUrl) {
     }
   }
 
+  if (byLink.size === 0) {
+    for (const item of parseOverlayCards(html, baseUrl)) byLink.set(item.link, item);
+  }
+
   return [...byLink.values()];
+}
+
+/**
+ * Pola kartu dengan "stretched link": `<a href aria-label="Judul"></a>` kosong
+ * (overlay), lalu elemen ber-class "date" sebagai saudaranya.
+ * Dipakai bila pola `<a><time>` tidak menemukan apa pun (mis. kimi.ai/blog).
+ * @param {string} html
+ * @param {string} baseUrl
+ */
+function parseOverlayCards(html, baseUrl) {
+  const items = [];
+  const overlay = /<a\b[^>]*\bhref="([^"]*)"[^>]*\baria-label="([^"]*)"[^>]*>\s*<\/a>/gi;
+  const starts = [...html.matchAll(overlay)];
+
+  starts.forEach((match, i) => {
+    const chunk = html.slice(
+      match.index + match[0].length,
+      starts[i + 1]?.index ?? match.index + match[0].length + 3000,
+    );
+    const date = chunk.match(/<(\w+)\b[^>]*class="[^"]*\bdate\b[^"]*"[^>]*>([\s\S]*?)<\/\1>/i);
+    if (!date) return;
+
+    let link;
+    try {
+      link = new URL(decodeHtml(match[1]), baseUrl).toString();
+    } catch {
+      return;
+    }
+    const title = decodeHtml(match[2]);
+    if (!title || !isSecureUrl(link)) return;
+
+    items.push({
+      title,
+      link,
+      publishedAt: parseListingDate(decodeHtml(date[2])),
+      summary: "",
+    });
+  });
+
+  return items;
 }
 
 /**
