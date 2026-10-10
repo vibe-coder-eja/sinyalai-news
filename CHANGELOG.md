@@ -4,10 +4,16 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
-## [Belum dirilis]
+## [0.7.0] — 2026-10-10
 
-### 🔎 Verifikasi Bing Webmaster Tools
-- `public/BingSiteAuth.xml` ditambahkan untuk verifikasi kepemilikan situs di Bing Webmaster Tools (tersedia di `https://sinyalai.xyz/BingSiteAuth.xml` setelah deploy).
+Rilis dengan aturan penulisan berita baru (straight news dan by line sumber), seleksi redaksi yang lebih cerdas (pembanding topik, fokus edisi pagi dan malam, penyetelan skor otomatis), tombol berbagi berita, pengarsipan berita standar lama, URL artikel yang lebih bersih, serta pendaftaran situs ke mesin pencari.
+
+### 🔎 Pendaftaran Mesin Pencari
+- Situs terverifikasi di **Google Search Console** (properti Domain `sinyalai.xyz`, lewat record DNS) dan **Bing Webmaster Tools** (lewat `public/BingSiteAuth.xml`, tersedia di `https://sinyalai.xyz/BingSiteAuth.xml`).
+- Sitemap tersedia di `https://sinyalai.xyz/sitemap-index.xml` dan sudah tercantum di `robots.txt`.
+
+### 🚀 Otomasi Rilis
+- Workflow `release.yml`: mendorong tag `vX.Y.Z` otomatis membuat GitHub Release, dengan isi catatan diambil dari bagian versi yang sama di `CHANGELOG.md`. Rilis gagal jika catatan versi tidak ditemukan.
 
 ### 🧭 Seleksi Redaksi dan Keandalan Pipeline (hasil tinjauan 10 Oktober 2026)
 - **Validasi gaya otomatis** (`validate.mjs`): artikel ditolak jika memuat formula "bukan sekadar X melainkan Y", klise (mis. "lompatan revolusioner", "game-changer"), kata sifat penilai (mis. "luar biasa", "mengesankan"), atau kalimat Inggris yang belum diterjemahkan.
