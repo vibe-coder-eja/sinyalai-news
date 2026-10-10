@@ -1,7 +1,7 @@
 """Pembuat halaman "Alur Redaksi Sinyal AI" (diagram alur redaksi, tabel aturan, status tinjauan).
 
 Pemakaian:  python3 docs/alur-redaksi/generate.py docs/alur-redaksi/v0.8.1.html 0.8.1
-            (argumen ke-2: "0.8.0" = kode v0.8.0 apa adanya, "0.8.1" = v0.8.0 + perbaikan sumber HTML dan tag rilis GitHub)
+            (argumen ke-2: "0.8.0" = kode v0.8.0 apa adanya, "0.8.1" = v0.8.1, yaitu v0.8.0 + perbaikan sumber HTML dan tag rilis GitHub)
 
 Hasilnya satu berkas HTML mandiri yang bisa dibuka langsung di browser (memuat font dari
 Google Fonts bila online). Untuk memperbarui: ubah isi di bawah (figs, rules, issues, teks
@@ -203,10 +203,10 @@ figs=[
  ('5','Penulisan oleh AI','Berjalan per kandidat sampai tiga artikel terbit. Validasi juga memeriksa by line (sumber dan tanggal rilis). Kandidat yang gagal atau dilewati digantikan kandidat berikutnya.',FD),
  ('6','Penerbitan','Artikel baru baru masuk ke repo setelah test dan build lolos.',FE),
 ]
-LEAD = ('Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode v0.8.0 ditambah perbaikan sumber HTML dan tag rilis GitHub (belum dirilis, akan menjadi v0.8.1). Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.' if FIXED else
+LEAD = ('Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode pada rilis v0.8.1 (10 Oktober 2026), yaitu v0.8.0 ditambah perbaikan sumber HTML dan tag rilis GitHub. Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.' if FIXED else
         'Dari jadwal otomatis sampai artikel tayang di sinyalai.xyz, sesuai kode di cabang main pada rilis v0.8.0 (10 Oktober 2026), termasuk sumber HTML dan feed Atom GitHub. Bagian yang belum tersambung ke pipeline ditandai merah. Setiap kotak keputusan di bawah adalah aturan yang bisa Mas Reza setujui atau ubah.')
-VERSION_NOTE = 'v0.8.0 + perbaikan, belum dirilis' if FIXED else 'rilis 10 Okt 2026'
-STATUS_CAP = ('Delapan butir hasil tinjauan Mas Reza (10 Okt 2026), rilis v0.7.0, perbaikan sesudah v0.8.0, dan catatan yang masih terbuka.' if FIXED else
+VERSION_NOTE = 'rilis 10 Okt 2026' if FIXED else 'rilis 10 Okt 2026'
+STATUS_CAP = ('Delapan butir hasil tinjauan Mas Reza (10 Okt 2026), rilis v0.7.0, perbaikan pada v0.8.1, dan catatan yang masih terbuka.' if FIXED else
               'Delapan butir hasil tinjauan Mas Reza (10 Okt 2026), rilis v0.7.0, temuan baru pada v0.8.0, dan catatan yang masih terbuka.')
 figs_html=''
 for n,t,c,f in figs:

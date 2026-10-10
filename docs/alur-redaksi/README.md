@@ -8,7 +8,7 @@ Diagram alur redaksi dari jadwal otomatis sampai artikel tayang, lengkap dengan 
 |---|---|---|---|
 | [`v0.7.0.html`](v0.7.0.html) | rilis v0.7.0 | 2026-10-10 | Aturan penulisan baru (straight news, by line), validasi gaya otomatis, pembanding topik, fokus edisi pagi dan malam, penyetelan skor, jalur rilis. Mencakup 8 feed RSS. |
 | [`v0.8.0.html`](v0.8.0.html) | rilis v0.8.0 | 2026-10-10 | Tambah tahap "Sumber dan pengambilan" (19 sumber: RSS/Atom, HTML, manual). Menggambarkan kode apa adanya, termasuk bagian yang belum tersambung: sumber HTML dan page tidak dipakai `generate-news.mjs`, dan tag kandidat rilis GitHub tidak disaring. |
-| [`v0.8.1.html`](v0.8.1.html) | v0.8.0 + perbaikan (belum dirilis) | 2026-10-10 | Sumber HTML tersambung lewat `selectActiveSources`, sumber page dan `enabled: false` dilewati, tag kandidat GitHub dibuang, topik rilis GitHub = repo + versi. Dinamai v0.8.1 karena akan dirilis sebagai versi itu. |
+| [`v0.8.1.html`](v0.8.1.html) | rilis v0.8.1 | 2026-10-10 | Sumber HTML tersambung lewat `selectActiveSources`, sumber page dan `enabled: false` dilewati, tag kandidat GitHub dibuang, topik rilis GitHub = repo + versi. |
 
 Setiap berkas menggambarkan kode pada versi di kolom kedua, bukan pada versi repo saat ini. Bandingkan dengan `CHANGELOG.md` untuk perubahan setelahnya. Berkas lama adalah snapshot beku; pembuat di `generate.py` hanya menghasilkan v0.8.0 dan v0.8.1.
 

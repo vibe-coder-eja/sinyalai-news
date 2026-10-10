@@ -54,7 +54,7 @@ describe("findArticleProblems", () => {
 
   it("requires the release date (dd/mm) in the body when one is given", () => {
     const ctx = { company: "OpenAI", releaseDate: "07/10" };
-    expect(findArticleProblems(ok, ctx).join()).toMatch(/tanggal rilis sumber "07\/10"/);
+    expect(findArticleProblems(ok, ctx).join()).toMatch(/by line kurang tegas: tanggal rilis "\(07\/10\)"/);
     const withByline = { ...ok, body: "Berdasarkan rilis resmi OpenAI (07/10), model baru dirilis.\n\n" + body };
     expect(findArticleProblems(withByline, ctx)).toEqual([]);
   });
@@ -67,6 +67,45 @@ describe("findArticleProblems", () => {
   it("rejects an overly long title", () => {
     const p = findArticleProblems({ ...ok, title: "OpenAI " + "x".repeat(130) }, { company: "OpenAI" });
     expect(p.join()).toMatch(/title terlalu panjang/);
+  });
+});
+
+describe("by line strength", () => {
+  const ctx = { company: "OpenAI", releaseDate: "07/10" };
+  const withLead = (lead) => ({ ...ok, body: lead + "\n\n" + body });
+
+  it("accepts the date right next to the source name", () => {
+    expect(findArticleProblems(withLead("Berdasarkan rilis resmi OpenAI (07/10), model baru dirilis."), ctx)).toEqual([]);
+    expect(findArticleProblems(withLead("Dalam tulisan di blognya, OpenAI (07/10) menjelaskan pembaruan."), ctx)).toEqual([]);
+  });
+
+  it("rejects a date tucked at the end of a long sentence away from the source name", () => {
+    const weak = "OpenAI mengumumkan perluasan program yang memberikan akses ke kemampuan lanjutan dengan pengaman yang lebih longgar bagi banyak organisasi besar dan kecil (07/10).";
+    expect(findArticleProblems(withLead(weak), ctx).join()).toMatch(/by line kurang tegas/);
+  });
+
+  it("only looks at the first two paragraphs", () => {
+    const late = { ...ok, body: "Satu tanpa tanggal.\n\nDua tanpa tanggal.\n\nBerdasarkan rilis resmi OpenAI (07/10), terlambat." };
+    expect(findArticleProblems(late, ctx).join()).toMatch(/by line kurang tegas/);
+  });
+
+  it("handles company names with regex characters (Z.ai)", () => {
+    const art = { title: "Z.ai Rilis Model", summary, body: "Berdasarkan rilis resmi Z.ai (07/10), model baru dirilis." };
+    expect(findArticleProblems(art, { company: "Z.ai", releaseDate: "07/10" })).toEqual([]);
+  });
+});
+
+describe("boilerplate closing about Indonesia", () => {
+  it("rejects the stock sentence that the release does not mention Indonesia", () => {
+    const p = findArticleProblems(
+      { ...ok, body: body + "\n\nRilis resmi ini tidak menyebutkan ketersediaan program di Indonesia maupun aturan lokal." },
+      { company: "OpenAI" },
+    );
+    expect(p.join()).toMatch(/penutup baku/);
+  });
+
+  it("allows mentioning Indonesia when the source does", () => {
+    expect(findArticleProblems({ ...ok, body: body + "\n\nLayanan ini tersedia di Indonesia sejak hari peluncuran." }, { company: "OpenAI" })).toEqual([]);
   });
 });
 

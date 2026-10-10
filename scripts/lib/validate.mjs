@@ -23,6 +23,7 @@ export const STYLE_RULES = [
   [/\bpada intinya\b/i, 'klise "pada intinya"'],
   [/\bdi era sekarang\b/i, 'klise "di era sekarang"'],
   [/\bt(?:ak|idak) dapat dimungkiri\b/i, 'klise "tak dapat dimungkiri"'],
+  [/\b(?:rilis|sumber|pengumuman|tulisan|blog)\b[^.\n]{0,40}\b(?:tidak|belum)\s+(?:menyebut(?:kan)?|membahas|menjelaskan|memuat)\b[^.\n]{0,80}\bIndonesia\b/i, 'penutup baku "rilis tidak menyebut ... Indonesia"'],
   [/\b(?:luar biasa|mengesankan|menakjubkan|mengagumkan|spektakuler|fantastis|brilian|revolusioner|mengecewakan|hebat)\b/i, "kata sifat penilai (menggiring opini)"],
 ];
 
@@ -93,8 +94,18 @@ export function findArticleProblems(article, { company, releaseDate }) {
     if (company && !body.toLowerCase().includes(company.toLowerCase())) {
       problems.push(`body tidak menyebut sumber "${company}" (atribusi rilis)`);
     }
-    if (releaseDate && !body.includes(releaseDate)) {
-      problems.push(`body tidak memuat tanggal rilis sumber "${releaseDate}" (contoh: "Berdasarkan rilis resmi ${company || "sumber"} (${releaseDate}), ...")`);
+    if (releaseDate) {
+      // By line yang tegas: tanggal berdekatan dengan nama sumber, di dua paragraf pertama.
+      const lead = body.split(/\n\s*\n/).filter((p) => p.trim()).slice(0, 2).join("\n\n");
+      const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const near = company
+        ? new RegExp(`${escape(company)}[^\\n]{0,80}\\(${escape(releaseDate)}\\)`, "i")
+        : new RegExp(`\\(${escape(releaseDate)}\\)`);
+      if (!near.test(lead)) {
+        problems.push(
+          `by line kurang tegas: tanggal rilis "(${releaseDate})" harus berdekatan dengan nama sumber di paragraf pertama atau kedua (contoh: "Berdasarkan rilis resmi ${company || "sumber"} (${releaseDate}), ...")`,
+        );
+      }
     }
   }
   return problems;

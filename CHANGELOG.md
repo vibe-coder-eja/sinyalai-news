@@ -4,7 +4,17 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
-## [Belum dirilis]
+## [0.8.1] — 2026-10-10
+
+Rilis perbaikan setelah v0.8.0: sumber HTML kini benar-benar dipakai pipeline berita, berita kembar dari tag kandidat rilis GitHub ditangani, prompt penulis AI disetel setelah menilai artikel pertama dari aturan baru, dan dokumentasi alur redaksi disimpan per versi di repo.
+
+### ✍️ Penyetelan Prompt Penulis AI (hasil menilai dua artikel pertama)
+Dua artikel pengganti yang terbit lewat `auto-news` manual (Anthropic: Cyber Verification Program; OpenAI dan Atlassian) dinilai, lalu prompt dan validator disetel:
+- **By line lebih tegas**: tanggal rilis `(dd/mm)` harus berdekatan dengan nama sumber dan berada di paragraf pertama atau kedua. Validator menolak tanggal yang terselip di ujung kalimat panjang (`validate.mjs`). Prompt memberi contoh benar dan salah.
+- **Tanpa penutup baku tentang Indonesia**: kalimat seperti "Rilis tidak menyebutkan ketersediaan di Indonesia" kini ditolak otomatis, karena muncul seragam di tiga artikel pertama.
+- **Panjang lebih terarah** (bukan batas keras): pedoman 3 sampai 5 paragraf pendek, sekitar 250 sampai 450 kata untuk rilis biasa; daftar panjang cukup diringkas; informasi pendamping satu paragraf pendek.
+- **Gaya bercerita lebih konkret**: paragraf kedua atau ketiga boleh dibuka dengan sisi manusiawi, dan satu ilustrasi sehari-hari (maks. dua kalimat) sebagai ilustrasi umum tanpa angka atau fitur di luar sumber. Tetap dilarang membuat tokoh bernama, kutipan, atau adegan fiktif. Pembuka dan penutup diminta bervariasi antarartikel.
+- 6 test baru (total 192).
 
 ### 🔧 Perbaikan Sumber dan Rilis GitHub (pipeline berita)
 - **Sumber HTML kini benar-benar dipakai.** `generate-news.mjs` sebelumnya mengirim semua sumber ke `fetchFeed` tanpa memeriksa `type` dan `enabled`, sehingga sumber `html` (Anthropic, DeepSeek, Kimi) menghasilkan 0 item dan sumber `page` serta `enabled: false` tidak dihormati. Kini `selectActiveSources` (`lib/sources.mjs`) mengambil `rss` dan `html` (html lewat `fetchHtmlListing`), dan melewati `page` dan `enabled: false` dengan catatan di log. Dampak: Anthropic, DeepSeek, dan Kimi mulai terbit otomatis.

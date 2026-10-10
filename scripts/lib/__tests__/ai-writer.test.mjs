@@ -157,7 +157,7 @@ describe("generateArticleWithAI validation and context", () => {
     const first = JSON.parse(fetchMock.mock.calls[0][1].body).messages;
     expect(first[1].content).toContain("Tanggal Rilis Sumber (dd/mm): 09/10");
     const second = JSON.parse(fetchMock.mock.calls[1][1].body).messages;
-    expect(second[3].content).toMatch(/tanggal rilis sumber "09\/10"/);
+    expect(second[3].content).toMatch(/by line kurang tegas: tanggal rilis "\(09\/10\)"/);
   });
 
   it("states the editorial rules in the system prompt", () => {
@@ -167,6 +167,12 @@ describe("generateArticleWithAI validation and context", () => {
     expect(SYSTEM_PROMPT).toMatch(/INFORMASI PENDAMPING/);
     expect(SYSTEM_PROMPT).toMatch(/maksimal 120 karakter/);
     expect(SYSTEM_PROMPT).toMatch(/Tidak ada batas jumlah huruf atau paragraf/);
+    expect(SYSTEM_PROMPT).toMatch(/atribusi yang tegas/);
+    expect(SYSTEM_PROMPT).toMatch(/Contoh salah/);
+    expect(SYSTEM_PROMPT).toMatch(/kalimat baku seperti "Rilis tidak menyebutkan ketersediaan di Indonesia"/);
+    expect(SYSTEM_PROMPT).toMatch(/3 sampai 5 paragraf pendek/);
+    expect(SYSTEM_PROMPT).toMatch(/ilustrasi umum/);
+    expect(SYSTEM_PROMPT).toMatch(/Variasikan pembuka dan penutup/);
   });
 
   it("sends source text inside <sumber> tags", async () => {
