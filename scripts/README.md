@@ -74,16 +74,19 @@ Edit `scripts/sources.json`:
 - `type: "page"` — placeholder manual (skip fetch)  
 - `enabled: false` — diabaikan  
 
-## Roadmap AI rewrite
+## Aturan penulisan berita (penulis AI)
 
-Saat ini body draft masih **template** (`buildDraftBody` di `lib/markdown.mjs`).
+Berlaku untuk berita otomatis `generate-news.mjs`, sumber kebenarannya ada di `SYSTEM_PROMPT` (`lib/ai-writer.mjs`) dan `lib/validate.mjs`. Artikel yang sudah terbit tidak ditulis ulang.
 
-Langkah berikutnya yang disarankan:
+- **Straight news, piramida terbalik**: paragraf pertama memuat inti berita, paragraf berikutnya dari yang terpenting ke pelengkap.
+- **Atribusi sumber (by line)**: isi memuat nama sumber dan tanggal rilis `(dd/mm)`, misalnya "Berdasarkan rilis resmi OpenAI (07/10), ...". Validator menolak artikel tanpa keduanya.
+- **Netral dan independen**: fakta, bukan penilaian. Klaim dan angka perusahaan ditulis sebagai klaim perusahaan.
+- **Informasi pendamping**: boleh menambah penjelasan istilah dan konteks umum yang stabil. Dilarang menambah angka, tanggal, harga, spesifikasi, ketersediaan, atau rencana yang tidak ada di sumber.
+- **Bercerita yang relevan**: hangat dan manusiawi tanpa hiperbola, tanpa tokoh, kutipan, atau adegan fiktif.
+- **Panjang bebas**: tidak ada batas huruf atau paragraf untuk isi; penulis menjaga agar padat dan tidak membosankan.
+- **Batas teknis**: judul maks 120 karakter dan memuat nama perusahaan; ringkasan 40–400 karakter; tanpa aksara non-Latin dan tanpa teks placeholder.
 
-1. Panggil API LLM (mis. xAI Grok) dengan prompt editorial Sinyal AI.
-2. Input: judul + summary feed + URL sumber.
-3. Output: ringkasan netral 2–4 paragraf + bullet “mengapa penting”.
-4. Tetap simpan `source` URL resmi; jangan republish full press release.
+Untuk menilai hasil tanpa menerbitkan, jalankan `node scripts/generate-news.mjs --dry-run`. Mode ini mencetak artikel lengkap ke log dan tidak menyimpan file.
 
 ## Catatan
 

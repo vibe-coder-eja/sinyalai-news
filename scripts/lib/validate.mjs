@@ -18,20 +18,23 @@ export class ArticleValidationError extends Error {
   }
 }
 
+/**
+ * Batas teknis. Isi artikel sengaja tanpa batas huruf/paragraf: panjangnya
+ * ditentukan penulis agar padat dan tidak membosankan (lihat SYSTEM_PROMPT).
+ */
 export const LIMITS = {
   titleMax: 120,
-  summaryMin: 80,
-  summaryMax: 300,
-  bodyMin: 400,
-  bodyMinParagraphs: 2,
+  summaryMin: 40,
+  summaryMax: 400,
 };
 
 /**
  * @param {{ title: string, summary: string, body: string }} article
- * @param {{ company: string }} ctx
+ * @param {{ company: string, releaseDate?: string }} ctx
+ *   releaseDate: tanggal rilis sumber "dd/mm" yang wajib tertulis di isi artikel (atribusi sumber).
  * @returns {string[]} daftar masalah; kosong berarti lolos
  */
-export function findArticleProblems(article, { company }) {
+export function findArticleProblems(article, { company, releaseDate }) {
   const problems = [];
   const { title, summary, body } = article;
 
@@ -52,19 +55,23 @@ export function findArticleProblems(article, { company }) {
       `panjang summary ${summary.length} di luar ${LIMITS.summaryMin}-${LIMITS.summaryMax} karakter`,
     );
   }
-  const paragraphs = body.split(/\n\s*\n/).filter((p) => p.trim());
-  if (body.length < LIMITS.bodyMin) {
-    problems.push(`body terlalu pendek (${body.length} < ${LIMITS.bodyMin} karakter)`);
-  }
-  if (paragraphs.length < LIMITS.bodyMinParagraphs) {
-    problems.push(`body hanya ${paragraphs.length} paragraf`);
+  if (!body.trim()) {
+    problems.push("body kosong");
+  } else {
+    // Atribusi sumber (by line): nama perusahaan dan tanggal rilis harus tertulis di isi.
+    if (company && !body.toLowerCase().includes(company.toLowerCase())) {
+      problems.push(`body tidak menyebut sumber "${company}" (atribusi rilis)`);
+    }
+    if (releaseDate && !body.includes(releaseDate)) {
+      problems.push(`body tidak memuat tanggal rilis sumber "${releaseDate}" (contoh: "Berdasarkan rilis resmi ${company || "sumber"} (${releaseDate}), ...")`);
+    }
   }
   return problems;
 }
 
 /**
  * @param {{ title: string, summary: string, body: string }} article
- * @param {{ company: string }} ctx
+ * @param {{ company: string, releaseDate?: string }} ctx
  */
 export function assertValidArticle(article, ctx) {
   const problems = findArticleProblems(article, ctx);

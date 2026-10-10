@@ -6,6 +6,15 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### ✍️ Aturan Penulisan Berita Baru (penulis AI)
+Berlaku untuk berita yang dibuat setelah perubahan ini. Artikel yang sudah terbit tidak ditulis ulang.
+- **Straight news dengan piramida terbalik**, **atribusi sumber (by line)** berformat "Berdasarkan rilis resmi {Sumber} ({dd/mm}), ...", sikap **netral dan independen**, **informasi pendamping** yang relevan (dengan larangan menambah angka, tanggal, harga, spesifikasi, atau rencana di luar sumber), serta gaya bercerita yang manusiawi tanpa hiperbola. Prompt `SYSTEM_PROMPT` ditulis ulang untuk pembaca umum Indonesia.
+- **Panjang isi bebas**: batas minimal 400 karakter dan 2 paragraf dihapus. Penulis menentukan panjang agar padat dan tidak membosankan.
+- **Prompt dan validator diseragamkan**: judul maks 120 karakter (sebelumnya prompt 100, validator 120); ringkasan 40–400 karakter (sebelumnya prompt 100–200, validator 80–300, dan dipotong ke 220 saat disimpan). Pemotongan ringkasan kini 400, sama dengan validator, sehingga ringkasan yang lolos tidak lagi terpotong.
+- **Validator memeriksa by line**: isi harus menyebut nama sumber dan tanggal rilis `dd/mm` (tanggal rilis sumber, UTC). Jika tidak, artikel ditolak dan penulis diminta mengulang dengan umpan balik.
+- **Dry run menampilkan artikel lengkap** di log (`--dry-run`), agar redaksi bisa menilai hasil tulisan tanpa menerbitkan.
+- `scripts/README.md`: bagian "Roadmap AI rewrite" yang sudah usang diganti dengan aturan penulisan ini.
+
 ### 📣 Tombol Berbagi Berita
 - Komponen `ShareButtons` di halaman detail berita: WhatsApp, Telegram, Facebook, Email (compose Gmail), dan Salin tautan, lengkap dengan ikon merek (paket `simple-icons`, dipakai saat build sehingga tidak menambah JavaScript di browser).
 - Tautan berbagi dibangun oleh `src/lib/share.ts` (dengan test). Tombol Salin tautan memberi umpan balik teks dan mendukung pembaca layar (`aria-live`); tersedia cadangan untuk browser tanpa Clipboard API.

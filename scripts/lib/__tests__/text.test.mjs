@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { truncateAtWord, ELLIPSIS } from "../text.mjs";
+import { truncateAtWord, formatDayMonth, ELLIPSIS } from "../text.mjs";
 
 describe("truncateAtWord", () => {
   it("returns short text unchanged", () => {
@@ -32,5 +32,13 @@ describe("truncateAtWord", () => {
   it("handles empty and non-string input", () => {
     expect(truncateAtWord("", 10)).toBe("");
     expect(truncateAtWord(undefined, 10)).toBe("");
+  });
+});
+
+describe("formatDayMonth", () => {
+  it("formats a date as dd/mm in UTC with zero padding", () => {
+    expect(formatDayMonth(new Date("2026-10-07T12:00:00Z"))).toBe("07/10");
+    expect(formatDayMonth(new Date("2026-01-03T00:00:00Z"))).toBe("03/01");
+    expect(formatDayMonth(new Date("2026-12-25T23:59:00Z"))).toBe("25/12");
   });
 });

@@ -29,15 +29,34 @@ describe("findArticleProblems", () => {
     expect(findArticleProblems({ ...ok, title: "openai rilis model" }, { company: "OpenAI" })).toEqual([]);
   });
 
-  it("rejects out-of-range summary length", () => {
-    expect(findArticleProblems({ ...ok, summary: "Terlalu pendek." }, { company: "OpenAI" }).join()).toMatch(/summary/);
-    expect(findArticleProblems({ ...ok, summary: "x".repeat(301) }, { company: "OpenAI" }).join()).toMatch(/summary/);
+  it("accepts a flexible summary between 40 and 400 characters", () => {
+    expect(findArticleProblems({ ...ok, summary: "x".repeat(40) }, { company: "OpenAI" })).toEqual([]);
+    expect(findArticleProblems({ ...ok, summary: "x".repeat(400) }, { company: "OpenAI" })).toEqual([]);
   });
 
-  it("rejects a short or single-paragraph body", () => {
-    const p = findArticleProblems({ ...ok, body: "Satu paragraf saja." }, { company: "OpenAI" });
-    expect(p.join()).toMatch(/body terlalu pendek/);
-    expect(p.join()).toMatch(/1 paragraf/);
+  it("rejects a summary outside 40-400 characters", () => {
+    expect(findArticleProblems({ ...ok, summary: "Terlalu pendek." }, { company: "OpenAI" }).join()).toMatch(/summary/);
+    expect(findArticleProblems({ ...ok, summary: "x".repeat(401) }, { company: "OpenAI" }).join()).toMatch(/summary/);
+  });
+
+  it("puts no minimum on body length or paragraph count", () => {
+    expect(findArticleProblems({ ...ok, body: "OpenAI merilis pembaruan." }, { company: "OpenAI" })).toEqual([]);
+  });
+
+  it("rejects an empty body", () => {
+    expect(findArticleProblems({ ...ok, body: "   " }, { company: "OpenAI" }).join()).toMatch(/body kosong/);
+  });
+
+  it("requires the source company to be named in the body", () => {
+    const p = findArticleProblems({ ...ok, body: "Model baru dirilis untuk coding dan penggunaan komputer." }, { company: "OpenAI" });
+    expect(p.join()).toMatch(/tidak menyebut sumber "OpenAI"/);
+  });
+
+  it("requires the release date (dd/mm) in the body when one is given", () => {
+    const ctx = { company: "OpenAI", releaseDate: "07/10" };
+    expect(findArticleProblems(ok, ctx).join()).toMatch(/tanggal rilis sumber "07\/10"/);
+    const withByline = { ...ok, body: "Berdasarkan rilis resmi OpenAI (07/10), model baru dirilis.\n\n" + body };
+    expect(findArticleProblems(withByline, ctx)).toEqual([]);
   });
 
   it("rejects leftover placeholder text", () => {

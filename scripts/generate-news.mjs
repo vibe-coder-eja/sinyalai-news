@@ -3,8 +3,8 @@
  * Automated News Generator for Sinyal AI News
  * - Fetches official AI releases from configured sources (OpenAI, Anthropic, Google, Microsoft, NVIDIA, xAI).
  * - Applies AI relevance filtering and cross-article deduplication.
- * - Rewrites signals into professional Indonesian journalistic articles using OpenRouter (Minimax M3).
- * - Implements Humanizer standards (no AI slop, no fake claims, facts first).
+ * - Rewrites signals into Indonesian straight-news articles (inverted pyramid, source by line,
+ *   neutral, with relevant background) using OpenRouter (Minimax M3). Rules live in lib/ai-writer.mjs.
  * - Authors articles under 'Redaktur Sinyal AI News (RSAIN)'.
  */
 
@@ -15,6 +15,7 @@ import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
+import { formatDayMonth } from "./lib/text.mjs";
 import { selectEditorialEdition, isToday, DEFAULT_MAX_AGE_DAYS } from "./lib/editor.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 import { fetchSourceText } from "./lib/source-context.mjs";
@@ -163,22 +164,25 @@ async function main() {
         continue;
       }
 
+      // Tanggal tayang mengikuti tanggal rilis sumber (tidak pernah di masa depan).
+      const now = new Date();
+      const sourceDate = item.publishedAt;
+      const publishedDate = sourceDate.getTime() > now.getTime() ? now : sourceDate;
+
       const aiArticle = await generateArticleWithAI({
         title: item.title,
         summary: item.summary || "",
         company: src.company,
         sourceUrl: item.link,
         sourceText,
+        // Atribusi sumber di isi artikel memakai tanggal ini (dd/mm).
+        releaseDate: formatDayMonth(publishedDate),
         apiKey: API_KEY,
         model: MODEL,
       });
 
       // Judul sudah memuat nama perusahaan (divalidasi), jadi slug cukup dari judul.
       const slug = slugify(aiArticle.title);
-      // Tanggal tayang mengikuti tanggal rilis sumber (tidak pernah di masa depan).
-      const now = new Date();
-      const sourceDate = item.publishedAt;
-      const publishedDate = sourceDate.getTime() > now.getTime() ? now : sourceDate;
 
       const result = await writePublishedArticle({
         outDir: CONTENT_DIR,
@@ -199,6 +203,10 @@ async function main() {
           ? `      ✅ Lolos validasi (dry run, tidak disimpan): ${result.outPath}`
           : `      ✅ Berhasil diterbitkan: ${result.outPath}`,
       );
+      if (dryRun) {
+        // Tampilkan hasil tulisan agar redaksi bisa menilai gaya dan isinya tanpa menerbitkan.
+        console.log(`\n----- ${result.outPath} -----\n${result.markdown}\n----- selesai -----\n`);
+      }
       existingUrls.add(normUrl);
       totalPublished++;
     } catch (err) {

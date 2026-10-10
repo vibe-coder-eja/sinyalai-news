@@ -139,10 +139,34 @@ describe("generateArticleWithAI validation and context", () => {
     expect(result.title).toBe("xAI Hadirkan Fitur Baru");
   });
 
-  it("throws when both attempts fail validation", async () => {
+  it("throws when all attempts fail validation", async () => {
     const bad = { title: "Fitur Baru", summary: "Pendek.", body: "Terlalu pendek." };
     globalThis.fetch = vi.fn().mockResolvedValue(reply(bad));
     await expect(generateArticleWithAI(params)).rejects.toThrow(/Validasi artikel gagal/);
+  });
+
+  it("sends the release date and requires it in the body (source by line)", async () => {
+    const withoutByline = { title: "xAI Hadirkan Fitur Baru", summary: VALID_SUMMARY, body: VALID_BODY };
+    const withByline = { ...withoutByline, body: "Berdasarkan rilis resmi xAI (09/10), fitur baru hadir.\n\n" + VALID_BODY };
+    const fetchMock = vi.fn().mockResolvedValueOnce(reply(withoutByline)).mockResolvedValueOnce(reply(withByline));
+    globalThis.fetch = fetchMock;
+
+    const result = await generateArticleWithAI({ ...params, releaseDate: "09/10" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(result.body).toContain("(09/10)");
+    const first = JSON.parse(fetchMock.mock.calls[0][1].body).messages;
+    expect(first[1].content).toContain("Tanggal Rilis Sumber (dd/mm): 09/10");
+    const second = JSON.parse(fetchMock.mock.calls[1][1].body).messages;
+    expect(second[3].content).toMatch(/tanggal rilis sumber "09\/10"/);
+  });
+
+  it("states the editorial rules in the system prompt", () => {
+    expect(SYSTEM_PROMPT).toMatch(/PIRAMIDA TERBALIK/);
+    expect(SYSTEM_PROMPT).toMatch(/ATRIBUSI SUMBER/);
+    expect(SYSTEM_PROMPT).toMatch(/NETRAL DAN INDEPENDEN/);
+    expect(SYSTEM_PROMPT).toMatch(/INFORMASI PENDAMPING/);
+    expect(SYSTEM_PROMPT).toMatch(/maksimal 120 karakter/);
+    expect(SYSTEM_PROMPT).toMatch(/Tidak ada batas jumlah huruf atau paragraf/);
   });
 
   it("sends source text inside <sumber> tags", async () => {

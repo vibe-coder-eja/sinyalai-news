@@ -2,7 +2,8 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { truncateAtWord } from "./text.mjs";
 
-const MAX_SUMMARY_LENGTH = 220;
+// Sama dengan batas validator (validate.mjs), agar ringkasan yang lolos validasi tidak terpotong.
+const MAX_SUMMARY_LENGTH = 400;
 
 /**
  * Escape string for YAML double-quoted scalars.
