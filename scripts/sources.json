@@ -1,5 +1,5 @@
 {
-  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | page (page = manual/bookmark, belum di-fetch otomatis). aiFocused: true = semua item dianggap relevan AI; selain itu item disaring dengan kata kunci AI (scripts/lib/relevance.mjs). excludeKeywords: item yang judul/ringkasannya mengandung salah satu kata ini selalu dibuang.",
+  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | html (halaman resmi di-parse dari HTML) | page (page = manual/bookmark, belum di-fetch otomatis). aiFocused: true = semua item dianggap relevan AI; selain itu item disaring dengan kata kunci AI (scripts/lib/relevance.mjs). excludeKeywords: item yang judul/ringkasannya mengandung salah satu kata ini selalu dibuang.",
   "sources": [
     {
       "id": "openai",
@@ -14,12 +14,12 @@
     {
       "id": "anthropic",
       "company": "Anthropic",
-      "type": "rss",
-      "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/master/feeds/feed_anthropic_news.xml",
+      "type": "html",
+      "url": "https://www.anthropic.com/news",
       "home": "https://www.anthropic.com/news",
       "enabled": true,
       "aiFocused": true,
-      "notes": "Feed komunitas/mirror (tidak resmi); utamakan verifikasi manual sebelum menerbitkan karena risiko manipulasi konten."
+      "notes": "Halaman resmi (tanpa RSS resmi), di-parse dari HTML oleh scripts/lib/html.mjs. Mirror lama: https://raw.githubusercontent.com/Olshansk/rss-feeds/master/feeds/feed_anthropic_news.xml"
     },
     {
       "id": "nvidia-blog",
