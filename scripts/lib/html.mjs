@@ -156,6 +156,9 @@ export function parseListing(html, baseUrl) {
   if (byLink.size === 0) {
     for (const item of parseOverlayCards(html, baseUrl)) byLink.set(item.link, item);
   }
+  if (byLink.size === 0) {
+    for (const item of parseStandaloneLinkCards(html, baseUrl)) byLink.set(item.link, item);
+  }
 
   return [...byLink.values()];
 }
@@ -196,6 +199,63 @@ function parseOverlayCards(html, baseUrl) {
       summary: "",
     });
   });
+
+  return items;
+}
+
+/**
+ * Pola kartu dengan tautan "Learn More" yang berdiri sendiri (mis. ai.meta.com/blog): judul
+ * (`<h1-6>`) dan tanggal (teks polos "April 08, 2026") ada di kartu tepat SEBELUM tautan,
+ * bukan di dalamnya. Hanya tautan di bawah jalur halaman daftar (`/blog/<slug>/`) yang dihitung.
+ * Dipakai bila pola `<a><time>` dan overlay tidak menemukan apa pun.
+ * @param {string} html
+ * @param {string} baseUrl
+ */
+function parseStandaloneLinkCards(html, baseUrl) {
+  let base;
+  try {
+    base = new URL(baseUrl);
+  } catch {
+    return [];
+  }
+  const basePath = base.pathname.endsWith("/") ? base.pathname : `${base.pathname}/`;
+
+  const items = [];
+  const seen = new Set();
+  let prevEnd = 0;
+
+  for (const match of html.matchAll(/<a\b[^>]*\bhref="([^"]*)"[^>]*>/gi)) {
+    let link;
+    try {
+      const url = new URL(decodeHtml(match[1]), base);
+      if (url.origin !== base.origin) continue;
+      if (!url.pathname.startsWith(basePath) || url.pathname === basePath) continue;
+      url.search = "";
+      url.hash = "";
+      link = url.toString();
+    } catch {
+      continue;
+    }
+    if (!isSecureUrl(link)) continue;
+
+    // Kartu = teks sejak tautan artikel sebelumnya (dibatasi 4000 karakter).
+    const chunk = html.slice(Math.max(prevEnd, match.index - 4000), match.index);
+    prevEnd = match.index + match[0].length;
+    if (seen.has(link)) continue;
+
+    const headings = [...chunk.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)];
+    const title = headings.length ? decodeHtml(headings[headings.length - 1][1]) : "";
+    let publishedAt = null;
+    for (const m of chunk.matchAll(/<(?:p|span|div)\b[^>]*>([^<]{6,40})<\/(?:p|span|div)>/gi)) {
+      const text = decodeHtml(m[1]);
+      const d = text.length <= 30 ? parseListingDate(text) : null;
+      if (d) publishedAt = d;
+    }
+    if (!title || !publishedAt) continue;
+
+    seen.add(link);
+    items.push({ title, link, publishedAt, summary: "" });
+  }
 
   return items;
 }

@@ -12,6 +12,8 @@ Pemicu: edisi malam 11 Oktober 2026 (22:05 WIB) menayangkan 0 berita, tetapi run
 - **Rilis GitHub tanpa catatan dibuang sebelum seleksi** (`isThinGithubRelease`), sehingga tidak memakai slot kandidat lalu gagal di tahap konteks.
 - **Perbaikan penyaring pra-rilis**: tag `v0.21.6+canary.<stempel>` sebelumnya lolos karena `+` tidak dianggap pemisah.
 - **xAI dibaca dari sumber resmi**: `xai` kini mengambil `https://x.ai/news` langsung (tipe `html`). Feed mirror komunitas dipertahankan sebagai cadangan `xai-mirror` (URL artikel sama, tidak terbit ganda).
+- **Meta dari sumber resmi**: `meta-ai` kini membaca `https://ai.meta.com/blog/` langsung (mirror jadi cadangan `meta-ai-mirror`), ditambah dua feed RSS resmi baru `meta-newsroom` (about.fb.com/news) dan `meta-engineering` (engineering.fb.com). Dua feed baru tidak `aiFocused`, jadi tetap harus lolos filter relevansi AI.
+- **Parser HTML mode kartu** (`parseStandaloneLinkCards` di `html.mjs`): membaca daftar yang tautannya berdiri sendiri dan tanggalnya teks polos, seperti ai.meta.com/blog. Tes ditambahkan.
 - **Laporan kuota di workflow**: `generate-news.mjs` menulis `published/quota` ke `$GITHUB_OUTPUT`. Bila kuota tidak terpenuhi, workflow membuka (atau memperbarui) satu issue per edisi per hari, dan membuat run **gagal** bila 0 berita tayang. Deploy tetap berjalan sebelum langkah ini. Izin `issues: write` ditambahkan.
 
 ---

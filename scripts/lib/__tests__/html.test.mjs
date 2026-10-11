@@ -84,3 +84,33 @@ describe("parseListing (tanggal tanpa <time>)", () => {
     expect(items[0].summary).toContain("konteks 1 juta token");
   });
 });
+
+describe("parseListing: tautan berdiri sendiri (ai.meta.com/blog)", () => {
+  const META = "https://ai.meta.com/blog/";
+  const card = (date, title, href) =>
+    `<div><div class="c"><p>Blog</p><div><p>${date}</p></div><h4>${title}</h4><div><p>${date}</p><a href="${href}"><span>Learn More</span></a></div></div></div>`;
+  const page =
+    `<nav><a href="/blog/">Blog</a><a href="https://ai.meta.com/blog/?page=2">2</a></nav>` +
+    card("April 08, 2026", "Introducing Muse Spark: Scaling Towards Personal Superintelligence ", "https://ai.meta.com/blog/introducing-muse-spark-msl/") +
+    card("July 27, 2026", "Reimagining Independence", "/blog/pittsburgh-sam-dino/");
+
+  it("mengambil judul dan tanggal dari kartu sebelum tautan", () => {
+    const items = parseListing(page, META);
+    expect(items).toHaveLength(2);
+    expect(items[0].title).toBe("Introducing Muse Spark: Scaling Towards Personal Superintelligence");
+    expect(items[0].link).toBe("https://ai.meta.com/blog/introducing-muse-spark-msl/");
+    expect(items[0].publishedAt?.toISOString()).toBe("2026-04-08T00:00:00.000Z");
+    expect(items[1].link).toBe("https://ai.meta.com/blog/pittsburgh-sam-dino/");
+    expect(items[1].publishedAt?.toISOString()).toBe("2026-07-27T00:00:00.000Z");
+  });
+
+  it("mengabaikan navigasi, paginasi, dan tautan luar", () => {
+    const items = parseListing(page + `<a href="https://example.com/blog/x/">x</a>`, META);
+    expect(items.map((i) => i.link)).not.toContain("https://example.com/blog/x/");
+    expect(items.every((i) => !i.link.includes("page="))).toBe(true);
+  });
+
+  it("tidak mengganggu pola <a><time> yang sudah ada", () => {
+    expect(parseListing(featured, BASE)).toHaveLength(1);
+  });
+});

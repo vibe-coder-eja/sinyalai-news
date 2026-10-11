@@ -81,12 +81,40 @@
     {
       "id": "meta-ai",
       "company": "Meta",
+      "type": "html",
+      "url": "https://ai.meta.com/blog/",
+      "home": "https://ai.meta.com/blog/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Sumber resmi Meta AI (Muse, Llama, SAM, riset), dibaca langsung lewat parser HTML mode kartu (tautan berdiri sendiri, tanggal berupa teks polos). Hanya halaman pertama (10 artikel). Terbaru per 11 Okt 2026: 27 Jul."
+    },
+    {
+      "id": "meta-ai-mirror",
+      "company": "Meta",
       "type": "rss",
       "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_meta_ai.xml",
       "home": "https://ai.meta.com/blog/",
       "enabled": true,
       "aiFocused": true,
-      "notes": "Feed mirror komunitas dari ai.meta.com/blog; rilis model Llama, riset, dan arsitektur Meta AI."
+      "notes": "Cadangan: feed mirror komunitas dari ai.meta.com/blog. Dipakai bila parser HTML sumber resmi gagal. URL artikel sama dengan sumber resmi, jadi tidak terbit ganda."
+    },
+    {
+      "id": "meta-newsroom",
+      "company": "Meta",
+      "type": "rss",
+      "url": "https://about.fb.com/news/feed/",
+      "home": "https://about.fb.com/news/",
+      "enabled": true,
+      "notes": "Newsroom resmi Meta. Memuat banyak topik non-AI (keselamatan, produk sosial), jadi tidak ditandai aiFocused dan harus lolos filter relevansi AI."
+    },
+    {
+      "id": "meta-engineering",
+      "company": "Meta",
+      "type": "rss",
+      "url": "https://engineering.fb.com/feed/",
+      "home": "https://engineering.fb.com/",
+      "enabled": true,
+      "notes": "Blog engineering resmi Meta: infrastruktur AI, open source, AI glasses. Tidak aiFocused; harus lolos filter relevansi AI."
     },
     {
       "id": "openclaw-blog",
