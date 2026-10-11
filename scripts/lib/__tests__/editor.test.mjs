@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { isFreshEnough, isToday, sortCandidatesByPriority, selectEditorialEdition, computeCategoryShares, effectiveScore } from "../editor.mjs";
-import { EDITIONS, getEdition, editionBoost } from "../editions.mjs";
+import { EDITIONS, getEdition, editionBoost, resolveEditionByTime } from "../editions.mjs";
 
 describe("isToday", () => {
   it("detects same ISO calendar date as today", () => {
@@ -376,5 +376,66 @@ describe("GitHub release tags in selection", () => {
       referenceDate: ref,
     });
     expect(selected).toHaveLength(1);
+  });
+});
+
+describe("jadwal dan jendela berita per edisi", () => {
+  const hoursAgo = (ref, h) => new Date(ref.getTime() - h * 3600 * 1000);
+  const cand = (company, title, score, publishedAt) => ({
+    source: { company },
+    item: { link: `https://${company.toLowerCase()}.com/${title.replace(/\W+/g, "-")}`, title, publishedAt },
+    priority: { priorityScore: score, categories: ["Standar Umum"] },
+  });
+
+  it("memberi kedua edisi batas usia 2 hari", () => {
+    expect(EDITIONS.pagi.maxAgeDays).toBe(2);
+    expect(EDITIONS.malam.maxAgeDays).toBe(2);
+  });
+
+  it("menebak edisi dari jam WIB, longgar terhadap run yang molor", () => {
+    const at = (iso) => resolveEditionByTime(new Date(iso));
+    expect(at("2026-10-11T03:35:00Z")).toBe("pagi"); // 10.35 WIB tepat waktu
+    expect(at("2026-10-11T10:50:00Z")).toBe("pagi"); // 17.50 WIB, molor 7 jam
+    expect(at("2026-10-11T11:59:00Z")).toBe("pagi"); // 18.59 WIB
+    expect(at("2026-10-11T12:00:00Z")).toBe("malam"); // 19.00 WIB
+    expect(at("2026-10-11T15:05:00Z")).toBe("malam"); // 22.05 WIB tepat waktu
+    expect(at("2026-10-11T20:40:00Z")).toBe("malam"); // 03.40 WIB, molor 5,5 jam
+    expect(at("2026-10-11T21:00:00Z")).toBe("pagi"); // 04.00 WIB
+  });
+
+  it("pagi: rilis 1-2 hari lalu bersaing sejajar dengan rilis hari ini", () => {
+    const ref = new Date("2026-10-11T03:35:00Z");
+    const items = [
+      cand("OpenAI", "Hari ini kecil", 10, hoursAgo(ref, 2)),
+      cand("Anthropic", "Kemarin besar", 50, hoursAgo(ref, 20)),
+      cand("Google", "Dua hari lalu", 45, hoursAgo(ref, 44)),
+    ];
+    const selected = selectEditorialEdition({ allFeedItems: items, limit: 2, referenceDate: ref, edition: EDITIONS.pagi });
+    expect(selected.map((s) => s.item.title)).toEqual(["Kemarin besar", "Dua hari lalu"]);
+  });
+
+  it("malam: rilis hari ini didahulukan walau skornya lebih rendah", () => {
+    const ref = new Date("2026-10-11T15:05:00Z");
+    const items = [
+      cand("OpenAI", "Hari ini kecil", 10, hoursAgo(ref, 2)),
+      cand("Anthropic", "Kemarin besar", 50, hoursAgo(ref, 30)),
+    ];
+    const selected = selectEditorialEdition({ allFeedItems: items, limit: 1, referenceDate: ref, edition: EDITIONS.malam });
+    expect(selected[0].item.title).toBe("Hari ini kecil");
+  });
+
+  it("kedua edisi menolak rilis lebih tua dari 2 hari", () => {
+    const ref = new Date("2026-10-11T15:05:00Z");
+    const items = [cand("OpenAI", "Tiga hari lalu", 50, hoursAgo(ref, 72))];
+    for (const edition of [EDITIONS.pagi, EDITIONS.malam]) {
+      expect(selectEditorialEdition({ allFeedItems: items, limit: 3, referenceDate: ref, edition })).toEqual([]);
+    }
+  });
+
+  it("maxAgeDays eksplisit menimpa batas edisi", () => {
+    const ref = new Date("2026-10-11T15:05:00Z");
+    const items = [cand("OpenAI", "Tiga hari lalu", 50, hoursAgo(ref, 72))];
+    const selected = selectEditorialEdition({ allFeedItems: items, limit: 3, referenceDate: ref, edition: EDITIONS.malam, maxAgeDays: 7 });
+    expect(selected.length).toBe(1);
   });
 });

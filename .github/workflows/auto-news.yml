@@ -1,5 +1,9 @@
 name: Automated News Pipeline (RSAIN)
 
+# Pemicu utama: pemicu eksternal (cron-job.org) memanggil workflow_dispatch tepat 10:35 dan
+# 22:05 WIB dengan nama edisi eksplisit (lihat docs/jadwal-tayang.md).
+# Cron GitHub di bawah hanya cadangan: antrean schedule GitHub molor 4-7 jam, jadi run
+# terjadwal dilewati bila edisi yang sama sudah tayang dalam 10 jam terakhir.
 on:
   schedule:
     # 10:35 WIB (UTC+7) = 03:35 UTC (menghindari antrean padat di menit :00 dan :30)
@@ -49,44 +53,85 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Edisi: input dispatch (pagi/malam) > jadwal cron yang memicu > kosong (skrip menebak dari jam WIB).
+      # Run terjadwal dilewati bila edisi yang sama sudah tayang dalam 10 jam terakhir
+      # (penanda "edition=<nama>" ada di pesan commit). Dispatch selalu jalan.
+      - name: Resolve edition and check duplicate broadcast
+        id: edition
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_EDITION: ${{ inputs.edition }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          EDITION=""
+          if [ "$INPUT_EDITION" = "pagi" ] || [ "$INPUT_EDITION" = "malam" ]; then
+            EDITION="$INPUT_EDITION"
+          elif [ "$CRON" = "35 3 * * *" ]; then
+            EDITION="pagi"
+          elif [ "$CRON" = "5 15 * * *" ]; then
+            EDITION="malam"
+          fi
+          echo "name=$EDITION" >> "$GITHUB_OUTPUT"
+          echo "Edisi: ${EDITION:-auto (ditebak dari jam WIB)}"
+
+          SKIP=false
+          if [ "$EVENT_NAME" = "schedule" ] && [ -n "$EDITION" ]; then
+            if [ -n "$(git log --since='10 hours ago' --grep="edition=$EDITION" --format=%h origin/main)" ]; then
+              SKIP=true
+              echo "::notice title=Run cadangan dilewati::Edisi $EDITION sudah tayang dalam 10 jam terakhir."
+            fi
+          fi
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+
       - name: Set up Node.js
+        if: steps.edition.outputs.skip != 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        if: steps.edition.outputs.skip != 'true'
         run: npm ci
 
       - name: Run automated AI news generation
+        if: steps.edition.outputs.skip != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'minimax/minimax-m3' }}
+          EDITION: ${{ steps.edition.outputs.name }}
+          LIMIT: ${{ inputs.limit || '3' }}
+          DRY_RUN: ${{ inputs.dryRun }}
         run: |
-          ARGS="--limit=${{ inputs.limit || '3' }}"
-          if [ "${{ inputs.edition }}" = "pagi" ] || [ "${{ inputs.edition }}" = "malam" ]; then
-            ARGS="$ARGS --edition=${{ inputs.edition }}"
+          ARGS="--limit=$LIMIT"
+          if [ -n "$EDITION" ]; then
+            ARGS="$ARGS --edition=$EDITION"
           fi
-          if [ "${{ inputs.dryRun }}" = "true" ]; then
+          if [ "$DRY_RUN" = "true" ]; then
             ARGS="$ARGS --dry-run"
           fi
           node scripts/generate-news.mjs $ARGS
 
       - name: Run test suite
+        if: steps.edition.outputs.skip != 'true'
         run: npm run test
 
       - name: Build static site with Astro
+        if: steps.edition.outputs.skip != 'true'
         run: npm run build
 
       # Commit hanya setelah test & build lulus, agar artikel rusak tidak masuk ke main.
       - name: Commit and push new articles to main branch
-        if: ${{ inputs.dryRun != true }}
+        if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true }}
+        env:
+          EDITION: ${{ steps.edition.outputs.name }}
         run: |
           if [ -n "$(git status --porcelain src/content/news)" ]; then
             git config --global user.name "Redaktur Sinyal AI News (RSAIN)"
             git config --global user.email "rsain@sinyalai.users.noreply.github.com"
             git add src/content/news/
-            git commit -m "chore(news): automated edition broadcast [skip ci]"
+            # Penanda edition=<nama> dipakai penjaga run cadangan di atas.
+            git commit -m "chore(news): automated edition broadcast [skip ci]" -m "edition=${EDITION:-auto}"
             # main bisa berubah selama job berjalan (mis. PR di-merge). Tarik dulu dengan rebase
             # agar push tidak ditolak dan artikel edisi ini tidak hilang. Ulangi bila ada yang menyela.
             for attempt in 1 2 3; do
@@ -104,16 +149,16 @@ jobs:
       # Setelah rebase, main mungkin memuat perubahan kode baru. Bangun ulang agar situs yang
       # di-deploy sama dengan isi main, bukan snapshot saat job dimulai.
       - name: Rebuild site from synced main
-        if: ${{ inputs.dryRun != true }}
+        if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true }}
         run: npm run build
 
       - name: Upload GitHub Pages artifact
-        if: ${{ inputs.dryRun != true }}
+        if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
       - name: Deploy to GitHub Pages
-        if: ${{ inputs.dryRun != true }}
+        if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true }}
         id: deployment
         uses: actions/deploy-pages@v5
