@@ -61,12 +61,22 @@
     {
       "id": "xai",
       "company": "xAI",
+      "type": "html",
+      "url": "https://x.ai/news",
+      "home": "https://x.ai/news",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Sumber resmi xAI (blog x.ai/news), dibaca langsung lewat parser HTML. Cloudflare menolak UA browser biasa tetapi meloloskan UA bot pipeline. Terbaru per 11 Okt 2026: Team Bots (28 Sep)."
+    },
+    {
+      "id": "xai-mirror",
+      "company": "xAI",
       "type": "rss",
       "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_xainews.xml",
       "home": "https://x.ai/news",
       "enabled": true,
       "aiFocused": true,
-      "notes": "Feed mirror komunitas dari x.ai/news; verifikasi manual sebelum publikasi."
+      "notes": "Cadangan: feed mirror komunitas dari x.ai/news. Dipakai bila parser HTML sumber resmi gagal (mis. struktur halaman berubah atau Cloudflare memblokir runner). URL artikel sama dengan sumber resmi, jadi tidak terbit ganda."
     },
     {
       "id": "meta-ai",
