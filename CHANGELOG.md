@@ -6,7 +6,12 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
-Perbaikan keredaksian: berita kembar dan dominasi satu sumber.
+Perbaikan keredaksian: berita kembar dan dominasi satu sumber. Audit kerapian repo.
+
+### 🧼 Audit Kerapian Repo
+- **Dependensi**: `astro` 7.0.7 → 7.3.8, `@astrojs/sitemap` 3.7.4, `simple-icons` 16.35.0, `vitest` 4.1.11. `npm audit` dari 13 celah (1 critical) menjadi 0. Catatan: `npm install` pada npm 10.9.4 gagal mengurai peer-dependency `vitest` (bug arborist), sehingga pembaruan `vitest` dikerjakan dengan `--legacy-peer-deps`. Lockfile tetap memasang bersih lewat `npm ci`.
+- **Logo**: master di `src/logo/` diganti nama dari `sinyal-ai-news-logo-1 (n).png` menjadi nama semantik. `public/logo/*.png` (±5,9 MB, duplikat `.webp`, tidak dirujuk kode) dan 14 salinan `src/logo/*.webp` dihapus. `convert-logos.mjs` kini hanya membuat WebP di `public/logo/`, hasilnya identik byte-per-byte dengan yang sudah ada.
+- **Dokumen**: audit, rencana implementasi, dan walkthrough lama dipindah ke `docs/arsip/` dengan banner historis. `sinyalai_prd.md` dan `panduan_konten.md` dipindah ke `docs/`. README dan `scripts/README.md` disegarkan (lima workflow, dua jalur pipeline, seluruh modul `scripts/lib`, batas usia rilis 2 hari menggantikan 7 hari yang usang).
 
 ### 🧹 Berita Kembar dan Dominasi Satu Sumber
 - **Akar masalah kembar**: run yang antre di grup concurrency memakai SHA main saat dipicu, jadi tidak melihat artikel edisi sebelumnya dan menerbitkan sumber yang sama dua kali. Checkout kini memakai `ref: main`.

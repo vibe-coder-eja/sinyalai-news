@@ -1,5 +1,7 @@
 # 🔍 Laporan Audit — Sinyal AI News
 
+> **Arsip historis.** Dokumen ini ditulis pada 15 Juli 2026 dan tidak lagi diperbarui. Path lokal, domain (`sinyalai.vercel.app`), jumlah artikel, dan temuan di dalamnya mencerminkan keadaan saat itu. Untuk kondisi terkini lihat `README.md`, `CHANGELOG.md`, dan `docs/rencana-perbaikan.md`.
+
 > **Tanggal:** 15 Juli 2026  
 > **Reviewer:** Antigravity (QA Engineer & Fullstack Developer)  
 > **Proyek:** SinyalAI News — Sinyal Akal Imitasi  
