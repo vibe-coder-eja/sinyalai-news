@@ -39,7 +39,7 @@ export const EDITIONS = {
  * pipeline mengulang seleksi dengan batas ini untuk mengisi slot yang kosong. Tanggal tayang
  * tetap mengikuti tanggal sumber, jadi berita lebih tua tidak diberi tanggal palsu.
  */
-export const FALLBACK_MAX_AGE_DAYS = 4;
+export const FALLBACK_MAX_AGE_DAYS = 7;
 
 /**
  * @param {string} name "pagi" atau "malam" (nilai lain dianggap malam, sama seperti perilaku sebelumnya)

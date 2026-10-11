@@ -68,4 +68,4 @@ Klik *Test run* pada job. Run baru bernama "Automated News Pipeline (RSAIN)" aka
 
 ## Kuota tidak terpenuhi
 
-Bila rilis dalam batas usia edisi (2 hari) kurang dari kuota, pipeline mengulang seleksi dengan batas cadangan 4 hari. Jika kuota masih belum terpenuhi, langkah akhir workflow membuka issue "Kuota edisi belum terpenuhi: <edisi>, <tanggal>" (satu per edisi per hari) dan membuat run gagal bila 0 berita tayang, sehingga GitHub mengirim notifikasi. Situs tetap di-deploy sebelum run ditandai gagal.
+Bila rilis dalam batas usia edisi (2 hari) kurang dari kuota, pipeline mengulang seleksi dengan batas cadangan 7 hari. Jika kuota masih belum terpenuhi, langkah akhir workflow membuka issue "Kuota edisi belum terpenuhi: <edisi>, <tanggal>" (satu per edisi per hari) dan membuat run gagal bila 0 berita tayang, sehingga GitHub mengirim notifikasi. Situs tetap di-deploy sebelum run ditandai gagal.
