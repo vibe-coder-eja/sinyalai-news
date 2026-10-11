@@ -6,6 +6,7 @@ source: "https://openai.com/index/new-chatgpt-ads-format-and-measurement"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-05T10:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "Building advertising for the way people use AI"
 categories: ["Kerjasama Industri"]
 ---

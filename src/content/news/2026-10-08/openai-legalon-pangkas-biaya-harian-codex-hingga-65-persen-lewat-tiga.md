@@ -6,6 +6,7 @@ source: "https://openai.com/index/legalon-halves-codex-costs"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T12:00:00.000Z
 draft: false
+archived: true
 ---
 
 LegalOn, penyedia perangkat lunak hukum asal Jepang, melaporkan hasil efisiensi penggunaan Codex dari OpenAI pada alur kerja rekayasanya. Perusahaan menyatakan biaya harian untuk Codex turun sekitar 65 persen, sementara kecepatan pengembangan tetap stabil. Strategi ini dicapai dengan mencocokkan setiap jenis tugas ke agen Codex yang paling sesuai.

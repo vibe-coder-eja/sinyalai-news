@@ -5,6 +5,7 @@ company: "Anthropic"
 source: "https://www.anthropic.com/news/barclays-scales-claude"
 publishedAt: 2026-10-01
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

@@ -6,6 +6,7 @@ source: "https://huggingface.co/blog/allenai/impactful-scheduling"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-09T15:20:29.000Z
 draft: false
+archived: true
 sourceTitle: "Impactful scheduling for GPU clusters"
 categories: ["Standar Umum"]
 ---

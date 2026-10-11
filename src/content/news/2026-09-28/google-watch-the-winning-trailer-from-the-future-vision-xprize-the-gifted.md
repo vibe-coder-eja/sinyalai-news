@@ -5,6 +5,7 @@ company: "Google"
 source: "https://blog.google/innovation-and-ai/technology/ai/winner-future-vision-xprize/"
 publishedAt: 2026-09-28
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

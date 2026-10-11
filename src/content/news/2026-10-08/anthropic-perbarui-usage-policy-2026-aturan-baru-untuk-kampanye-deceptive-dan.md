@@ -6,6 +6,7 @@ source: "https://www.anthropic.com/news/2026-usage-policy-update"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T00:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "2026 Usage Policy update"
 categories: ["Riset & Kebijakan"]
 ---

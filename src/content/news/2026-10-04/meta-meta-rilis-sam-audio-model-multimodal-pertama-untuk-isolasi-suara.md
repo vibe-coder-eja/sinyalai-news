@@ -6,6 +6,7 @@ source: "https://ai.meta.com/blog/sam-audio/"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2025-12-16
 draft: true
+archived: true
 ---
 
 Meta resmi memperkenalkan SAM Audio, model multimodal pertama yang dirancang khusus untuk memisahkan suara (*audio separation*) dari campuran audio yang kompleks. Peluncuran ini memperluas keluarga model Segment Anything (SAM) ke ranah pemrosesan audio, setelah sebelumnya dikenal di segmen computer vision.

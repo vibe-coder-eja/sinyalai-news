@@ -6,6 +6,7 @@ source: "https://openai.com/index/advancing-computer-use-with-ironclad"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T10:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "Advancing computer use with Ironclad"
 categories: ["Fitur & Skills"]
 ---

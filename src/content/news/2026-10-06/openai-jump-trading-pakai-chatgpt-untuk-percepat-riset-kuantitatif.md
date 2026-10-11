@@ -6,6 +6,7 @@ source: "https://openai.com/index/jump-trading"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T12:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "How Jump Trading is scaling quant research with ChatGPT"
 categories: ["Fitur & Skills","Penerapan Industri","Riset & Kebijakan"]
 ---

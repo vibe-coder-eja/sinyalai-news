@@ -6,6 +6,7 @@ source: "https://www.anthropic.com/news/anthropic-cyber-mission"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T00:00:00.000Z
 draft: false
+archived: true
 ---
 
 Anthropic mengumumkan peluncuran Anthropic Cyber Mission sebagai komitmen jangka panjang untuk memperkuat keamanan sistem yang digunakan banyak pihak. Program ini berfokus pada dua area utama, yaitu pertahanan infrastruktur kritis dan penguatan keamanan pada perangkat lunak open-source.

@@ -6,6 +6,7 @@ source: "https://blogs.nvidia.com/blog/local-ai-rtx-spark-microsoft-windows-even
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-07T18:45:28.000Z
 draft: false
+archived: true
 ---
 
 NVIDIA dan Microsoft mengumumkan kolaborasi teknis yang membawa tumpukan AI NVIDIA ke dalam ekosistem PC Windows. Dalam acara Windows AI and Surface di San Francisco, CEO NVIDIA Jensen Huang dan CEO Microsoft Satya Nadella memaparkan pengembangan bersama perangkat keras dan perangkat lunak untuk menopang agen AI di komputer pribadi. Huang mengaitkan sejarah panjang dukungan NVIDIA terhadap Windows dengan era agenik saat ini, sementara Nadella menekankan keamanan desktop sebagai syarat eksekusi agen.

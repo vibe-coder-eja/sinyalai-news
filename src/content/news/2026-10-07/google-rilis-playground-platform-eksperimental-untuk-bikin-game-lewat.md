@@ -6,6 +6,7 @@ source: "https://blog.google/innovation-and-ai/technology/ai/playground-experime
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-07T12:00:00.000Z
 draft: false
+archived: true
 ---
 
 Google meluncurkan Playground, sebuah platform gim eksperimental yang dirancang untuk menurunkan hambatan dalam pengembangan game. Melalui antarmuka percakapan, pengguna cukup mengetikkan deskripsi ide permainan untuk membangun karakter, aturan, hingga keseluruhan dunia game tanpa perlu kemampuan coding. Platform ini menyediakan opsi memulai dari halaman kosong, memodifikasi contoh perintah, atau menggunakan panduan untuk membentuk konsep yang langsung dapat diuji.

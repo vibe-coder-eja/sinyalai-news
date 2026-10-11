@@ -6,6 +6,7 @@ source: "https://blogs.microsoft.com/blog/2026/09/17/what-weve-learned-from-micr
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-09-17
 draft: true
+archived: true
 ---
 
 Microsoft merilis publikasi bertajuk "What we've learned from Microsoft's own AI transformation" di blog resmi perusahaan pada 17 September 2026. Dalam rilis tersebut, Microsoft menilai bahwa kecerdasan buatan mengubah cara kerja lebih cepat daripada kemampuan organisasi untuk menguasainya secara menyeluruh.

@@ -5,6 +5,7 @@ company: "xAI"
 source: "https://x.ai/news/grok-openclaw"
 publishedAt: 2026-05-19
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

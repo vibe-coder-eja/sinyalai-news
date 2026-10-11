@@ -5,6 +5,7 @@ company: "OpenAI"
 source: "https://openai.com/index/chatham-financial"
 publishedAt: 2026-10-02
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

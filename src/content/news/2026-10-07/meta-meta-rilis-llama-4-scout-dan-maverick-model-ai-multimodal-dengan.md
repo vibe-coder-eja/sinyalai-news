@@ -6,6 +6,7 @@ source: "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2025-04-05
 draft: true
+archived: true
 ---
 
 Meta resmi memperkenalkan dua model AI terbaru dari keluarga Llama 4, yaitu Llama 4 Scout dan Llama 4 Maverick. Kedua model ini merupakan model berbobot terbuka (open-weight) pertama dari Meta yang dirancang secara native untuk menangani berbagai modalitas, termasuk teks dan gambar, dalam satu arsitektur terpadu. Peluncuran ini juga menandai penggunaan arsitektur Mixture-of-Experts (MoE) untuk pertama kalinya pada lini model Llama.

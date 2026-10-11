@@ -6,6 +6,7 @@ source: "https://www.anthropic.com/news/3-5-models-and-computer-use"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2024-10-22
 draft: true
+archived: true
 ---
 
 Anthropic mengumumkan tiga pembaruan utama untuk lini model Claude 3.5, meliputi kemampuan computer use, model Claude 3.5 Sonnet versi terbaru, serta model Claude 3.5 Haiku. Fitur computer use memungkinkan Claude untuk berinteraksi langsung dengan antarmuka komputer, seperti menavigasi layar, menggerakkan kursor, dan mengetik, sehingga agen AI dapat menjalankan tugas pada aplikasi dan software yang tidak memiliki API khusus.

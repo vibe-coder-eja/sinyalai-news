@@ -6,6 +6,7 @@ source: "https://openai.com/index/asana-browser-agent"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-09T07:00:00.000Z
 draft: false
+archived: true
 ---
 
 OpenAI mempublikasikan studi kasus dari Asana yang berhasil memangkas biaya model hingga 76 kali lipat pada browser agent mereka. Efisiensi tersebut dicapai dengan memanfaatkan GPT-6.1 Sol, model bahasa terbaru OpenAI, yang dijalankan melalui lingkungan pengembangan Codex.

@@ -6,6 +6,7 @@ source: "https://ai.meta.com/blog/omnilingual-asr-advancing-automatic-speech-rec
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2025-11-10
 draft: true
+archived: true
 ---
 
 Meta meluncurkan Omnilingual Automatic Speech Recognition (ASR), sebuah paket model yang dirancang untuk menerjemahkan ucapan menjadi teks pada lebih dari 1.600 bahasa di seluruh dunia. Inisiatif ini ditujukan untuk memperluas akses teknologi pengenalan suara, khususnya bagi komunitas linguistik yang selama ini kurang terlayani oleh sistem ASR konvensional.

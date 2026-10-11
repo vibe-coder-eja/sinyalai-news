@@ -6,6 +6,7 @@ source: "https://openai.com/index/sharing-ai-progress-in-mathematics"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T12:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "Sharing AI progress in mathematics"
 categories: ["Rilis Model","Riset & Kebijakan"]
 ---
