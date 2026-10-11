@@ -1,5 +1,7 @@
 # Upgrade ke Standar ⭐⭐⭐⭐ — Keamanan, Pipeline RSS, SEO, Testing
 
+> **Arsip historis.** Dokumen ini ditulis pada Juli 2026 dan tidak lagi diperbarui. Path lokal, domain (`sinyalai.vercel.app`), jumlah artikel, dan temuan di dalamnya mencerminkan keadaan saat itu. Untuk kondisi terkini lihat `README.md`, `CHANGELOG.md`, dan `docs/rencana-perbaikan.md`.
+
 Rencana perbaikan untuk 4 kategori yang belum memenuhi standar bintang 4.
 
 ## User Review Required

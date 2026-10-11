@@ -1,5 +1,7 @@
 # Walkthrough — Upgrade ke Standar ⭐⭐⭐⭐ SinyalAI News
 
+> **Arsip historis.** Dokumen ini ditulis pada Juli 2026 dan tidak lagi diperbarui. Path lokal, domain (`sinyalai.vercel.app`), jumlah artikel, dan temuan di dalamnya mencerminkan keadaan saat itu. Untuk kondisi terkini lihat `README.md`, `CHANGELOG.md`, dan `docs/rencana-perbaikan.md`.
+
 Upgrade komprehensif pada **Keamanan**, **Pipeline RSS**, **SEO**, dan **Testing** telah berhasil diimplementasikan dan diverifikasi dengan sukses!
 
 ---

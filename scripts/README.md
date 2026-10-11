@@ -12,14 +12,30 @@ sources.json  →  fetch RSS  →  draft .md (draft: true)  →  editorial revie
 |------|--------|
 | `scripts/sources.json` | Daftar perusahaan + URL RSS/page |
 | `scripts/templates/article.md` | Template frontmatter + body |
+| `scripts/generate-news.mjs` | CLI berita otomatis: seleksi, penulis AI, validasi, simpan |
 | `scripts/fetch-signals.mjs` | CLI fetch → tulis draft |
+| `scripts/archive-all.mjs` | Tandai semua artikel tayang `archived: true` (dipakai reset konten) |
+| `scripts/convert-logos.mjs` | Master logo `src/logo/*.png` → WebP di `public/logo/`, ikon, favicon, OG image |
 | `scripts/lib/rss.mjs` | Parser RSS/Atom minimal |
+| `scripts/lib/html.mjs` | Pengambil daftar rilis dari halaman HTML |
+| `scripts/lib/sources.mjs` | Pemilihan sumber aktif |
+| `scripts/lib/source-context.mjs` | Konteks halaman sumber untuk penulis AI |
+| `scripts/lib/ai-writer.mjs` | Prompt dan pemanggilan penulis AI (OpenRouter) |
+| `scripts/lib/validate.mjs` | Validasi keluaran AI (format, gaya, batas teknis) |
+| `scripts/lib/editor.mjs` | Seleksi kandidat, keseimbangan kategori, batas per perusahaan |
+| `scripts/lib/editions.mjs` | Profil edisi pagi dan malam |
+| `scripts/lib/relevance.mjs` | Penyaring relevansi dan skor prioritas |
+| `scripts/lib/release-tags.mjs` | Penyaring tag rilis GitHub |
+| `scripts/lib/topic.mjs` | Pembanding topik antar artikel |
+| `scripts/lib/dedupe.mjs` | Deduplikasi URL sumber & slug |
+| `scripts/lib/backfill.mjs` | Jendela tanggal per hari dan penyaringan arsip untuk reset konten |
+| `scripts/lib/archive.mjs` | Penanda `archived: true` pada Markdown |
 | `scripts/lib/markdown.mjs` | Writer draft + skeleton body |
 | `scripts/lib/slug.mjs` | Pembuat slug aman |
-| `scripts/lib/relevance.mjs` | Penyaring relevansi AI untuk feed umum |
-| `scripts/lib/dedupe.mjs` | Deduplikasi URL sumber & slug |
 | `scripts/lib/text.mjs` | Pemotongan teks batas kata (*word-boundary*) |
-| `src/content/news/` | Artikel (termasuk draft) |
+| `src/content/news/` | Artikel (termasuk draft dan arsip) |
+
+Alat reset konten dijelaskan di [`docs/reset-konten.md`](../docs/reset-konten.md), jadwal edisi di [`docs/jadwal-tayang.md`](../docs/jadwal-tayang.md).
 
 ## Menjalankan
 

@@ -1,7 +1,7 @@
 # Rencana Perbaikan — Sinyal AI News
 
 > Disusun: 2026-10-07 · Berdasarkan review kode dan hasil build lokal (situs live tidak dapat diakses dari lingkungan review).
-> Status: **usulan, belum dieksekusi**. Tidak ada file kode yang diubah.
+> Status: **sebagian besar selesai** (diperbarui 2026-10-11). Rincian per fase ada di bagian *Status eksekusi* di bawah. Dokumen ini berawal dari usulan, jadi isi fase di atasnya adalah rencana awal, bukan keadaan terkini.
 
 ## Ringkasan
 
@@ -113,4 +113,4 @@ Fase 1 → 2 → 3 → 4 → 5 → 6. Fase 1 dan 2 dapat dikerjakan dalam satu b
 - **Fase 3** selesai sebagian: 11 artikel bertanggal palsu ditarik (lihat `CHANGELOG.md`). Artikel OpenAI, Google, dan NVIDIA yang tayang 4–7 Okt 2026 masih bertanggal stempel generate dan **belum terverifikasi** terhadap tanggal sumbernya.
 - **Fase 4** selesai: validasi keluaran LLM, konteks halaman sumber, anti-halusinasi, dan kandidat cadangan (lihat `CHANGELOG.md`). Item "sumber `trusted: false` jadi draft" dicoret, karena tujuan adalah tayang otomatis untuk semua sumber. Pengaman yang tersisa: validasi keluaran LLM dan konteks halaman sumber.
 - **Fase 5** selesai sebagian: manifest PWA, README, dan JSON-LD diperbaiki. OG image per artikel dan self-host font ditunda (butuh aset/unduhan font dan keputusan desain).
-- **Fase 6** selesai sebagian: dokumen audit dipindah ke `docs/`, `.agents/skills` dipertahankan. Logo **tidak** dihapus: PNG bernomor di `src/logo/` adalah master yang dibaca `scripts/convert-logos.mjs`. Sisa opsi: `public/logo/*.png` (±5,9 MB) ikut ter-deploy padahal situs hanya memakai `.webp`; hapus hanya jika tidak ada tautan eksternal ke PNG tersebut.
+- **Fase 6** selesai (2026-10-11): dokumen audit lama dipindah ke `docs/arsip/` dengan banner historis, PRD dan panduan konten dipindah ke `docs/`, `.agents/skills` dipertahankan. Master logo di `src/logo/` diberi nama semantik dan salinan WebP-nya dihapus. `public/logo/*.png` (±5,9 MB) dihapus karena duplikat `.webp`, tidak dirujuk kode mana pun, dan ikut ter-deploy. `public/logo.png` dipertahankan karena dipakai manifest PWA dan JSON-LD.
