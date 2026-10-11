@@ -1,0 +1,95 @@
+name: Reset Konten Berita (RSAIN)
+
+# Mengarsipkan seluruh berita lama lalu menulis ulang berita edisi pagi untuk tanggal-tanggal
+# tertentu dengan aturan redaksi terbaru. Hasilnya didorong ke BRANCH BARU (bukan main),
+# lalu ditinjau dan di-merge sekali lewat PR agar situs tidak pernah kosong.
+# Pemakaian dan alasan desain: docs/reset-konten.md
+on:
+  workflow_dispatch:
+    inputs:
+      dates:
+        description: 'Tanggal sumber (YYYY-MM-DD) dipisah koma, diproses berurutan'
+        required: true
+        default: '2026-10-09,2026-10-10,2026-10-11'
+        type: string
+      limit:
+        description: 'Kuota berita per tanggal'
+        required: false
+        default: '3'
+        type: string
+      branch:
+        description: 'Nama branch hasil (dibuat baru dari main)'
+        required: true
+        default: 'konten/reset-9-11-oktober'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    name: Arsipkan dan tulis ulang
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout main terbaru
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Arsipkan seluruh berita lama
+        run: node scripts/archive-all.mjs
+
+      - name: Tulis ulang berita per tanggal (edisi pagi)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'minimax/minimax-m3' }}
+          DATES: ${{ inputs.dates }}
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          IFS=',' read -ra LIST <<< "$DATES"
+          for d in "${LIST[@]}"; do
+            d="$(echo "$d" | tr -d '[:space:]')"
+            node scripts/generate-news.mjs --edition=pagi --limit="$LIMIT" --for-date="$d" --ignore-archived
+          done
+
+      - name: Pastikan ada berita baru yang tayang
+        run: |
+          LIVE=$(grep -rLE '^archived: true' src/content/news --include='*.md' | wc -l)
+          echo "Berita tayang setelah reset: $LIVE"
+          if [ "$LIVE" -eq 0 ]; then
+            echo "::error::Tidak ada berita baru. Branch tidak didorong agar situs tidak kosong."
+            exit 1
+          fi
+
+      - name: Run test suite
+        run: npm run test
+
+      - name: Build static site with Astro
+        run: npm run build
+
+      - name: Push ke branch hasil
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          git config --global user.name "Redaktur Sinyal AI News (RSAIN)"
+          git config --global user.email "rsain@sinyalai.users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add src/content/news/
+          git commit -m "content(news): reset konten, arsipkan berita lama dan tulis ulang edisi pagi" -m "edition=reset"
+          git push origin "$BRANCH"
