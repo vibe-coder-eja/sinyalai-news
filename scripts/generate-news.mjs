@@ -19,8 +19,8 @@ import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
 import { formatDayMonth } from "./lib/text.mjs";
-import { selectEditorialEdition, isToday, DEFAULT_MAX_AGE_DAYS } from "./lib/editor.mjs";
-import { getEdition } from "./lib/editions.mjs";
+import { selectEditorialEdition, isToday } from "./lib/editor.mjs";
+import { getEdition, resolveEditionByTime } from "./lib/editions.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 import { fetchSourceText } from "./lib/source-context.mjs";
 
@@ -61,15 +61,16 @@ const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const sourceFilter = args.find((a) => a.startsWith("--source="))?.split("=")[1];
 // Default quota: 3 articles per edition (Pagi: 3, Malam: 3)
-const maxAgeDays = parseInt(args.find((a) => a.startsWith("--max-age-days="))?.split("=")[1] || String(DEFAULT_MAX_AGE_DAYS), 10);
 const editionQuota = parseInt(args.find((a) => a.startsWith("--limit="))?.split("=")[1] || "3", 10);
 
-// Determine broadcast edition (Pagi: 10:35 WIB / 03:35 UTC, Malam: 22:05 WIB / 15:05 UTC)
-const currentUtcHour = new Date().getUTCHours();
-const defaultEdition = currentUtcHour < 12 ? "pagi" : "malam";
-const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || defaultEdition;
+// Determine broadcast edition (Pagi: 10:35 WIB, Malam: 22:05 WIB). Nama edisi sebaiknya dikirim
+// eksplisit oleh pemicu; tanpa itu ditebak dari jam WIB karena run terjadwal GitHub bisa molor.
+const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || resolveEditionByTime();
 const editionProfile = getEdition(edition);
 const editionLabel = editionProfile.label;
+// Batas usia rilis: --max-age-days menimpa batas milik edisi.
+const maxAgeDaysArg = args.find((a) => a.startsWith("--max-age-days="))?.split("=")[1];
+const maxAgeDays = maxAgeDaysArg ? parseInt(maxAgeDaysArg, 10) : editionProfile.maxAgeDays;
 
 async function main() {
   console.log(`\n======================================================`);
@@ -160,6 +161,7 @@ async function main() {
   console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} kandidat untuk ${editionQuota} slot tayang):`);
   if (selectedArticles.length === 0) {
     console.log(`   ℹ️ Tidak ada rilis baru yang layak tayang saat ini.`);
+    console.log(`::warning title=Kuota edisi belum terpenuhi::${editionLabel}: tidak ada rilis layak tayang (0 dari ${editionQuota}).`);
     console.log(`\n======================================================\n`);
     return;
   }
@@ -246,6 +248,11 @@ async function main() {
     } catch (err) {
       console.error(`      ❌ Gagal memproses artikel "${item.title}": ${err.message}`);
     }
+  }
+
+  if (totalPublished < editionQuota) {
+    // Anotasi ::warning:: tampil di ringkasan run GitHub Actions.
+    console.log(`::warning title=Kuota edisi belum terpenuhi::${editionLabel}: ${totalPublished} dari ${editionQuota} berita tayang.`);
   }
 
   console.log(`\n======================================================`);

@@ -4,6 +4,27 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [0.9.0] — 2026-10-11
+
+Rilis jadwal tayang dan tampilan: edisi pagi dan malam kini dipicu tepat waktu dari luar GitHub (cron GitHub tinggal cadangan), aturan isi per edisi dibedakan, dan teks beranda, halaman Tentang, serta footer diperbarui.
+
+### ⏰ Jadwal Tayang Tepat Waktu dan Jendela Berita per Edisi
+Run terjadwal GitHub terlambat 4–7 jam dari cron (edisi pagi tayang sekitar 17:00 WIB, edisi malam sekitar 02:00–03:40 WIB). Panduan pemasangan: `docs/jadwal-tayang.md`.
+- **Pemicu eksternal sebagai pemicu utama**: cron-job.org memanggil `workflow_dispatch` pada 10:35 dan 22:05 WIB dengan nama edisi eksplisit.
+- **Cron GitHub menjadi cadangan** dengan penjaga: run terjadwal dilewati bila edisi yang sama sudah tayang dalam 10 jam terakhir (penanda `edition=<nama>` di pesan commit). Nama edisi dari cron kini eksplisit, tidak lagi ditebak.
+- **Edisi tanpa nama ditebak dari jam WIB** (pagi 04:00–18:59, malam 19:00–03:59), bukan `UTC < 12`, agar run yang molor tidak salah label.
+- **Pagi**: boleh mengambil rilis 1–2 hari terakhir, bersaing sejajar dengan rilis hari ini berdasarkan skor. **Malam**: rilis hari ini didahulukan. Batas usia keduanya 2 hari (sebelumnya 7); `--max-age-days` tetap bisa menimpa.
+- Peringatan `::warning::` di ringkasan Actions bila kuota edisi tidak terpenuhi.
+- 6 test baru (total 198).
+
+### 🏠 Copywriting Situs dan Footer
+- **Beranda**: teks hero ditulis ulang agar menggambarkan tujuan situs: berita AI berbahasa Indonesia dari sumber resmi, ringkas dan netral, bertaut ke sumber asli, terbit pagi 10.35 dan malam 22.05 WIB. Judul seksi "Sinyal terbaru" menjadi "Berita terbaru"; deskripsi meta disesuaikan.
+- **Beranda**: deretan label perusahaan (OpenClaw, Hugging Face, OpenAI, dst.) di beranda dihapus.
+- **Tentang**: copywriting ditulis ulang (misi, cara kerja redaksi dalam empat langkah, prinsip editorial) dengan keterbukaan bahwa berita ditulis redaktur berbasis AI (RSAIN). Klaim "8 raksasa AI" dan daftar teknis (Astro, GitHub Pages) dihapus; label sumber resmi dipertahankan.
+- **Footer**: tambah baris "Bagian dari PT. Cakrawala Prima Berdikari" dengan tautan ke https://cakrawalaprimaberdikari.com (tab baru, `rel="noopener"`).
+
+---
+
 ## [0.8.1] — 2026-10-10
 
 Rilis perbaikan setelah v0.8.0: sumber HTML kini benar-benar dipakai pipeline berita, berita kembar dari tag kandidat rilis GitHub ditangani, prompt penulis AI disetel setelah menilai artikel pertama dari aturan baru, dan dokumentasi alur redaksi disimpan per versi di repo.

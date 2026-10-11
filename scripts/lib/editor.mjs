@@ -159,7 +159,8 @@ export function effectiveScore(priority, { edition, shares = {} } = {}) {
  * @param {Set<string>} params.existingUrls - Set URL yang sudah dinormalisasi dan pernah diterbitkan
  * @param {number} [params.limit=3] - Target kuota edisi (pagi: 3, malam: 3)
  * @param {Date} [params.referenceDate] - Waktu acuan sekarang (default: new Date())
- * @param {number} [params.maxAgeDays=7] - Rilis lebih tua dari ini atau tanpa tanggal tidak tayang
+ * @param {number} [params.maxAgeDays] - Rilis lebih tua dari ini atau tanpa tanggal tidak tayang
+ *   (bawaan: `edition.maxAgeDays`, lalu 7 hari)
  * @param {object} [params.edition] - Profil edisi (editions.mjs) untuk bonus skor
  * @param {Array<object>} [params.existingEntries] - Metadata artikel yang sudah ada (dedupe.mjs `entries`)
  * @param {(info: { reason: string, candidate: object, match?: object }) => void} [params.onSkip]
@@ -171,8 +172,9 @@ export function selectEditorialEdition(params) {
     existingUrls = new Set(),
     limit = 3,
     referenceDate = new Date(),
-    maxAgeDays = DEFAULT_MAX_AGE_DAYS,
     edition,
+    // Batas usia: argumen eksplisit > batas milik edisi > bawaan umum.
+    maxAgeDays = edition?.maxAgeDays ?? DEFAULT_MAX_AGE_DAYS,
     existingEntries = [],
     onSkip = () => {},
   } = params;
@@ -231,6 +233,12 @@ export function selectEditorialEdition(params) {
     keptPool.push({ ...current, label: cand.item?.title || cand.normUrl });
     dedupedCandidates.push(cand);
   });
+
+  // Edisi tanpa prioritas hari ini (pagi): semua rilis yang masih layak bersaing sejajar
+  // berdasarkan skor, termasuk rilis 1-2 hari sebelumnya.
+  if (edition?.todayFirst === false) {
+    return pickDiverse(sortCandidatesByPriority(dedupedCandidates), limit, new Set());
+  }
 
   // 3. Pisahkan ke dalam 2 bucket: "Hari Ini" vs "Hari Sebelumnya (Backlog)"
   const todayCandidates = [];
