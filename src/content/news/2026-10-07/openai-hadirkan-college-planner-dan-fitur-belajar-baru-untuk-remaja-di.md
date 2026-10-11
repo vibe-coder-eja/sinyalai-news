@@ -6,6 +6,7 @@ source: "https://openai.com/index/teens-learn-and-plan"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-07T12:00:00.000Z
 draft: false
+archived: true
 ---
 
 OpenAI mengumumkan pembaruan untuk ChatGPT for Teens yang mencakup College Planner, fitur baru untuk mendampingi siswa dalam proses pendaftaran perguruan tinggi. Fitur ini dirancang untuk membantu remaja menyusun rencana, menelusuri pilihan kampus, serta mengelola tenggat waktu aplikasi kuliah secara terstruktur.

@@ -6,6 +6,7 @@ source: "https://openai.com/index/gpt-6-for-everyone"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-07T00:00:00.000Z
 draft: false
+archived: true
 ---
 
 OpenAI mengumumkan peluncuran GPT-6 secara global melalui platform ChatGPT. Peluncuran ini disertai dengan fitur Intelligent UI yang dirancang untuk mengubah format jawaban menjadi lebih visual dan interaktif.

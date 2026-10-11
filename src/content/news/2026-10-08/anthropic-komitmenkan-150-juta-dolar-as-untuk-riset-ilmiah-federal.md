@@ -6,6 +6,7 @@ source: "https://www.anthropic.com/news/genesis-mission-commitment"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T00:00:00.000Z
 draft: false
+archived: true
 ---
 
 Anthropic mengumumkan komitmen pendanaan sebesar 150 juta dolar AS selama tiga tahun untuk Genesis Mission, sebuah inisiatif federal yang bertujuan mempercepat penemuan ilmiah dan teknologi melalui kecerdasan buatan. Dana tersebut dialokasikan untuk menyediakan akses model bahasa Claude kepada lebih dari 15 lembaga yang tergabung dalam misi tersebut, termasuk NASA, National Institutes of Health (NIH), dan National Science Foundation (NSF). Komitmen ini diumumkan dalam Science: A New Golden Age Summit yang digelar oleh White House Office of Science and Technology Policy di Washington, DC.

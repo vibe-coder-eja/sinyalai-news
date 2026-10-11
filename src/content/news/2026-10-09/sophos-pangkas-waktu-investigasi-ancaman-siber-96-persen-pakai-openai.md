@@ -6,6 +6,7 @@ source: "https://openai.com/index/sophos"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-09T07:00:00.000Z
 draft: false
+archived: true
 ---
 
 Sophos mengintegrasikan OpenAI Daybreak ke dalam layanan Managed Detection and Response (MDR) untuk mempercepat alur kerja analis keamanan siber. Model AI dari OpenAI tersebut dipakai sebagai agen investigasi yang menangani tahap pengumpulan data, kontekstualisasi indikator ancaman, serta penyusunan hipotesis serangan secara otomatis.

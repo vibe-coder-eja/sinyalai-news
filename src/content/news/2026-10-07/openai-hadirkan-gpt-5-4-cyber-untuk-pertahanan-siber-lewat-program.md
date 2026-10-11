@@ -6,6 +6,7 @@ source: "https://openai.com/index/scaling-trusted-access-for-cyber-defense"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-07T10:32:04.588Z
 draft: false
+archived: true
 ---
 
 OpenAI mengumumkan perluasan program Trusted Access for Cyber dengan memperkenalkan GPT-5.4-Cyber. Model ini dihadirkan bagi para cyber defender yang telah melewati proses vetting sebagai jalur akses resmi terhadap kapabilitas AI terbaru OpenAI di bidang keamanan siber.

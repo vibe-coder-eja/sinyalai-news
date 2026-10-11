@@ -5,6 +5,7 @@ company: "Google"
 source: "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
 publishedAt: 2026-10-02
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

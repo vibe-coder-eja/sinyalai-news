@@ -6,6 +6,7 @@ source: "https://openai.com/index/atlassian-partnership"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-06T16:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "Atlassian and OpenAI expand partnership to turn enterprise knowledge into action"
 categories: ["Rilis Model","Kerjasama Industri","Penerapan Industri"]
 ---

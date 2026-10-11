@@ -6,6 +6,7 @@ source: "https://github.com/openclaw/openclaw/releases/tag/v2026.9.9"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T17:38:34.000Z
 draft: false
+archived: true
 sourceTitle: "openclaw 2026.9.9"
 categories: ["Fitur & Skills"]
 ---

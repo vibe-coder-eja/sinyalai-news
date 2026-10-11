@@ -6,6 +6,7 @@ source: "https://openai.com/index/oracle"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T16:00:00.000Z
 draft: false
+archived: true
 ---
 
 Oracle memanfaatkan ChatGPT dan Codex dari OpenAI untuk mengotomatiskan berbagai alur kerja internal di tiga divisi utama: rekrutmen, engineering, dan operasional. Penerapan ini berfokus pada konversi pengetahuan spesialis menjadi alur kerja yang cepat dan dapat diulang oleh tim internal.

@@ -6,6 +6,7 @@ source: "https://x.ai/news/grok-4-5"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-07-16
 draft: true
+archived: true
 ---
 
 xAI memperkenalkan Grok 4.5 sebagai model AI terbaru sekaligus model paling pintar yang mereka kembangkan. Peluncuran ini diposisikan untuk menjawab kebutuhan pada tiga area utama: pemrograman (coding), eksekusi tugas agen (agentic tasks), dan pekerjaan berbasis pengetahuan (knowledge work).

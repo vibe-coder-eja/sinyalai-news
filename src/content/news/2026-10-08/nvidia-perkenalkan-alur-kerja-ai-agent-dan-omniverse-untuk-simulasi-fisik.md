@@ -6,6 +6,7 @@ source: "https://blogs.nvidia.com/blog/developers-simulation-frontier-ai-agents/
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T21:06:35.000Z
 draft: false
+archived: true
 ---
 
 NVIDIA menampilkan serangkaian proyek pengembangan yang memadukan model AI frontier dengan pustaka NVIDIA Omniverse untuk mempercepat pembuatan aplikasi simulasi. Pengembang kini dapat memberikan instruksi dalam bahasa alami untuk mengarahkan AI agent, mulai dari menghubungkan aset, menerapkan logika fisika, hingga memeriksa perilaku adegan (scene) dalam simulasi. Pustaka Omniverse berperan menyediakan kapabilitas fisika, rendering, dan simulasi sensor yang dipercepat oleh GPU.

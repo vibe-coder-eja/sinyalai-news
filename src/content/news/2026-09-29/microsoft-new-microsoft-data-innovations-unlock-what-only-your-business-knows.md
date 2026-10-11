@@ -5,6 +5,7 @@ company: "Microsoft"
 source: "https://blogs.microsoft.com/blog/2026/09/28/new-microsoft-data-innovations-unlock-what-only-your-business-knows/"
 publishedAt: 2026-09-29
 draft: true
+archived: true
 ---
 
 > Draft otomatis dari pipeline Sinyal AI. **Belum di-review editorial.**

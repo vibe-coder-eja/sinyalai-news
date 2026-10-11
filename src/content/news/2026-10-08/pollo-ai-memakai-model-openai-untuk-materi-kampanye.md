@@ -6,6 +6,7 @@ source: "https://openai.com/index/pollo-ai"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T12:00:00.000Z
 draft: false
+archived: true
 ---
 
 Ringkasan resmi OpenAI menyebut bahwa Pollo AI memakai GPT-5.6, GPT-6 Astra, dan GPT-Image-2.5 untuk mengubah gagasan kreatif menjadi kampanye. Penerapan model tersebut dijelaskan dalam konteks bantuan bagi para kreator untuk mengembangkan materi promosi.

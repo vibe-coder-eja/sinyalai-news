@@ -6,6 +6,7 @@ source: "https://openai.com/index/disrupting-ai-enabled-false-front-operations"
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-08T00:00:00.000Z
 draft: false
+archived: true
 sourceTitle: "Disrupting AI-enabled “false front” operations"
 categories: ["Standar Umum"]
 ---
