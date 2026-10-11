@@ -51,6 +51,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
+          # Wajib main terbaru, bukan SHA saat run dipicu. Run yang antre di grup concurrency
+          # harus melihat artikel edisi sebelumnya, kalau tidak sumber yang sama terbit dua kali.
+          ref: main
           fetch-depth: 0
 
       # Edisi: input dispatch (pagi/malam) > jadwal cron yang memicu > kosong (skrip menebak dari jam WIB).
