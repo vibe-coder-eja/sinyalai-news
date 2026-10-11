@@ -64,3 +64,16 @@ describe("releaseTopicTokens", () => {
     expect(MIN_RELEASE_NOTES_CHARS).toBe(120);
   });
 });
+
+describe("releaseSkipReason: perawatan internal", () => {
+  const gh = (tag, title) => ({ link: `https://github.com/o/r/releases/tag/${encodeURIComponent(tag)}`, title });
+  it("melewati tag build otomatis tanpa nomor versi", () => {
+    expect(releaseSkipReason(gh("release-publish/9cf7fc279c26-1791664994", "x"))).toMatch(/build otomatis/);
+  });
+  it("melewati judul bergaya commit test/ci/chore", () => {
+    expect(releaseSkipReason(gh("v2026.10.2", "v2026.10.2: ci: pin runner"))).toMatch(/perawatan internal/);
+  });
+  it("tidak menyentuh rilis versi biasa", () => {
+    expect(releaseSkipReason(gh("v2026.10.1", "openclaw 2026.10.1"))).toBeNull();
+  });
+});

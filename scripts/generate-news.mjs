@@ -23,6 +23,7 @@ import { selectEditorialEdition, isToday } from "./lib/editor.mjs";
 import { getEdition, resolveEditionByTime } from "./lib/editions.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 import { fetchSourceText } from "./lib/source-context.mjs";
+import { dateWindow, filterToWindow, withoutArchived } from "./lib/backfill.mjs";
 
 /**
  * Basic .env loader (without external dependencies)
@@ -63,9 +64,14 @@ const sourceFilter = args.find((a) => a.startsWith("--source="))?.split("=")[1];
 // Default quota: 3 articles per edition (Pagi: 3, Malam: 3)
 const editionQuota = parseInt(args.find((a) => a.startsWith("--limit="))?.split("=")[1] || "3", 10);
 
+// Mode reset konten: --ignore-archived mengabaikan arsip lama saat dedupe (sumber yang sama boleh
+// ditulis ulang); --for-date=YYYY-MM-DD hanya memilih rilis sumber pada hari UTC itu.
+const ignoreArchived = args.includes("--ignore-archived");
+const forDate = args.find((a) => a.startsWith("--for-date="))?.split("=")[1];
+
 // Determine broadcast edition (Pagi: 10:35 WIB, Malam: 22:05 WIB). Nama edisi sebaiknya dikirim
 // eksplisit oleh pemicu; tanpa itu ditebak dari jam WIB karena run terjadwal GitHub bisa molor.
-const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || resolveEditionByTime();
+const edition = args.find((a) => a.startsWith("--edition="))?.split("=")[1] || (forDate ? "pagi" : resolveEditionByTime());
 const editionProfile = getEdition(edition);
 const editionLabel = editionProfile.label;
 // Batas usia rilis: --max-age-days menimpa batas milik edisi.
@@ -81,6 +87,8 @@ async function main() {
   console.log(`Target Kuota Tayang: ${editionQuota} berita`);
   console.log(`Fokus edisi: ${editionProfile.focus}`);
   console.log(`Batas usia rilis: ${maxAgeDays} hari (tanggal tayang mengikuti tanggal sumber)`);
+  if (forDate) console.log(`Jendela tanggal sumber: ${forDate} (hari UTC)`);
+  if (ignoreArchived) console.log(`Mode reset: arsip lama diabaikan saat dedupe`);
   console.log(`Dry run: ${dryRun ? "YA (tidak menyimpan file)" : "TIDAK (publikasi langsung)"}`);
 
   if (!API_KEY) {
@@ -102,7 +110,10 @@ async function main() {
   }
 
   // Load existing published URLs for deduplication
-  const { sources: existingUrls, entries: existingEntries } = await loadExistingArticles(CONTENT_DIR);
+  const loaded = await loadExistingArticles(CONTENT_DIR);
+  const { sources: existingUrls, entries: existingEntries } = ignoreArchived
+    ? withoutArchived(loaded, normalizeUrl)
+    : loaded;
   console.log(`Terdeteksi ${existingUrls.size} URL rilis resmi yang sudah ada sebelumnya.\n`);
 
   // 1. Fetch and pool candidate signals from all active sources (rss + html; page = manual, dilewati)
@@ -141,12 +152,16 @@ async function main() {
   }
 
   // 2. Chief Editor Selection (Prioritas, Hari Ini > Hari Sebelumnya, Anti-Duplikasi, Diversifikasi)
+  const window = forDate ? dateWindow(forDate) : null;
+  const candidatePool = window ? filterToWindow(allFeedItems, window) : allFeedItems;
+  if (window) console.log(`   🗓️ ${candidatePool.length} dari ${allFeedItems.length} sinyal berada di jendela ${forDate}.`);
+
   const selectedArticles = selectEditorialEdition({
-    allFeedItems,
+    allFeedItems: candidatePool,
     existingUrls,
     // Ambil kandidat cadangan: yang gagal validasi/konteks tipis digantikan kandidat berikutnya.
     limit: editionQuota * 2,
-    referenceDate: new Date(),
+    referenceDate: window ? window.end : new Date(),
     maxAgeDays,
     edition: editionProfile,
     existingEntries,

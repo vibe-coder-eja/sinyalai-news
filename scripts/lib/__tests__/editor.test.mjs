@@ -439,3 +439,20 @@ describe("jadwal dan jendela berita per edisi", () => {
     expect(selected.length).toBe(1);
   });
 });
+
+describe("batas per perusahaan", () => {
+  it("tidak mengambil lebih dari 2 berita dari satu perusahaan walau kandidat lain kurang", () => {
+    const ref = new Date("2026-10-11T10:00:00Z");
+    const mk = (n) => ({
+      source: { company: "OpenClaw" },
+      item: { link: `https://github.com/o/r/releases/tag/v${n}.0`, title: `Rilis fitur unik ${n}`, publishedAt: new Date(ref.getTime() - 3600 * 1000) },
+      priority: { priorityScore: 40, categories: ["Fitur & Skills"] },
+    });
+    const selected = selectEditorialEdition({
+      allFeedItems: [mk(1), mk(2), mk(3), mk(4)],
+      limit: 6,
+      referenceDate: ref,
+    });
+    expect(selected.length).toBe(2);
+  });
+});

@@ -6,6 +6,7 @@ source: "https://github.com/openclaw/openclaw/releases/tag/release-publish%2F9cf
 author: "Redaktur Sinyal AI News (RSAIN)"
 publishedAt: 2026-10-10T20:37:42.000Z
 draft: false
+archived: true
 sourceTitle: "release-publish/9cf7fc279c26-1791664994: fix(ui): restore startup toast recovery test after reload (#168634)"
 categories: ["Penerapan Industri"]
 ---

@@ -82,15 +82,19 @@ export function sortCandidatesByPriority(items) {
   });
 }
 
+/** Batas berita dari satu perusahaan dalam satu pemilihan kandidat edisi. */
+export const MAX_PER_COMPANY = 2;
+
 /**
  * Memilih item dengan preferensi diversifikasi sumber (maks 1 per perusahaan di putaran pertama).
  * @param {Array<object>} candidates
  * @param {number} quota
- * @param {Set<string>} chosenCompanies
+ * @param {Map<string, number>} chosenCompanies perusahaan terpilih dan jumlah beritanya (dibagi antar pemanggilan)
  * @returns {Array<object>}
  */
-function pickDiverse(candidates, quota, chosenCompanies) {
+function pickDiverse(candidates, quota, chosenCompanies, maxPerCompany = MAX_PER_COMPANY) {
   const selected = [];
+  const counts = chosenCompanies;
   const remaining = [];
 
   for (const cand of candidates) {
@@ -101,15 +105,20 @@ function pickDiverse(candidates, quota, chosenCompanies) {
     const company = cand.source?.company || cand.item?.company || "unknown";
     if (!chosenCompanies.has(company)) {
       selected.push(cand);
-      chosenCompanies.add(company);
+      chosenCompanies.set(company, 1);
     } else {
       remaining.push(cand);
     }
   }
 
   // Jika kuota belum terpenuhi dari perusahaan yang berbeda, ambil sisa kandidat terbaik
+  // Satu perusahaan dibatasi `maxPerCompany` per pemilihan agar edisi tidak didominasi satu sumber.
   for (const cand of remaining) {
     if (selected.length >= quota) break;
+    const company = cand.source?.company || cand.item?.company || "unknown";
+    const used = counts.get(company) ?? 0;
+    if (used >= maxPerCompany) continue;
+    counts.set(company, used + 1);
     selected.push(cand);
   }
 
@@ -237,7 +246,7 @@ export function selectEditorialEdition(params) {
   // Edisi tanpa prioritas hari ini (pagi): semua rilis yang masih layak bersaing sejajar
   // berdasarkan skor, termasuk rilis 1-2 hari sebelumnya.
   if (edition?.todayFirst === false) {
-    return pickDiverse(sortCandidatesByPriority(dedupedCandidates), limit, new Set());
+    return pickDiverse(sortCandidatesByPriority(dedupedCandidates), limit, new Map());
   }
 
   // 3. Pisahkan ke dalam 2 bucket: "Hari Ini" vs "Hari Sebelumnya (Backlog)"
@@ -257,7 +266,7 @@ export function selectEditorialEdition(params) {
   const sortedPrevious = sortCandidatesByPriority(previousDaysCandidates);
 
   const selected = [];
-  const chosenCompanies = new Set();
+  const chosenCompanies = new Map();
 
   // 5. Ambil dari rilis Hari Ini terlebih dahulu (dengan diversifikasi sumber)
   const pickedToday = pickDiverse(sortedToday, limit, chosenCompanies);
