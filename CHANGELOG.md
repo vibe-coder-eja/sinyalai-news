@@ -18,6 +18,7 @@ Run terjadwal GitHub terlambat 4–7 jam dari cron (edisi pagi tayang sekitar 17
 ### 🏠 Copywriting Beranda
 - Teks hero ditulis ulang agar menggambarkan tujuan situs: berita AI berbahasa Indonesia dari sumber resmi, ringkas dan netral, bertaut ke sumber asli, terbit pagi 10.35 dan malam 22.05 WIB. Judul seksi "Sinyal terbaru" menjadi "Berita terbaru"; deskripsi meta disesuaikan.
 - Deretan label perusahaan (OpenClaw, Hugging Face, OpenAI, dst.) di beranda dihapus.
+- Halaman Tentang: copywriting ditulis ulang (misi, cara kerja redaksi dalam empat langkah, prinsip editorial) dengan keterbukaan bahwa berita ditulis redaktur berbasis AI (RSAIN). Klaim "8 raksasa AI" dan daftar teknis (Astro, GitHub Pages) dihapus; label sumber resmi dipertahankan.
 - Footer: tambah baris "Bagian dari PT. Cakrawala Prima Berdikari" dengan tautan ke https://cakrawalaprimaberdikari.com (tab baru, `rel="noopener"`).
 
 ---
