@@ -6,7 +6,11 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
-Perbaikan keredaksian (berita kembar, dominasi satu sumber, reset konten) dan audit kerapian repo. Mencakup PR #16, #17, #18, dan #19.
+---
+
+## [0.10.0] — 2026-10-11
+
+Rilis keredaksian dan kerapian repo: berita kembar dan dominasi satu sumber diatasi, alat reset konten ditambahkan dan dijalankan, dependensi diperbarui (audit 0 celah), serta aset logo dan dokumentasi dirapikan. Mencakup PR #16, #17, #18, dan #19.
 
 ### 🧼 Audit Kerapian Repo (#19)
 - **Dependensi**: `astro` 7.0.7 → 7.3.8, `@astrojs/sitemap` 3.7.4, `simple-icons` 16.35.0, `vitest` 4.1.11. `npm audit` dari 13 celah (1 critical) menjadi 0. Catatan: `npm install` pada npm 10.9.4 gagal mengurai peer-dependency `vitest` (bug arborist), sehingga pembaruan `vitest` dikerjakan dengan `--legacy-peer-deps`. Lockfile tetap memasang bersih lewat `npm ci`.
