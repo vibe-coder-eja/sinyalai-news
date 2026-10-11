@@ -40,9 +40,16 @@ export function isPrereleaseTag(tag) {
  */
 export function releaseSkipReason(item) {
   const gh = parseGithubReleaseUrl(item?.link || "");
-  if (gh && isPrereleaseTag(gh.tag)) return `kandidat/pra-rilis (${gh.tag})`;
+  if (!gh) return null;
+  if (isPrereleaseTag(gh.tag)) return `kandidat/pra-rilis (${gh.tag})`;
+  // Tag tanpa nomor versi (mis. `release-publish/<sha>`) adalah penanda build otomatis, bukan rilis.
+  if (!/\d+\.\d+/.test(gh.tag)) return `tag build otomatis (${gh.tag})`;
+  // Judul bergaya commit untuk perawatan internal (test, ci, chore, ...).
+  if (MAINTENANCE_TITLE.test(item?.title || "")) return "perawatan internal (test/ci/chore)";
   return null;
 }
+
+const MAINTENANCE_TITLE = /(?:^|[\s:])(?:test|tests|ci|chore|build|docs|style|refactor)(?:\([^)]*\))?!?:\s/i;
 
 /** Cuplikan feed minimal agar sebuah rilis GitHub punya bahan berita (huruf). */
 export const MIN_RELEASE_NOTES_CHARS = 120;

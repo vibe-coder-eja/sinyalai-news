@@ -4,6 +4,18 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ---
 
+## [Belum dirilis]
+
+Perbaikan keredaksian: berita kembar dan dominasi satu sumber.
+
+### 🧹 Berita Kembar dan Dominasi Satu Sumber
+- **Akar masalah kembar**: run yang antre di grup concurrency memakai SHA main saat dipicu, jadi tidak melihat artikel edisi sebelumnya dan menerbitkan sumber yang sama dua kali. Checkout kini memakai `ref: main`.
+- **Tiga artikel kembar diarsipkan** (OpenClaw v2026.10.1, OpenClaw toast test, iklan ChatGPT). Tes baru menjaga agar tidak ada dua artikel tayang dengan sumber sama.
+- **Rilis perawatan internal dibuang**: tag build otomatis tanpa nomor versi (`release-publish/<sha>`) dan judul bergaya commit `test/ci/chore/docs/build/style/refactor`.
+- **Batas 2 berita per perusahaan** dalam pemilihan kandidat satu edisi.
+
+---
+
 ## [0.9.0] — 2026-10-11
 
 Rilis jadwal tayang dan tampilan: edisi pagi dan malam kini dipicu tepat waktu dari luar GitHub (cron GitHub tinggal cadangan), aturan isi per edisi dibedakan, dan teks beranda, halaman Tentang, serta footer diperbarui.
