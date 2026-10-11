@@ -4,6 +4,7 @@ import {
   isPrereleaseTag,
   releaseSkipReason,
   releaseTopicTokens,
+  isThinGithubRelease,
   MIN_RELEASE_NOTES_CHARS,
 } from "../release-tags.mjs";
 
@@ -75,5 +76,33 @@ describe("releaseSkipReason: perawatan internal", () => {
   });
   it("tidak menyentuh rilis versi biasa", () => {
     expect(releaseSkipReason(gh("v2026.10.1", "openclaw 2026.10.1"))).toBeNull();
+  });
+});
+
+describe("tag canary dengan metadata build semver", () => {
+  it("menandai `+canary.<stempel>` sebagai pra-rilis", () => {
+    expect(isPrereleaseTag("v0.21.6+canary.20261011T070142Z")).toBe(true);
+    expect(isPrereleaseTag("v1.0.0+nightly.5")).toBe(true);
+    const link = "https://github.com/NousResearch/hermes-agent/releases/tag/v0.21.6%2Bcanary.20261011T070142Z";
+    expect(releaseSkipReason({ link })).toMatch(/kandidat\/pra-rilis/);
+  });
+
+  it("tidak salah menandai metadata build biasa", () => {
+    expect(isPrereleaseTag("v1.0.0+build.5")).toBe(false);
+    expect(isPrereleaseTag("v1.0.0+device")).toBe(false);
+  });
+});
+
+describe("isThinGithubRelease", () => {
+  const link = "https://github.com/o/r/releases/tag/v1.2.3";
+  it("true untuk rilis GitHub dengan cuplikan feed pendek atau kosong", () => {
+    expect(isThinGithubRelease({ link, summary: "" })).toBe(true);
+    expect(isThinGithubRelease({ link })).toBe(true);
+    expect(isThinGithubRelease({ link, summary: "x".repeat(MIN_RELEASE_NOTES_CHARS - 1) })).toBe(true);
+  });
+
+  it("false bila catatan rilis cukup panjang atau bukan rilis GitHub", () => {
+    expect(isThinGithubRelease({ link, summary: "x".repeat(MIN_RELEASE_NOTES_CHARS) })).toBe(false);
+    expect(isThinGithubRelease({ link: "https://openai.com/index/gpt-6", summary: "" })).toBe(false);
   });
 });

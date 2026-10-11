@@ -7,7 +7,8 @@
  */
 
 const PRERELEASE_WORDS = "rc|alpha|beta|canary|nightly|abandoned|snapshot|dev|preview";
-const PRERELEASE = new RegExp(`(?:^|[-_.])(?:${PRERELEASE_WORDS})(?:[-_.]?\\d+)*(?=$|[-_.])`, "i");
+// Pemisah termasuk "+" (metadata build semver, mis. `v0.21.6+canary.20261011T070142Z`).
+const PRERELEASE = new RegExp(`(?:^|[-_.+])(?:${PRERELEASE_WORDS})(?:[-_.]?\\d+)*(?=$|[-_.+])`, "i");
 
 /**
  * @param {string} link
@@ -53,6 +54,16 @@ const MAINTENANCE_TITLE = /(?:^|[\s:])(?:test|tests|ci|chore|build|docs|style|re
 
 /** Cuplikan feed minimal agar sebuah rilis GitHub punya bahan berita (huruf). */
 export const MIN_RELEASE_NOTES_CHARS = 120;
+
+/**
+ * Rilis GitHub tanpa catatan rilis yang cukup di feed tidak punya bahan berita (halaman GitHub
+ * penuh teks antarmuka). Dicek sebelum seleksi agar tidak memakai slot kandidat.
+ * @param {{ link?: string, summary?: string }} item
+ * @returns {boolean}
+ */
+export function isThinGithubRelease(item) {
+  return parseGithubReleaseUrl(item?.link || "") !== null && (item?.summary || "").length < MIN_RELEASE_NOTES_CHARS;
+}
 
 /**
  * Kata kunci topik untuk rilis GitHub: nama repo dan nomor versi, tanpa penanda kandidat.

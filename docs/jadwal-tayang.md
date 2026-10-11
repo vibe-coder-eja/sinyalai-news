@@ -65,3 +65,7 @@ Klik *Test run* pada job. Run baru bernama "Automated News Pipeline (RSAIN)" aka
 
 - Token kedaluwarsa → pemicu eksternal gagal (HTTP 401) dan hanya cron cadangan yang berjalan, jadi tayang tetap terjadi tetapi terlambat. Perbarui token sebelum tanggal kedaluwarsa.
 - Peringatan **"Kuota edisi belum terpenuhi"** muncul di ringkasan run Actions bila artikel yang tayang kurang dari kuota.
+
+## Kuota tidak terpenuhi
+
+Bila rilis dalam batas usia edisi (2 hari) kurang dari kuota, pipeline mengulang seleksi dengan batas cadangan 4 hari. Jika kuota masih belum terpenuhi, langkah akhir workflow membuka issue "Kuota edisi belum terpenuhi: <edisi>, <tanggal>" (satu per edisi per hari) dan membuat run gagal bila 0 berita tayang, sehingga GitHub mengirim notifikasi. Situs tetap di-deploy sebelum run ditandai gagal.

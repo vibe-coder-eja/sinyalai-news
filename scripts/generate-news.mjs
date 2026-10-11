@@ -13,14 +13,14 @@ import path from "node:path";
 import { fetchFeed } from "./lib/rss.mjs";
 import { fetchHtmlListing } from "./lib/html.mjs";
 import { selectActiveSources, fetchSourceItems } from "./lib/sources.mjs";
-import { releaseSkipReason, parseGithubReleaseUrl, MIN_RELEASE_NOTES_CHARS } from "./lib/release-tags.mjs";
+import { releaseSkipReason, isThinGithubRelease, parseGithubReleaseUrl, MIN_RELEASE_NOTES_CHARS } from "./lib/release-tags.mjs";
 import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
 import { loadExistingArticles, normalizeUrl } from "./lib/dedupe.mjs";
 import { slugify } from "./lib/slug.mjs";
 import { writePublishedArticle, toIsoDate } from "./lib/markdown.mjs";
 import { formatDayMonth } from "./lib/text.mjs";
 import { selectEditorialEdition, isToday } from "./lib/editor.mjs";
-import { getEdition, resolveEditionByTime } from "./lib/editions.mjs";
+import { getEdition, resolveEditionByTime, FALLBACK_MAX_AGE_DAYS } from "./lib/editions.mjs";
 import { generateArticleWithAI } from "./lib/ai-writer.mjs";
 import { fetchSourceText } from "./lib/source-context.mjs";
 import { dateWindow, filterToWindow, withoutArchived } from "./lib/backfill.mjs";
@@ -78,6 +78,16 @@ const editionLabel = editionProfile.label;
 const maxAgeDaysArg = args.find((a) => a.startsWith("--max-age-days="))?.split("=")[1];
 const maxAgeDays = maxAgeDaysArg ? parseInt(maxAgeDaysArg, 10) : editionProfile.maxAgeDays;
 
+/**
+ * Tulis hasil run ke $GITHUB_OUTPUT agar langkah workflow berikutnya bisa melaporkan kuota
+ * yang tidak terpenuhi. Tanpa $GITHUB_OUTPUT (run lokal) tidak melakukan apa pun.
+ */
+function reportOutputs({ published, quota, label, tried }) {
+  const file = process.env.GITHUB_OUTPUT;
+  if (!file) return;
+  fs.appendFileSync(file, `published=${published}\nquota=${quota}\nlabel=${label}\ntried=${tried}\n`);
+}
+
 async function main() {
   console.log(`\n======================================================`);
   console.log(`🤖 Sinyal AI News — Pemimpin Redaksi (${editionLabel})`);
@@ -129,10 +139,16 @@ async function main() {
       const feedItems = await fetchSourceItems(src, { fetchFeed, fetchHtmlListing }, 15000);
       let relevantCount = 0;
       let prereleaseCount = 0;
+      let thinCount = 0;
       for (const item of feedItems) {
         // Tag kandidat/pra-rilis GitHub (rc, beta, abandoned, ...) bukan berita.
         if (releaseSkipReason(item)) {
           prereleaseCount++;
+          continue;
+        }
+        // Rilis GitHub tanpa catatan rilis tidak punya bahan berita; jangan biarkan memakai slot.
+        if (isThinGithubRelease(item)) {
+          thinCount++;
           continue;
         }
         const relevance = checkRelevance(item, src);
@@ -144,6 +160,7 @@ async function main() {
       console.log(
         `   • [${src.company}] ${feedItems.length} entri (${relevantCount} sinyal relevan` +
           (prereleaseCount ? `, ${prereleaseCount} kandidat rilis dibuang` : "") +
+          (thinCount ? `, ${thinCount} rilis tanpa catatan dibuang` : "") +
           `)`,
       );
     } catch (err) {
@@ -156,112 +173,138 @@ async function main() {
   const candidatePool = window ? filterToWindow(allFeedItems, window) : allFeedItems;
   if (window) console.log(`   🗓️ ${candidatePool.length} dari ${allFeedItems.length} sinyal berada di jendela ${forDate}.`);
 
-  const selectedArticles = selectEditorialEdition({
-    allFeedItems: candidatePool,
-    existingUrls,
-    // Ambil kandidat cadangan: yang gagal validasi/konteks tipis digantikan kandidat berikutnya.
-    limit: editionQuota * 2,
-    referenceDate: window ? window.end : new Date(),
-    maxAgeDays,
-    edition: editionProfile,
-    existingEntries,
-    onSkip: ({ reason, candidate, match }) => {
-      console.log(
-        `   ⏭️ Dilewati (${reason}): "${candidate.item.title}"` +
-          (match ? ` mirip dengan "${match.label}" (kecocokan ${Math.round(match.score * 100)}%, kata: ${match.shared.join(", ")})` : ""),
-      );
-    },
-  });
+  // Rentang usia berjenjang: batas edisi dulu, lalu batas cadangan bila kuota belum terpenuhi.
+  // Tidak dipakai pada mode jendela tanggal (reset konten) atau saat --max-age-days diberikan eksplisit.
+  const ageTiers = [maxAgeDays];
+  if (!forDate && !maxAgeDaysArg && FALLBACK_MAX_AGE_DAYS > maxAgeDays) ageTiers.push(FALLBACK_MAX_AGE_DAYS);
 
-  console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} kandidat untuk ${editionQuota} slot tayang):`);
-  if (selectedArticles.length === 0) {
-    console.log(`   ℹ️ Tidak ada rilis baru yang layak tayang saat ini.`);
-    console.log(`::warning title=Kuota edisi belum terpenuhi::${editionLabel}: tidak ada rilis layak tayang (0 dari ${editionQuota}).`);
-    console.log(`\n======================================================\n`);
-    return;
-  }
-
-  selectedArticles.forEach((cand, idx) => {
-    const isCurToday = isToday(cand.item.publishedAt);
-    const tag = cand.priority.categories.join(", ");
-    console.log(`   ${idx + 1}. [${isCurToday ? "HARI INI" : "HARI SEBELUMNYA"} | ${cand.source.company} | ${tag} (Skor: ${cand.priority.priorityScore}, efektif: ${cand.effectiveScore})]:`);
-    console.log(`      "${cand.item.title}"`);
-    console.log(`      Sumber: ${cand.item.link}`);
-  });
-
-  // 3. Process and write only the chosen articles (strictly saving API tokens)
-  console.log(`\n✍️ Memulai penulisan berita dengan AI (Maksimal ${selectedArticles.length} artikel)...`);
   let totalPublished = 0;
+  const tried = new Set();
 
-  for (const candidate of selectedArticles) {
-    if (totalPublished >= editionQuota) break;
-    const { item, source: src, normUrl, priority } = candidate;
-    console.log(`\n   🧠 Menjalankan AI rewrite (Humanizer & Redaktur RSAIN) untuk [${src.company}]: "${item.title}"...`);
+  for (const [tierIdx, tierMaxAge] of ageTiers.entries()) {
+    const slotsLeft = editionQuota - totalPublished;
+    if (slotsLeft <= 0) break;
+    if (tierIdx > 0) {
+      console.log(`\n🔁 Kuota belum terpenuhi (${totalPublished} dari ${editionQuota}). Mencari rilis cadangan hingga ${tierMaxAge} hari...`);
+    }
 
-    try {
-      const sourceText = await fetchSourceText(item.link);
-      console.log(
-        `      📄 Konteks: halaman sumber ${sourceText.length} karakter, cuplikan feed ${(item.summary || "").length} karakter`,
-      );
-      // Rilis GitHub hanya layak bila feed memuat catatan rilis; halaman GitHub penuh teks antarmuka.
-      const hasEnoughContext = parseGithubReleaseUrl(item.link)
-        ? (item.summary || "").length >= MIN_RELEASE_NOTES_CHARS
-        : sourceText.length >= 300 || (item.summary || "").length >= 120;
-      if (!hasEnoughContext) {
-        console.warn(`      ⏭️ Dilewati: konteks sumber terlalu tipis, berisiko halusinasi.`);
-        continue;
-      }
+    const selectedArticles = selectEditorialEdition({
+      allFeedItems: candidatePool,
+      existingUrls,
+      // Ambil kandidat cadangan: yang gagal validasi/konteks tipis digantikan kandidat berikutnya.
+      limit: slotsLeft * 2,
+      referenceDate: window ? window.end : new Date(),
+      maxAgeDays: tierMaxAge,
+      edition: editionProfile,
+      existingEntries,
+      onSkip: ({ reason, candidate, match }) => {
+        console.log(
+          `   ⏭️ Dilewati (${reason}): "${candidate.item.title}"` +
+            (match ? ` mirip dengan "${match.label}" (kecocokan ${Math.round(match.score * 100)}%, kata: ${match.shared.join(", ")})` : ""),
+        );
+      },
+    });
 
-      // Tanggal tayang mengikuti tanggal rilis sumber (tidak pernah di masa depan).
-      const now = new Date();
-      const sourceDate = item.publishedAt;
-      const publishedDate = sourceDate.getTime() > now.getTime() ? now : sourceDate;
+    console.log(`\n📋 Hasil Kurasi Pemimpin Redaksi (${selectedArticles.length} kandidat untuk ${slotsLeft} slot tayang, usia maks ${tierMaxAge} hari):`);
+    if (selectedArticles.length === 0) {
+      console.log(`   ℹ️ Tidak ada rilis baru yang layak tayang pada rentang ini.`);
+      continue;
+    }
 
-      const aiArticle = await generateArticleWithAI({
-        title: item.title,
-        summary: item.summary || "",
-        company: src.company,
-        sourceUrl: item.link,
-        sourceText,
-        // Atribusi sumber di isi artikel memakai tanggal ini (dd/mm).
-        releaseDate: formatDayMonth(publishedDate),
-        editionFocus: editionProfile.writerFocus,
-        apiKey: API_KEY,
-        model: MODEL,
-      });
+    selectedArticles.forEach((cand, idx) => {
+      const isCurToday = isToday(cand.item.publishedAt);
+      const tag = cand.priority.categories.join(", ");
+      console.log(`   ${idx + 1}. [${isCurToday ? "HARI INI" : "HARI SEBELUMNYA"} | ${cand.source.company} | ${tag} (Skor: ${cand.priority.priorityScore}, efektif: ${cand.effectiveScore})]:`);
+      console.log(`      "${cand.item.title}"`);
+      console.log(`      Sumber: ${cand.item.link}`);
+    });
 
-      // Judul sudah memuat nama perusahaan (divalidasi), jadi slug cukup dari judul.
-      const slug = slugify(aiArticle.title);
+    // 3. Process and write only the chosen articles (strictly saving API tokens)
+    console.log(`\n✍️ Memulai penulisan berita dengan AI (Maksimal ${selectedArticles.length} artikel)...`);
 
-      const result = await writePublishedArticle({
-        outDir: CONTENT_DIR,
-        dateFolder: toIsoDate(publishedDate),
-        slug,
-        title: aiArticle.title,
-        summary: aiArticle.summary,
-        company: src.company,
-        source: item.link,
-        author: "Redaktur Sinyal AI News (RSAIN)",
-        publishedAt: publishedDate,
-        body: aiArticle.body,
-        sourceTitle: item.title,
-        categories: priority.categories,
-        dryRun,
-      });
-
-      console.log(
-        dryRun
-          ? `      ✅ Lolos validasi (dry run, tidak disimpan): ${result.outPath}`
-          : `      ✅ Berhasil diterbitkan: ${result.outPath}`,
-      );
-      if (dryRun) {
-        // Tampilkan hasil tulisan agar redaksi bisa menilai gaya dan isinya tanpa menerbitkan.
-        console.log(`\n----- ${result.outPath} -----\n${result.markdown}\n----- selesai -----\n`);
-      }
+    for (const candidate of selectedArticles) {
+      if (totalPublished >= editionQuota) break;
+      const { item, source: src, normUrl, priority } = candidate;
+      // Kandidat yang gagal tidak dicoba ulang pada jenjang berikutnya.
       existingUrls.add(normUrl);
-      totalPublished++;
-    } catch (err) {
-      console.error(`      ❌ Gagal memproses artikel "${item.title}": ${err.message}`);
+      tried.add(normUrl);
+      console.log(`\n   🧠 Menjalankan AI rewrite (Humanizer & Redaktur RSAIN) untuk [${src.company}]: "${item.title}"...`);
+
+      try {
+        const sourceText = await fetchSourceText(item.link);
+        console.log(
+          `      📄 Konteks: halaman sumber ${sourceText.length} karakter, cuplikan feed ${(item.summary || "").length} karakter`,
+        );
+        // Rilis GitHub hanya layak bila feed memuat catatan rilis; halaman GitHub penuh teks antarmuka.
+        const hasEnoughContext = parseGithubReleaseUrl(item.link)
+          ? (item.summary || "").length >= MIN_RELEASE_NOTES_CHARS
+          : sourceText.length >= 300 || (item.summary || "").length >= 120;
+        if (!hasEnoughContext) {
+          console.warn(`      ⏭️ Dilewati: konteks sumber terlalu tipis, berisiko halusinasi.`);
+          continue;
+        }
+
+        // Tanggal tayang mengikuti tanggal rilis sumber (tidak pernah di masa depan).
+        const now = new Date();
+        const sourceDate = item.publishedAt;
+        const publishedDate = sourceDate.getTime() > now.getTime() ? now : sourceDate;
+
+        const aiArticle = await generateArticleWithAI({
+          title: item.title,
+          summary: item.summary || "",
+          company: src.company,
+          sourceUrl: item.link,
+          sourceText,
+          // Atribusi sumber di isi artikel memakai tanggal ini (dd/mm).
+          releaseDate: formatDayMonth(publishedDate),
+          editionFocus: editionProfile.writerFocus,
+          apiKey: API_KEY,
+          model: MODEL,
+        });
+
+        // Judul sudah memuat nama perusahaan (divalidasi), jadi slug cukup dari judul.
+        const slug = slugify(aiArticle.title);
+
+        const result = await writePublishedArticle({
+          outDir: CONTENT_DIR,
+          dateFolder: toIsoDate(publishedDate),
+          slug,
+          title: aiArticle.title,
+          summary: aiArticle.summary,
+          company: src.company,
+          source: item.link,
+          author: "Redaktur Sinyal AI News (RSAIN)",
+          publishedAt: publishedDate,
+          body: aiArticle.body,
+          sourceTitle: item.title,
+          categories: priority.categories,
+          dryRun,
+        });
+
+        console.log(
+          dryRun
+            ? `      ✅ Lolos validasi (dry run, tidak disimpan): ${result.outPath}`
+            : `      ✅ Berhasil diterbitkan: ${result.outPath}`,
+        );
+        if (dryRun) {
+          // Tampilkan hasil tulisan agar redaksi bisa menilai gaya dan isinya tanpa menerbitkan.
+          console.log(`\n----- ${result.outPath} -----\n${result.markdown}\n----- selesai -----\n`);
+        }
+        // Artikel baru ikut menjadi pembanding topik pada jenjang berikutnya.
+        existingEntries.push({
+          title: aiArticle.title,
+          sourceTitle: item.title,
+          company: src.company,
+          source: item.link,
+          publishedAt: publishedDate,
+          draft: false,
+          archived: false,
+          categories: priority.categories,
+        });
+        totalPublished++;
+      } catch (err) {
+        console.error(`      ❌ Gagal memproses artikel "${item.title}": ${err.message}`);
+      }
     }
   }
 
@@ -269,6 +312,7 @@ async function main() {
     // Anotasi ::warning:: tampil di ringkasan run GitHub Actions.
     console.log(`::warning title=Kuota edisi belum terpenuhi::${editionLabel}: ${totalPublished} dari ${editionQuota} berita tayang.`);
   }
+  reportOutputs({ published: totalPublished, quota: editionQuota, label: editionLabel, tried: tried.size });
 
   console.log(`\n======================================================`);
   console.log(`🎉 Selesai! Total ${totalPublished} berita resmi berhasil diproduksi untuk ${editionLabel}.`);
