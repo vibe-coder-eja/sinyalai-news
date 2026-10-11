@@ -6,33 +6,21 @@ import { withBase } from "../lib/url";
 
 const articles = await getPublishedNews();
 const latest = articles.slice(0, 3);
-const companies = [...new Set(articles.map((a) => a.data.company))];
 ---
 
 <BaseLayout
   title="Sinyal AI News"
-  description="Sinyal AI News — Berita Terkini Dunia AI (Akal Imitasi). Ringkasan berita AI resmi, cepat, dan terpercaya dari ekosistem teknologi global."
+  description="Berita AI berbahasa Indonesia dari sumber resminya. Rilis model, produk, dan kerja sama industri AI dunia, ditulis ringkas dan netral dengan tautan ke sumber asli. Terbit pagi dan malam."
 >
   <section class="container hero reveal reveal-1">
-    <p class="eyebrow">Live signal feed</p>
-    <h1 class="page-title">Sinyal dari industri AI</h1>
+    <p class="eyebrow">Berita AI berbahasa Indonesia</p>
+    <h1 class="page-title">Kabar terbaru dunia AI, langsung dari sumber resminya</h1>
     <p class="page-lead">
-      <strong>Sinyal AI News</strong> (Berita Terkini Dunia AI / Akal Imitasi) merangkum rilis resmi dari
-      perusahaan teknologi AI menjadi berita singkat yang mudah dipantau — netral,
-      bersumber, tanpa noise.
+      <strong>Sinyal AI News</strong> menyaring rilis resmi dari perusahaan dan organisasi AI dunia,
+      lalu menuliskannya kembali dalam bahasa Indonesia yang ringkas dan netral. Setiap berita memuat
+      tautan ke sumber aslinya. Terbit dua kali sehari: edisi pagi pukul 10.35 dan edisi malam
+      pukul 22.05 WIB.
     </p>
-
-    {
-      companies.length > 0 && (
-        <div class="chip-row" role="list" aria-label="Perusahaan yang muncul di feed">
-          {companies.map((company) => (
-            <span class="chip" role="listitem">
-              <strong>{company}</strong>
-            </span>
-          ))}
-        </div>
-      )
-    }
 
     <div class="hero-actions">
       <a class="btn btn-primary" href={withBase("/berita")}>Lihat semua berita</a>
@@ -42,14 +30,14 @@ const companies = [...new Set(articles.map((a) => a.data.company))];
 
   <section class="container latest reveal reveal-2">
     <div class="section-head">
-      <h2>Sinyal terbaru</h2>
+      <h2>Berita terbaru</h2>
       <a href={withBase("/berita")}>Semua berita →</a>
     </div>
 
     {
       latest.length === 0 ? (
         <div class="empty-state">
-          <p class="empty-title">Belum ada sinyal</p>
+          <p class="empty-title">Belum ada berita</p>
           <p>Tambahkan artikel Markdown di <code>src/content/news/</code>.</p>
         </div>
       ) : (

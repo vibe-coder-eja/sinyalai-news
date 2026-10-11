@@ -15,6 +15,10 @@ Run terjadwal GitHub terlambat 4–7 jam dari cron (edisi pagi tayang sekitar 17
 - Peringatan `::warning::` di ringkasan Actions bila kuota edisi tidak terpenuhi.
 - 6 test baru (total 198).
 
+### 🏠 Copywriting Beranda
+- Teks hero ditulis ulang agar menggambarkan tujuan situs: berita AI berbahasa Indonesia dari sumber resmi, ringkas dan netral, bertaut ke sumber asli, terbit pagi 10.35 dan malam 22.05 WIB. Judul seksi "Sinyal terbaru" menjadi "Berita terbaru"; deskripsi meta disesuaikan.
+- Deretan label perusahaan (OpenClaw, Hugging Face, OpenAI, dst.) di beranda dihapus.
+
 ---
 
 ## [0.8.1] — 2026-10-10
