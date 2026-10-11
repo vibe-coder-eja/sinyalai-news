@@ -10,40 +10,41 @@ if (!fs.existsSync(publicLogoDir)) {
   fs.mkdirSync(publicLogoDir, { recursive: true });
 }
 
-// Mapping of original filenames to semantic names
+// Master PNG di src/logo/ -> nama semantik WebP di public/logo/.
+// Jalankan: node scripts/convert-logos.mjs (butuh paket sharp, sudah ikut terpasang bersama Astro).
 const logoMappings = [
   {
-    original: "sinyal-ai-news-logo-1 (1).png",
+    master: "sinyal-ai-news-logo-horizontal-dark.png",
     semantic: "sinyal-ai-news-logo-horizontal-dark.webp",
     description: "Horizontal lockup for dark background (white text + neon green mark)",
   },
   {
-    original: "sinyal-ai-news-logo-1 (2).png",
+    master: "sinyal-ai-news-logo-horizontal-alt.png",
     semantic: "sinyal-ai-news-logo-horizontal-alt.webp",
     description: "Horizontal lockup variant 2",
   },
   {
-    original: "sinyal-ai-news-logo-1 (3).png",
+    master: "sinyal-ai-news-logo-horizontal-light.png",
     semantic: "sinyal-ai-news-logo-horizontal-light.webp",
     description: "Horizontal lockup for light background (dark text + neon green mark)",
   },
   {
-    original: "sinyal-ai-news-logo-1 (4).png",
+    master: "sinyal-ai-news-logo-stacked-dark.png",
     semantic: "sinyal-ai-news-logo-stacked-dark.webp",
     description: "Stacked vertical lockup for dark background",
   },
   {
-    original: "sinyal-ai-news-logo-1 (5).png",
+    master: "sinyal-ai-news-logo-stacked-light.png",
     semantic: "sinyal-ai-news-logo-stacked-light.webp",
     description: "Stacked vertical lockup for light background",
   },
   {
-    original: "sinyal-ai-news-logo-1 (6).png",
+    master: "sinyal-ai-news-logo-icon.png",
     semantic: "sinyal-ai-news-logo-icon.webp",
     description: "Square symbol / icon with transparent background",
   },
   {
-    original: "sinyal-ai-news-logo-1 (7).png",
+    master: "sinyal-ai-news-logo-icon-card.png",
     semantic: "sinyal-ai-news-logo-icon-card.webp",
     description: "Square symbol / app icon with solid dark background",
   },
@@ -53,51 +54,27 @@ async function convert() {
   console.log("🚀 Starting Logo WebP Conversion & Project Implementation...");
 
   for (const item of logoMappings) {
-    const inputPath = path.join(srcLogoDir, item.original);
+    const inputPath = path.join(srcLogoDir, item.master);
     if (!fs.existsSync(inputPath)) {
-      console.warn(`⚠️ Warning: ${item.original} not found!`);
+      console.warn(`⚠️ Warning: ${item.master} not found!`);
       continue;
     }
 
     const imgBuffer = fs.readFileSync(inputPath);
 
-    // 1. Direct webp conversion in src/logo (same numbered basename)
-    const srcNumberedWebp = path.join(
-      srcLogoDir,
-      item.original.replace(/\.png$/, ".webp")
-    );
-    await sharp(imgBuffer)
-      .webp({ quality: 90 })
-      .toFile(srcNumberedWebp);
-
-    // 2. Semantic webp conversion in src/logo
-    const srcSemanticWebp = path.join(srcLogoDir, item.semantic);
-    await sharp(imgBuffer)
-      .webp({ quality: 90 })
-      .toFile(srcSemanticWebp);
-
-    // 3. Semantic webp copy to public/logo/
+    // Master PNG di src/logo/ -> WebP semantik di public/logo/ (satu-satunya salinan yang dipakai situs)
     const publicSemanticWebp = path.join(publicLogoDir, item.semantic);
     await sharp(imgBuffer)
       .webp({ quality: 90 })
       .toFile(publicSemanticWebp);
 
-    // Also keep semantic PNG in public/logo/ for legacy fallback
-    const publicSemanticPng = path.join(
-      publicLogoDir,
-      item.semantic.replace(/\.webp$/, ".png")
-    );
-    await sharp(imgBuffer)
-      .png()
-      .toFile(publicSemanticPng);
-
-    console.log(`✅ Converted: ${item.original} -> ${item.semantic}`);
+    console.log(`✅ Converted: ${item.master} -> ${item.semantic}`);
   }
 
   // 4. Generate Core Public Icons / Web Assets
-  const iconBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-1 (6).png"));
-  const iconSolidBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-1 (7).png"));
-  const horizontalBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-1 (1).png"));
+  const iconBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-icon.png"));
+  const iconSolidBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-icon-card.png"));
+  const horizontalBuffer = fs.readFileSync(path.join(srcLogoDir, "sinyal-ai-news-logo-horizontal-dark.png"));
 
   // public/logo.webp (512x512)
   await sharp(iconBuffer)
