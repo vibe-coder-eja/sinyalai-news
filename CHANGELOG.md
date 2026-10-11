@@ -14,6 +14,9 @@ Perbaikan keredaksian: berita kembar dan dominasi satu sumber.
 - **Rilis perawatan internal dibuang**: tag build otomatis tanpa nomor versi (`release-publish/<sha>`) dan judul bergaya commit `test/ci/chore/docs/build/style/refactor`.
 - **Batas 2 berita per perusahaan** dalam pemilihan kandidat satu edisi.
 
+### 🏷️ Footer
+- Label perusahaan diubah menjadi "Bagian dari Cakrawala Prima Berdikari" (tanpa "PT.").
+
 ---
 
 ## [0.9.0] — 2026-10-11
