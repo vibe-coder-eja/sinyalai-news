@@ -6,26 +6,35 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
-Perbaikan keredaksian: berita kembar dan dominasi satu sumber. Audit kerapian repo.
+---
 
-### 🧼 Audit Kerapian Repo
+## [0.10.0] — 2026-10-11
+
+Rilis keredaksian dan kerapian repo: berita kembar dan dominasi satu sumber diatasi, alat reset konten ditambahkan dan dijalankan, dependensi diperbarui (audit 0 celah), serta aset logo dan dokumentasi dirapikan. Mencakup PR #16, #17, #18, dan #19.
+
+### 🧼 Audit Kerapian Repo (#19)
 - **Dependensi**: `astro` 7.0.7 → 7.3.8, `@astrojs/sitemap` 3.7.4, `simple-icons` 16.35.0, `vitest` 4.1.11. `npm audit` dari 13 celah (1 critical) menjadi 0. Catatan: `npm install` pada npm 10.9.4 gagal mengurai peer-dependency `vitest` (bug arborist), sehingga pembaruan `vitest` dikerjakan dengan `--legacy-peer-deps`. Lockfile tetap memasang bersih lewat `npm ci`.
 - **Logo**: master di `src/logo/` diganti nama dari `sinyal-ai-news-logo-1 (n).png` menjadi nama semantik. `public/logo/*.png` (±5,9 MB, duplikat `.webp`, tidak dirujuk kode) dan 14 salinan `src/logo/*.webp` dihapus. `convert-logos.mjs` kini hanya membuat WebP di `public/logo/`, hasilnya identik byte-per-byte dengan yang sudah ada.
 - **Dokumen**: audit, rencana implementasi, dan walkthrough lama dipindah ke `docs/arsip/` dengan banner historis. `sinyalai_prd.md` dan `panduan_konten.md` dipindah ke `docs/`. README dan `scripts/README.md` disegarkan (lima workflow, dua jalur pipeline, seluruh modul `scripts/lib`, batas usia rilis 2 hari menggantikan 7 hari yang usang).
 
-### 🧹 Berita Kembar dan Dominasi Satu Sumber
+### 🧹 Berita Kembar dan Dominasi Satu Sumber (#16)
 - **Akar masalah kembar**: run yang antre di grup concurrency memakai SHA main saat dipicu, jadi tidak melihat artikel edisi sebelumnya dan menerbitkan sumber yang sama dua kali. Checkout kini memakai `ref: main`.
 - **Tiga artikel kembar diarsipkan** (OpenClaw v2026.10.1, OpenClaw toast test, iklan ChatGPT). Tes baru menjaga agar tidak ada dua artikel tayang dengan sumber sama.
 - **Rilis perawatan internal dibuang**: tag build otomatis tanpa nomor versi (`release-publish/<sha>`) dan judul bergaya commit `test/ci/chore/docs/build/style/refactor`.
 - **Batas 2 berita per perusahaan** dalam pemilihan kandidat satu edisi.
 
-### 🔄 Alat Reset Konten
+### 🔄 Alat Reset Konten (#16)
 - `scripts/archive-all.mjs` mengarsipkan semua berita tayang tanpa menghapus berkas.
 - Opsi `--ignore-archived` (arsip lama tidak ikut dedupe) dan `--for-date=YYYY-MM-DD` (hanya rilis pada hari UTC itu) pada `generate-news.mjs`.
 - Workflow manual `reset-konten.yml` mendorong hasil ke branch baru untuk ditinjau. Panduan: `docs/reset-konten.md`.
 
-### 🏷️ Footer
-- Label perusahaan diubah menjadi "Bagian dari Cakrawala Prima Berdikari" (tanpa "PT.").
+### 📰 Reset Konten Dijalankan (#17)
+- Workflow `reset-konten.yml` dijalankan untuk 9–11 Oktober 2026: seluruh berita lama diarsipkan (`archived: true`, berkas tetap ada) dan edisi pagi ditulis ulang dengan aturan redaksi terbaru.
+- Hasilnya 4 berita tayang (3 bertanggal 2026-10-09, 1 bertanggal 2026-10-11); tanggal 2026-10-10 belum memiliki berita tayang. Total 76 berkas di `src/content/news/`, 72 di antaranya arsip.
+- `src/data/legacy-redirects.json` dikosongkan (`{}`) karena semua tujuan pengalihan sudah diarsipkan. Mekanisme `redirects` di `astro.config.mjs` tetap dipertahankan.
+
+### 🏷️ Footer (#16, #18)
+- Label perusahaan diubah menjadi "Bagian dari Cakrawala Prima Berdikari" (tanpa "PT."), lalu diperbaiki spasinya antara "Bagian dari" dan nama perusahaan.
 
 ---
 
