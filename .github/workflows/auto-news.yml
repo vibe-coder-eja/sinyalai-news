@@ -36,6 +36,8 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  # Untuk issue laporan "kuota edisi belum terpenuhi" di langkah terakhir.
+  issues: write
 
 concurrency:
   group: "pages"
@@ -98,6 +100,7 @@ jobs:
         run: npm ci
 
       - name: Run automated AI news generation
+        id: generate
         if: steps.edition.outputs.skip != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -165,3 +168,32 @@ jobs:
         if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true }}
         id: deployment
         uses: actions/deploy-pages@v5
+
+      # Situs tetap di-deploy di atas, tetapi kuota yang tidak terpenuhi tidak boleh lewat diam-diam:
+      # buka (atau perbarui) satu issue per edisi per hari, dan buat run MERAH bila 0 berita tayang
+      # supaya GitHub mengirim notifikasi gagal.
+      - name: Report unmet edition quota
+        if: ${{ steps.edition.outputs.skip != 'true' && inputs.dryRun != true && steps.generate.outputs.published != steps.generate.outputs.quota }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISHED: ${{ steps.generate.outputs.published }}
+          QUOTA: ${{ steps.generate.outputs.quota }}
+          LABEL: ${{ steps.generate.outputs.label }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE="Kuota edisi belum terpenuhi: $LABEL, $(TZ=Asia/Jakarta date +%F)"
+          BODY="$LABEL menayangkan **$PUBLISHED dari $QUOTA** berita.
+
+          Penyebab biasanya stok rilis sumber habis (sudah terpakai, terlalu tua, atau konteksnya tipis). Rincian ada di log langkah \"Run automated AI news generation\": $RUN_URL
+
+          Tindakan: tambah sumber di \`scripts/sources.json\`, atau jalankan ulang edisi secara manual bila sumber baru sudah terbit."
+          EXISTING=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "Run ulang: $PUBLISHED dari $QUOTA berita tayang. $RUN_URL"
+          else
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi
+          if [ "$PUBLISHED" = "0" ]; then
+            echo "::error title=Tidak ada berita tayang::$LABEL menayangkan 0 dari $QUOTA berita."
+            exit 1
+          fi

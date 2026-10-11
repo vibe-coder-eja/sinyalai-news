@@ -6,6 +6,17 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### 🛟 Edisi Kosong Tidak Lagi Lewat Diam-diam
+Pemicu: edisi malam 11 Oktober 2026 (22:05 WIB) menayangkan 0 berita, tetapi run tetap hijau dan situs hanya di-deploy ulang tanpa perubahan.
+- **Fallback usia rilis**: bila kuota edisi belum terpenuhi dalam batas usia edisi (2 hari), seleksi diulang dengan batas cadangan 7 hari (`FALLBACK_MAX_AGE_DAYS`). Tanggal tayang tetap mengikuti tanggal sumber. Tidak berlaku pada mode `--for-date` atau saat `--max-age-days` diberikan eksplisit.
+- **Rilis GitHub tanpa catatan dibuang sebelum seleksi** (`isThinGithubRelease`), sehingga tidak memakai slot kandidat lalu gagal di tahap konteks.
+- **Perbaikan penyaring pra-rilis**: tag `v0.21.6+canary.<stempel>` sebelumnya lolos karena `+` tidak dianggap pemisah.
+- **xAI dibaca dari sumber resmi**: `xai` kini mengambil `https://x.ai/news` langsung (tipe `html`). Feed mirror komunitas dipertahankan sebagai cadangan `xai-mirror` (URL artikel sama, tidak terbit ganda).
+- **Meta dari sumber resmi**: `meta-ai` kini membaca `https://ai.meta.com/blog/` langsung (mirror jadi cadangan `meta-ai-mirror`), ditambah dua feed RSS resmi baru `meta-newsroom` (about.fb.com/news) dan `meta-engineering` (engineering.fb.com). Dua feed baru tidak `aiFocused`, jadi tetap harus lolos filter relevansi AI.
+- **Parser HTML mode kartu** (`parseStandaloneLinkCards` di `html.mjs`): membaca daftar yang tautannya berdiri sendiri dan tanggalnya teks polos, seperti ai.meta.com/blog. Tes ditambahkan.
+- **OpenClaw hanya dari blog**: sumber `openclaw-releases` (feed rilis GitHub) dihapus; OpenClaw kini diambil dari `openclaw-blog` saja. Artikel OpenClaw yang sudah tayang dari rilis GitHub tetap ada.
+- **Laporan kuota di workflow**: `generate-news.mjs` menulis `published/quota` ke `$GITHUB_OUTPUT`. Bila kuota tidak terpenuhi, workflow membuka (atau memperbarui) satu issue per edisi per hari, dan membuat run **gagal** bila 0 berita tayang. Deploy tetap berjalan sebelum langkah ini. Izin `issues: write` ditambahkan.
+
 ---
 
 ## [0.10.0] — 2026-10-11
