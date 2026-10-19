@@ -1,5 +1,5 @@
 export interface ShareTarget {
-  id: "whatsapp" | "telegram" | "facebook" | "email";
+  id: "whatsapp" | "telegram" | "facebook" | "x" | "email";
   label: string;
   href: string;
 }
@@ -17,6 +17,7 @@ export function buildShareTargets(url: string, title: string): ShareTarget[] {
     { id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${textWithUrl}` },
     { id: "telegram", label: "Telegram", href: `https://t.me/share/url?url=${u}&text=${t}` },
     { id: "facebook", label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+    { id: "x", label: "X", href: `https://x.com/intent/post?url=${u}&text=${t}` },
     {
       id: "email",
       label: "Email (Gmail)",

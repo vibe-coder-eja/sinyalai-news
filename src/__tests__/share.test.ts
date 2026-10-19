@@ -8,8 +8,16 @@ describe("buildShareTargets", () => {
   const targets = buildShareTargets(url, title);
   const byId = Object.fromEntries(targets.map((t) => [t.id, t.href]));
 
-  it("memuat WhatsApp, Telegram, Facebook, dan Email", () => {
-    expect(targets.map((t) => t.id)).toEqual(["whatsapp", "telegram", "facebook", "email"]);
+  it("memuat WhatsApp, Telegram, Facebook, X, dan Email", () => {
+    expect(targets.map((t) => t.id)).toEqual(["whatsapp", "telegram", "facebook", "x", "email"]);
+  });
+
+  it("X memisahkan url dan teks lewat intent post", () => {
+    const u = new URL(byId.x);
+    expect(u.hostname).toBe("x.com");
+    expect(u.pathname).toBe("/intent/post");
+    expect(u.searchParams.get("url")).toBe(url);
+    expect(u.searchParams.get("text")).toBe(title);
   });
 
   it("WhatsApp membawa judul dan tautan", () => {

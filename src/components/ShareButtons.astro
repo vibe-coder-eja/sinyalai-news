@@ -1,5 +1,5 @@
 ---
-import { siFacebook, siGmail, siTelegram, siWhatsapp } from "simple-icons";
+import { siFacebook, siGmail, siTelegram, siWhatsapp, siX } from "simple-icons";
 import { buildShareTargets } from "../lib/share";
 
 interface Props {
@@ -13,6 +13,7 @@ const icons = {
   whatsapp: siWhatsapp.path,
   telegram: siTelegram.path,
   facebook: siFacebook.path,
+  x: siX.path,
   email: siGmail.path,
 };
 ---
@@ -161,6 +162,7 @@ const icons = {
   .share-whatsapp svg { color: #25d366; }
   .share-telegram svg { color: #26a5e4; }
   .share-facebook svg { color: #1877f2; }
+  .share-x svg { color: var(--text); }
   .share-email svg { color: #ea4335; }
   .share-copy svg { color: var(--accent); }
 
