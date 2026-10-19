@@ -1,5 +1,5 @@
 {
-  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | html (halaman resmi di-parse dari HTML) | page (page = manual/bookmark, belum di-fetch otomatis). aiFocused: true = semua item dianggap relevan AI; selain itu item disaring dengan kata kunci AI (scripts/lib/relevance.mjs). excludeKeywords: item yang judul/ringkasannya mengandung salah satu kata ini selalu dibuang.",
+  "$schema_note": "Daftar sumber rilis AI untuk pipeline Sinyal AI. type: rss | html (halaman resmi di-parse dari HTML) | updates (catatan rilis Mintlify berisi blok <Update>) | page (page = manual/bookmark, belum di-fetch otomatis). aiFocused: true = semua item dianggap relevan AI; selain itu item disaring dengan kata kunci AI (scripts/lib/relevance.mjs). excludeKeywords: item yang judul/ringkasannya mengandung salah satu kata ini selalu dibuang.",
   "sources": [
     {
       "id": "openai",
@@ -32,6 +32,15 @@
       "notes": "Feed umum NVIDIA (gaming, otomotif, AI). Disaring dengan kata kunci AI."
     },
     {
+      "id": "nvidia-developer",
+      "company": "NVIDIA",
+      "type": "rss",
+      "url": "https://developer.nvidia.com/blog/feed",
+      "home": "https://developer.nvidia.com/blog/",
+      "enabled": true,
+      "notes": "Blog teknis NVIDIA Developer (Nemotron, NIM, CUDA, inferensi). Memuat HPC dan grafis non-AI, jadi tidak aiFocused dan disaring dengan kata kunci AI. Feed memuat 100 item."
+    },
+    {
       "id": "microsoft-blog",
       "company": "Microsoft",
       "type": "rss",
@@ -39,6 +48,15 @@
       "home": "https://blogs.microsoft.com/",
       "enabled": true,
       "notes": "Feed umum Microsoft Blog (AI /ai/feed mengembalikan 410)."
+    },
+    {
+      "id": "microsoft-research",
+      "company": "Microsoft",
+      "type": "rss",
+      "url": "https://www.microsoft.com/en-us/research/feed/",
+      "home": "https://www.microsoft.com/en-us/research/blog/",
+      "enabled": true,
+      "notes": "Blog Microsoft Research (agen, riset model, AI untuk sains). Memuat topik non-AI (komputasi, kriptografi), jadi tidak aiFocused. Perusahaan sama dengan microsoft-blog, jadi tetap kena batas 2 berita per perusahaan."
     },
     {
       "id": "google-deepmind",
@@ -57,6 +75,15 @@
       "home": "https://blog.google/technology/ai/",
       "enabled": true,
       "aiFocused": true
+    },
+    {
+      "id": "google-research",
+      "company": "Google",
+      "type": "rss",
+      "url": "https://research.google/blog/rss/",
+      "home": "https://research.google/blog/",
+      "enabled": true,
+      "notes": "Blog Google Research. Ringkasan di feed sangat pendek (belasan karakter), jadi konteks artikel diambil dari halaman sumber. Memuat topik non-AI (kuantum, sistem), jadi tidak aiFocused."
     },
     {
       "id": "xai",
@@ -133,7 +160,7 @@
       "home": "https://nousresearch.com/blog",
       "enabled": true,
       "aiFocused": true,
-      "notes": "HTML tanpa RSS. Manual sampai struktur halaman dicek untuk parser html."
+      "notes": "Manual. Situs Next.js (RSC): daftar blog tidak berupa tautan HTML biasa dan kartunya tidak memuat tanggal (tanggal hanya ada di meta article:published_time tiap halaman artikel), jadi parser html tidak bisa membacanya tanpa mengunduh tiap artikel. Tidak ada RSS (rss.xml, feed, feed.xml 404). Artikel blog baru jarang (kurang dari satu per bulan); rilis Hermes Agent sudah masuk lewat hermes-agent-releases."
     },
     {
       "id": "nous-research-releases",
@@ -143,7 +170,7 @@
       "home": "https://nousresearch.com/releases",
       "enabled": true,
       "aiFocused": true,
-      "notes": "HTML tanpa RSS. Manual sampai struktur halaman dicek untuk parser html."
+      "notes": "Manual. Bukan changelog: halaman katalog produk dan model (Hermes 3/4, NousCoder, Psyche) berbentuk RSC tanpa tanggal per entri; keterangan \"Last release\" terbaru 25 Feb 2026. Tidak ada berita baru yang bisa diambil dari sini; rilis Hermes Agent sudah masuk lewat hermes-agent-releases."
     },
     {
       "id": "hermes-agent-releases",
@@ -178,11 +205,12 @@
     {
       "id": "amd-ir",
       "company": "AMD",
-      "type": "page",
+      "type": "html",
       "url": "https://ir.amd.com/news-events/press-releases",
       "home": "https://ir.amd.com/news-events/press-releases",
       "enabled": true,
-      "notes": "Siaran pers investor relations, HTML tanpa RSS. Umum (bukan hanya AI), perlu penyaringan kata kunci saat diaktifkan."
+      "excludeKeywords": ["Financial Results", "Board of Directors", "Dividend"],
+      "notes": "Siaran pers investor relations, di-parse dari HTML blok <article> (tautan judul dan <time> bersaudara) oleh parseArticleBlocks di scripts/lib/html.mjs. Umum (bukan hanya AI): tidak aiFocused, jadi disaring kata kunci AI. Ringkasan kosong di halaman daftar."
     },
     {
       "id": "qwen",
@@ -192,7 +220,7 @@
       "home": "https://qwen.ai/blog",
       "enabled": true,
       "aiFocused": true,
-      "notes": "HTML dirender JavaScript; parser html biasa kemungkinan gagal."
+      "notes": "Manual. qwen.ai/blog dirender JavaScript (CSR). Daftar artikel ada di JSON https://qwen.ai/api/page_config?code=research.research-list&lang=en-US (judul, tanggal, id; tautan https://qwen.ai/blog?id=<id>), tetapi per 19 Okt 2026 entri terbarunya 23 Des 2025 sehingga tidak menghasilkan berita baru. Aktifkan lewat fetcher JSON bila daftar itu mulai diperbarui lagi atau ditemukan kode daftar yang lebih baru."
     },
     {
       "id": "kimi",
@@ -207,12 +235,52 @@
     {
       "id": "zai",
       "company": "Z.ai",
-      "type": "page",
-      "url": "https://docs.z.ai/llms.txt",
-      "home": "https://docs.z.ai/guides/overview/overview",
+      "type": "updates",
+      "url": "https://docs.z.ai/release-notes/new-released.md",
+      "home": "https://docs.z.ai/release-notes/new-released",
       "enabled": true,
       "aiFocused": true,
-      "notes": "Belum ada daftar blog publik (z.ai/blog 404). Blog tiap model (mis. z.ai/blog/glm-5.3-flash) berupa halaman SPA kosong tanpa indeks; tautannya hanya ada di halaman panduan model di docs.z.ai. Manual sampai ada fetcher yang membaca docs.z.ai/llms.txt untuk mendeteksi model baru."
+      "notes": "Belum ada daftar blog publik (z.ai/blog 404). Rilis model dibaca dari halaman catatan rilis docs.z.ai (Markdown berisi blok <Update label=tanggal description=model>) lewat fetchUpdates di scripts/lib/updates.mjs. Tautan sumber = halaman dokumentasi model. Rilis terbaru per 19 Okt 2026: GLM-5.3-Flash (26 Agu), jadi baru tayang saat ada rilis model baru."
+    },
+    {
+      "id": "aws-machine-learning",
+      "company": "AWS",
+      "type": "rss",
+      "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+      "home": "https://aws.amazon.com/blogs/machine-learning/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "AWS Machine Learning Blog (Bedrock, SageMaker, ketersediaan model pihak ketiga). Banyak tutorial teknis dan studi kasus pelanggan; skor editor menentukan mana yang layak tayang."
+    },
+    {
+      "id": "apple-machine-learning",
+      "company": "Apple",
+      "type": "rss",
+      "url": "https://machinelearning.apple.com/rss.xml",
+      "home": "https://machinelearning.apple.com/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Apple Machine Learning Research (MLX, model on-device, makalah riset). Item berupa abstrak makalah dengan tanggal tengah malam GMT."
+    },
+    {
+      "id": "github-ai",
+      "company": "GitHub",
+      "type": "rss",
+      "url": "https://github.blog/ai-and-ml/feed/",
+      "home": "https://github.blog/ai-and-ml/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Kategori AI & ML di GitHub Blog (Copilot, agen, deteksi rahasia). Berisi banyak panduan pemula; skor editor menentukan mana yang layak tayang."
+    },
+    {
+      "id": "mistral",
+      "company": "Mistral AI",
+      "type": "rss",
+      "url": "https://mistral.ai/rss.xml",
+      "home": "https://mistral.ai/news/",
+      "enabled": true,
+      "aiFocused": true,
+      "notes": "Newsroom resmi Mistral AI. Ringkasan di feed sering kosong atau sangat pendek, jadi konteks artikel diambil dari halaman sumber."
     }
   ]
 }

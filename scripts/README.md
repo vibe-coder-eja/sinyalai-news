@@ -18,6 +18,7 @@ sources.json  →  fetch RSS  →  draft .md (draft: true)  →  editorial revie
 | `scripts/convert-logos.mjs` | Master logo `src/logo/*.png` → WebP di `public/logo/`, ikon, favicon, OG image |
 | `scripts/lib/rss.mjs` | Parser RSS/Atom minimal |
 | `scripts/lib/html.mjs` | Pengambil daftar rilis dari halaman HTML |
+| `scripts/lib/updates.mjs` | Pengambil catatan rilis Mintlify (blok `<Update>`), dipakai Z.ai |
 | `scripts/lib/sources.mjs` | Pemilihan sumber aktif |
 | `scripts/lib/source-context.mjs` | Konteks halaman sumber untuk penulis AI |
 | `scripts/lib/ai-writer.mjs` | Prompt dan pemanggilan penulis AI (OpenRouter) |

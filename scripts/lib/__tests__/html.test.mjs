@@ -19,6 +19,46 @@ describe("parseListingDate", () => {
     expect(parseListingDate("kemarin")).toBeNull();
     expect(parseListingDate("")).toBeNull();
   });
+  it("membaca waktu ISO tanpa zona sebagai UTC, dan menghormati zona bila ada", () => {
+    expect(parseListingDate("2026-10-12T09:00:00")?.toISOString()).toBe("2026-10-12T09:00:00.000Z");
+    expect(parseListingDate("2026-10-12T09:00:00+07:00")?.toISOString()).toBe("2026-10-12T02:00:00.000Z");
+  });
+});
+
+describe("parseListing: blok <article> (tautan judul dan <time> bersaudara)", () => {
+  const amd = (href, iso, label, title) => `<article class="media"><div class="row"><div class="media-body">
+    <div class="media-heading"><a href="${href}">
+      ${title}   </a></div>
+    <div class="date"><time datetime="${iso}">${label}</time></div></div></div></article>`;
+  const base = "https://ir.amd.com/news-events/press-releases";
+
+  it("membaca judul dari teks tautan, tanggal dari datetime, dan tautan absolut", () => {
+    const html = amd("https://ir.amd.com/news-events/press-releases/detail/1301/helion", "2026-10-12T09:00:00", "Oct 12, 2026 9:00 am EDT", "Introducing AMD Helion &amp; Co");
+    const [item] = parseListing(html, base);
+    expect(item).toMatchObject({
+      title: "Introducing AMD Helion & Co",
+      link: "https://ir.amd.com/news-events/press-releases/detail/1301/helion",
+      summary: "",
+    });
+    expect(item.publishedAt?.toISOString()).toBe("2026-10-12T09:00:00.000Z");
+  });
+
+  it("memakai teks tanggal bila datetime tidak ada, dan melewati blok tanpa tautan atau tanggal", () => {
+    const html = [
+      amd("/detail/2/b", "", "Oct 6, 2026 4:15 pm EDT", "Judul B"),
+      `<article><time datetime="2026-10-01">Oct 1, 2026</time></article>`,
+      `<article><a href="/detail/3/c">Judul C</a></article>`,
+    ].join("\n");
+    const items = parseListing(html, base);
+    expect(items.map((i) => i.title)).toEqual(["Judul B"]);
+    expect(items[0].link).toBe("https://ir.amd.com/detail/2/b");
+    expect(items[0].publishedAt?.toISOString()).toBe("2026-10-06T00:00:00.000Z");
+  });
+
+  it("tidak dipakai bila pola <a><time> sudah menemukan artikel", () => {
+    const items = parseListing(`<article>${featured}</article>`, BASE);
+    expect(items.map((i) => i.link)).toEqual(["https://www.anthropic.com/news/a"]);
+  });
 });
 
 describe("parseListing", () => {

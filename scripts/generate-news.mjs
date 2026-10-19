@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fetchFeed } from "./lib/rss.mjs";
 import { fetchHtmlListing } from "./lib/html.mjs";
+import { fetchUpdates } from "./lib/updates.mjs";
 import { selectActiveSources, fetchSourceItems } from "./lib/sources.mjs";
 import { releaseSkipReason, isThinGithubRelease, parseGithubReleaseUrl, MIN_RELEASE_NOTES_CHARS } from "./lib/release-tags.mjs";
 import { checkRelevance, getEditorialPriority } from "./lib/relevance.mjs";
@@ -126,7 +127,7 @@ async function main() {
     : loaded;
   console.log(`Terdeteksi ${existingUrls.size} URL rilis resmi yang sudah ada sebelumnya.\n`);
 
-  // 1. Fetch and pool candidate signals from all active sources (rss + html; page = manual, dilewati)
+  // 1. Fetch and pool candidate signals from all active sources (rss + html + updates; page = manual, dilewati)
   const { active: activeSources, skipped: skippedSources } = selectActiveSources(sources);
   console.log(`🔍 Mengumpulkan sinyal rilis dari ${activeSources.length} sumber resmi...`);
   for (const { source, reason } of skippedSources) {
@@ -136,7 +137,7 @@ async function main() {
 
   for (const src of activeSources) {
     try {
-      const feedItems = await fetchSourceItems(src, { fetchFeed, fetchHtmlListing }, 15000);
+      const feedItems = await fetchSourceItems(src, { fetchFeed, fetchHtmlListing, fetchUpdates }, 15000);
       let relevantCount = 0;
       let prereleaseCount = 0;
       let thinCount = 0;

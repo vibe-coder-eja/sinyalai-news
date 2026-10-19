@@ -33,6 +33,8 @@ const AI_PATTERNS = [
   /\bCopilot\b/i,
   /\bLlama\b/i,
   /\bGrok\b/i,
+  /\bNemotron\b/i,
+  /\bmultimodal\b/i,
   /\bagentic\b/i,
   /\bAI agents?\b/i,
   /\bchatbots?\b/i,

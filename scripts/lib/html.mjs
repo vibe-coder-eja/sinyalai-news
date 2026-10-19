@@ -53,7 +53,9 @@ export function parseListingDate(raw) {
     return Number.isNaN(d.valueOf()) ? null : d;
   }
   if (/^\d{4}-\d{2}-\d{2}T/.test(text)) {
-    const d = new Date(text);
+    // Waktu tanpa zona (mis. "2026-10-12T09:00:00") dibaca UTC agar tidak bergantung zona mesin.
+    const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text);
+    const d = new Date(zoned ? text : `${text}Z`);
     return Number.isNaN(d.valueOf()) ? null : d;
   }
 
@@ -159,8 +161,44 @@ export function parseListing(html, baseUrl) {
   if (byLink.size === 0) {
     for (const item of parseStandaloneLinkCards(html, baseUrl)) byLink.set(item.link, item);
   }
+  if (byLink.size === 0) {
+    for (const item of parseArticleBlocks(html, baseUrl)) byLink.set(item.link, item);
+  }
 
   return [...byLink.values()];
+}
+
+/**
+ * Pola blok `<article>`: tautan judul dan `<time>` bersaudara di dalam satu `<article>`,
+ * bukan tautan yang membungkus `<time>` (mis. siaran pers ir.amd.com). Judul diambil dari
+ * teks tautan pertama (atau heading bila ada). Dipakai bila pola lain tidak menemukan apa pun.
+ * @param {string} html
+ * @param {string} baseUrl
+ */
+function parseArticleBlocks(html, baseUrl) {
+  const items = [];
+  for (const block of html.match(/<article\b[^>]*>[\s\S]*?<\/article>/gi) || []) {
+    const time = block.match(/<time\b([^>]*)>([\s\S]*?)<\/time>/i);
+    const anchor = block.match(/<a\b[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)<\/a>/i);
+    if (!time || !anchor) continue;
+
+    let link;
+    try {
+      link = new URL(decodeHtml(anchor[1]), baseUrl).toString();
+    } catch {
+      continue;
+    }
+    if (!isSecureUrl(link)) continue;
+
+    const title = extractTitle(block) || decodeHtml(anchor[2]);
+    const datetime = time[1].match(/\bdatetime="([^"]*)"/i)?.[1];
+    const publishedAt =
+      parseListingDate(datetime || "") || parseListingDate(decodeHtml(time[2]));
+    if (!title) continue;
+
+    items.push({ title, link, publishedAt, summary: truncateAtWord(extractSummary(block), MAX_SUMMARY_LENGTH) });
+  }
+  return items;
 }
 
 /**

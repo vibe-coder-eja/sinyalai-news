@@ -9,6 +9,7 @@ describe("hasAiSignal", () => {
     "Scaling inference for large language models",
     "Gemini 3 arrives in Workspace",
     "What's new in GPT-5 for developers",
+    "NVIDIA Nemotron 3.5 Super VL Powers Specialized Agents with Multimodal Reasoning",
   ])("detects AI content: %s", (title) => {
     expect(hasAiSignal({ title })).toBe(true);
   });

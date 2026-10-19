@@ -6,6 +6,21 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+### ➕ Tujuh Sumber Baru untuk Menambah Stok Rilis
+Pemicu: issue #22 dan #23 (kuota edisi belum terpenuhi). Stok kandidat dalam jendela 2 hari sering hanya 1-2 berita, dan 5 dari 22 sumber bertipe `page` tidak pernah diambil.
+- **Tujuh feed RSS resmi ditambahkan** (semua diuji dengan `fetch-signals --dry-run`, 0 error): `nvidia-developer` (NVIDIA), `microsoft-research` (Microsoft), `google-research` (Google), `aws-machine-learning` (AWS), `apple-machine-learning` (Apple), `github-ai` (GitHub), dan `mistral` (Mistral AI). Total sumber 22 menjadi 29, dan sumber yang diambil otomatis 17 menjadi 24.
+- **`aiFocused`**: AWS, Apple, GitHub (kategori AI & ML), dan Mistral ditandai `aiFocused`. NVIDIA Developer, Microsoft Research, dan Google Research tetap disaring kata kunci AI karena memuat topik non-AI.
+- **Perusahaan yang sama berbagi batas**: sumber baru NVIDIA, Microsoft, dan Google memakai nama perusahaan yang sudah ada, sehingga tetap kena batas 2 berita per perusahaan per edisi.
+- **Filter relevansi**: kata kunci `Nemotron` dan `multimodal` ditambahkan karena judul seperti "Nemotron 3.5 Super VL Powers Specialized Agents with Multimodal Reasoning" sebelumnya dibuang. Tes ditambahkan.
+
+### 🔌 Sumber `page` yang Mati Dihidupkan (AMD dan Z.ai)
+Dari lima sumber bertipe `page` (tidak pernah diambil), dua kini aktif; tiga sisanya tetap manual dengan alasan terdokumentasi di `notes`.
+- **AMD (`amd-ir`) aktif sebagai `html`**: siaran pers `ir.amd.com` menaruh tautan judul dan `<time>` bersaudara di dalam `<article>`. Pola baru `parseArticleBlocks` di `html.mjs` membacanya dan hanya dipakai bila pola lain tidak menemukan apa pun, sehingga sumber yang sudah ada tidak berubah. Sumber tidak `aiFocused` (disaring kata kunci AI) dan membuang siaran pers hasil keuangan, dividen, dan susunan dewan.
+- **Z.ai (`zai`) aktif sebagai tipe baru `updates`**: `scripts/lib/updates.mjs` membaca `docs.z.ai/release-notes/new-released.md` (blok `<Update label=tanggal description=model>`). Tautan sumber adalah halaman dokumentasi model, dan ringkasan dibersihkan dari markdown. Rilis terbaru saat ini GLM-5.3-Flash (26 Agustus), jadi baru tayang bila ada rilis model baru. `fetch-signals.mjs` dan `generate-news.mjs` kini memakai `fetchSourceItems`/`ACTIVE_TYPES` yang sama.
+- **Waktu ISO tanpa zona dibaca UTC** di `parseListingDate` (sebelumnya mengikuti zona waktu mesin).
+- **Tetap manual**: `qwen` (daftar JSON `qwen.ai/api/page_config` ditemukan, tetapi entri terbarunya 23 Des 2025), `nous-research-blog` (situs Next.js, tanggal hanya ada di halaman tiap artikel, tidak ada RSS), dan `nous-research-releases` (katalog produk, bukan changelog).
+- Tes ditambahkan untuk parser blok `<article>`, zona waktu ISO, `updates.mjs`, dan perutean tipe `updates`. Total sumber 29, aktif 26.
+
 ### 🛟 Edisi Kosong Tidak Lagi Lewat Diam-diam
 Pemicu: edisi malam 11 Oktober 2026 (22:05 WIB) menayangkan 0 berita, tetapi run tetap hijau dan situs hanya di-deploy ulang tanpa perubahan.
 - **Fallback usia rilis**: bila kuota edisi belum terpenuhi dalam batas usia edisi (2 hari), seleksi diulang dengan batas cadangan 7 hari (`FALLBACK_MAX_AGE_DAYS`). Tanggal tayang tetap mengikuti tanggal sumber. Tidak berlaku pada mode `--for-date` atau saat `--max-age-days` diberikan eksplisit.

@@ -17,6 +17,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchFeed } from "./lib/rss.mjs";
 import { fetchHtmlListing } from "./lib/html.mjs";
+import { fetchUpdates } from "./lib/updates.mjs";
+import { ACTIVE_TYPES, fetchSourceItems } from "./lib/sources.mjs";
 import { buildDraftBody, writeDraftArticle } from "./lib/markdown.mjs";
 import { slugify, uniqueSlug } from "./lib/slug.mjs";
 import { checkRelevance } from "./lib/relevance.mjs";
@@ -107,7 +109,7 @@ async function main() {
     const source = sources[i];
     stats.sources += 1;
 
-    if (source.type !== "rss" && source.type !== "html") {
+    if (!ACTIVE_TYPES.has(source.type || "rss")) {
       console.log(`• [${source.id}] skip (type=${source.type}) — ${source.notes || "manual"}`);
       continue;
     }
@@ -115,10 +117,7 @@ async function main() {
     process.stdout.write(`• [${source.id}] fetch ${source.url} ... `);
 
     try {
-      const items =
-        source.type === "html"
-          ? await fetchHtmlListing(source.url)
-          : await fetchFeed(source.url);
+      const items = await fetchSourceItems(source, { fetchFeed, fetchHtmlListing, fetchUpdates });
       console.log(`${items.length} item`);
       stats.fetched += items.length;
 

@@ -4,11 +4,12 @@
  * Jenis sumber di sources.json:
  * - rss  : feed RSS/Atom (fetchFeed)
  * - html : halaman daftar rilis HTML (fetchHtmlListing)
+ * - updates : halaman catatan rilis Mintlify berisi blok <Update> (fetchUpdates)
  * - page : catatan manual, tidak diambil otomatis
  * `enabled: false` mematikan sumber. Tanpa `type` dianggap rss.
  */
 
-export const ACTIVE_TYPES = new Set(["rss", "html"]);
+export const ACTIVE_TYPES = new Set(["rss", "html", "updates"]);
 
 /**
  * @param {Array<{ id: string, type?: string, enabled?: boolean }>} sources
@@ -33,11 +34,11 @@ export function selectActiveSources(sources = []) {
 /**
  * Ambil item dari satu sumber sesuai tipenya.
  * @param {{ type?: string, url: string }} source
- * @param {{ fetchFeed: Function, fetchHtmlListing: Function }} fetchers
+ * @param {{ fetchFeed: Function, fetchHtmlListing: Function, fetchUpdates?: Function }} fetchers
  * @param {number} [timeoutMs]
  */
-export function fetchSourceItems(source, { fetchFeed, fetchHtmlListing }, timeoutMs) {
-  return source.type === "html"
-    ? fetchHtmlListing(source.url, timeoutMs)
-    : fetchFeed(source.url, timeoutMs);
+export function fetchSourceItems(source, { fetchFeed, fetchHtmlListing, fetchUpdates }, timeoutMs) {
+  if (source.type === "html") return fetchHtmlListing(source.url, timeoutMs);
+  if (source.type === "updates") return fetchUpdates(source.url, timeoutMs);
+  return fetchFeed(source.url, timeoutMs);
 }
