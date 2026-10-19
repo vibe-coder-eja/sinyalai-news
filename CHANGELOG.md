@@ -6,6 +6,16 @@ Semua pembaruan penting, perbaikan teknis, dan peningkatan editorial pada proyek
 
 ## [Belum dirilis]
 
+---
+
+## [0.11.0] — 2026-10-19
+
+Rilis penambahan stok berita dan pembagian ke X: edisi kosong tidak lagi lewat diam-diam, sumber bertambah dari 22 menjadi 29 (26 diambil otomatis), dan tombol bagikan ke X ditambahkan di halaman artikel. Mencakup PR #21 dan perubahan langsung ke `main`.
+
+### 🔗 Tombol Bagikan ke X
+- **Tombol "X"** ditambahkan di bagian "Bagikan berita ini" pada halaman artikel, di antara Facebook dan Email. Tautan memakai `https://x.com/intent/post` dengan parameter `url` dan `text` (judul), keduanya di-encode (`buildShareTargets` di `src/lib/share.ts`). Ikon dari `simple-icons` (`siX`), berwarna mengikuti teks karena logo X berwarna hitam di tema gelap.
+- Tes ditambahkan untuk urutan target dan isi tautan X (`src/__tests__/share.test.ts`).
+
 ### ➕ Tujuh Sumber Baru untuk Menambah Stok Rilis
 Pemicu: issue #22 dan #23 (kuota edisi belum terpenuhi). Stok kandidat dalam jendela 2 hari sering hanya 1-2 berita, dan 5 dari 22 sumber bertipe `page` tidak pernah diambil.
 - **Tujuh feed RSS resmi ditambahkan** (semua diuji dengan `fetch-signals --dry-run`, 0 error): `nvidia-developer` (NVIDIA), `microsoft-research` (Microsoft), `google-research` (Google), `aws-machine-learning` (AWS), `apple-machine-learning` (Apple), `github-ai` (GitHub), dan `mistral` (Mistral AI). Total sumber 22 menjadi 29, dan sumber yang diambil otomatis 17 menjadi 24.
