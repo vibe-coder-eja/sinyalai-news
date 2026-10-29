@@ -1,0 +1,21 @@
+---
+title: "AWS tambah fitur tata kelola di QA Studio berbasis Amazon Nova Act untuk tim QA berskala besar"
+summary: "AWS (28/10) merilis bagian ketiga seri QA Studio: fitur Applications untuk mengelompokkan tes per aplikasi beserta metrik kesehatannya, serta team-based user management dengan lima peran untuk mengatur siapa boleh melihat dan mengubah tes."
+company: "AWS"
+source: "https://aws.amazon.com/blogs/machine-learning/accelerating-software-delivery-with-agentic-qa-automation-using-amazon-nova-act-part-3/"
+author: "Redaktur Sinyal AI News (RSAIN)"
+publishedAt: 2026-10-28T18:12:13.000Z
+draft: false
+sourceTitle: "Accelerating software delivery with agentic QA automation using Amazon Nova Act – Part 3"
+categories: ["Fitur & Skills"]
+---
+
+AWS (28/10) memperkenalkan dua kemampuan baru di QA Studio, solusi referensi berbasis Amazon Nova Act yang membantu tim QA menulis dan menjalankan tes otomatis menggunakan bahasa alami. Bagian ketiga dari seri ini menambahkan Applications, yaitu wadah yang mengelompokkan tes berdasarkan aplikasi yang diuji, serta team-based user management yang mengatur siapa boleh melihat dan mengubah tes di dalam sebuah tim.
+
+Bayangkan sebuah perusahaan yang sudah menjalankan otomatisasi QA di banyak produk. Ratusan tes otomatis menumpuk dari berbagai tim, dan semua orang bisa melihat tes milik semua orang. Pertanyaan sederhana seperti "apakah tes untuk aplikasi ini sehat hari ini?" sulit dijawab. Begitu pula pertanyaan tentang siapa yang bertanggung jawab ketika cakupan tes menurun. Di sinilah Applications berperan: setiap aplikasi yang diuji—misalnya sebuah situs web atau layanan—menjadi wadah yang memiliki nama, URL dasar, dan daftar lingkungan seperti development, staging, dan production. Tes satuan (use case) dan kumpulan tes regresi (test suite) yang sudah dibahas di bagian pertama dan kedua kini ditempatkan di dalam aplikasi, sehingga setiap tim hanya bekerja di dalam aplikasi yang mereka miliki.
+
+Agar tim tidak sekadar mencentang daftar tes, QA Studio menampilkan metrik kesehatan di halaman aplikasi. Tiga angka utama muncul di bagian atas: tingkat keberhasilan (pass rate) dalam periode tertentu, total eksekusi, dan jumlah kegagalan saat ini. Dari situ, sistem menghitung health score 0–100 yang dimulai dari pass rate lalu dikurangi penalti untuk tes yang tidak stabil (flaky). Tes yang hasilnya bolak-balik antara lulus dan gagal tidak akan membuat skor terlihat sempurna palsu. Tab metrik kemudian menampilkan tren dalam jendela 7 hari per jam atau 30 hari per hari, lengkap dengan filter per lingkungan sehingga staging dan production bisa dibandingkan untuk set tes yang sama. Dua tampilan tambahan menyortir tes yang paling sering tidak stabil dalam tujuh hari terakhir dan daftar kegagalan terbaru, yang masing-masing bisa diklik untuk membuka log trajektori dan rekaman sesi Amazon Nova Act dari bagian pertama seri ini.
+
+Untuk menjawab pertanyaan "siapa pemilik tes ini?", AWS menambahkan sistem peran berbasis tim. Sebuah aplikasi hanya dimiliki satu tim, dan anggota tim mendapatkan salah satu dari lima peran yang bersifat kumulatif: Admin (akses seluruh studio, termasuk membuat tim dan menetapkan aplikasi), Team Lead (mengelola anggota tim dan membuat aplikasi untuk timnya), Editor (membuat dan mengubah use case serta test suite), Executor (menjalankan tes tanpa mengubah), dan Viewer (akses baca saja). Karena izin mengikuti aplikasi, tim tidak perlu mengatur hak pada ribuan tes satu per satu. Halaman Users di QA Studio menampilkan seluruh akun beserta tim dan perannya, sehingga Admin bisa langsung melihat siapa yang memegang peran apa di studio.
+
+Secara umum, Amazon Nova Act adalah model AI yang dapat menavigasi antarmuka web seperti manusia—misalnya mengklik tombol, mengisi formulir, dan membaca hasil di layar—berdasarkan instruksi bahasa alami. Pendekatan ini memungkinkan QA menulis tes tanpa skrip kode yang rumit, cukup mendeskripsikan langkah-langkah yang harus dilakukan agen. Pada bagian ketiga ini, AWS melengkapi kemampuan tersebut dengan lapisan tata kelola: pengelompokan tes per aplikasi, pelacakan kesehatan dari waktu ke waktu, dan kontrol akses bertingkat agar otomatisasi QA bisa dipakai lintas tim tanpa kehilangan keteraturan.
