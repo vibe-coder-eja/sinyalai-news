@@ -8,6 +8,10 @@
  * menentukan daripada kata umum. Dua berita dianggap sama jika kata kunci bersama
  * berbobot cukup besar. Bobot ikut menyesuaikan seiring bertambahnya artikel.
  *
+ * Pengecualian: nama varian. Dua berita dengan nama keluarga dan nomor versi yang
+ * sama tetapi nama varian berbeda (Gemini 4 Carbon dan Gemini 4 Argon, GPT-6.1 Terra
+ * dan GPT-6.1 Sol) adalah produk berbeda, seberapa pun miripnya kata lain di judulnya.
+ *
  * Batas: pembandingan judul lintas bahasa (judul Inggris vs judul Indonesia)
  * hanya mengandalkan nama produk dan angka. Karena itu artikel baru menyimpan
  * `sourceTitle` (judul asli sumber) agar pembandingan berikutnya Inggris-Inggris.
@@ -74,6 +78,79 @@ export function topicTokens(text) {
 }
 
 /**
+ * Topik: himpunan kata kunci, ditambah peta "nomor versi → nama varian" (mis. 4 → carbon)
+ * yang dibaca dari urutan kata di judul dan slug. Tetap bisa dipakai sebagai Set biasa.
+ */
+export class Topic extends Set {
+  /**
+   * @param {Iterable<string>} tokens
+   * @param {Map<string, string>} [variants]
+   */
+  constructor(tokens, variants = new Map()) {
+    super(tokens);
+    this.variants = variants;
+  }
+}
+
+const isNameWord = (w) => /^[a-z]{3,}$/.test(w) && !STOPWORDS.has(w) && !COMPANY_WORDS.has(w);
+/** Nomor versi: 1 sampai 3 digit, boleh bertitik (6.1). Tahun empat digit sengaja tidak termasuk. */
+const isVersionWord = (w) => /^\d{1,3}(?:_\d+)*$/.test(w);
+
+/**
+ * Setiap nomor versi yang disebut setelah kata nama keluarga, beserta kata nama yang langsung
+ * mengikutinya dalam segmen yang sama (null bila tidak ada). Varian harus satu segmen dengan
+ * nomor versinya: pada "Gemini 3.5: frontier intelligence", "frontier" adalah subjudul.
+ * @param {string} text
+ * @returns {Map<string, string | null>}
+ */
+function scanVersions(text) {
+  const out = new Map();
+  if (typeof text !== "string") return out;
+  const normalized = text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/(\d)\.(\d)/g, "$1_$2");
+  for (const segment of normalized.split(/[:;,.!?|()[\]–—]+/)) {
+    const words = segment
+      .split(/[^a-z0-9_]+/)
+      .map((w) => w.replace(/^_+|_+$/g, ""))
+      .filter(Boolean);
+    for (let i = 1; i < words.length; i += 1) {
+      if (!isVersionWord(words[i]) || !isNameWord(words[i - 1])) continue;
+      // "6", "1" pada slug "gpt-6-1-sol" sama dengan "6.1" pada judul.
+      const run = [];
+      let j = i;
+      while (j < words.length && isVersionWord(words[j])) run.push(words[j++]);
+      out.set(run.join("_"), j < words.length && isNameWord(words[j]) ? words[j] : null);
+      i = j - 1;
+    }
+  }
+  return out;
+}
+
+/**
+ * Pasangan "nomor versi → nama varian" dari sebuah teks: kata nama keluarga, nomor versi,
+ * lalu kata nama yang langsung mengikutinya. "Gemini 4 Carbon" → {"4" → "carbon"};
+ * "GPT-6.1 Sol" → {"6_1" → "sol"}. Nomor versi tanpa varian tidak dicatat.
+ * @param {string} text
+ * @returns {Map<string, string>}
+ */
+export function variantNames(text) {
+  return new Map([...scanVersions(text)].filter(([, name]) => name));
+}
+
+/** Benar bila kedua topik memuat nomor versi yang sama tetapi dengan nama varian berbeda. */
+export function hasVariantConflict(a, b) {
+  if (!a?.variants || !b?.variants) return false;
+  for (const [version, name] of a.variants) {
+    const other = b.variants.get(version);
+    if (other && other !== name) return true;
+  }
+  return false;
+}
+
+/**
  * Bangun representasi topik.
  * @param {{ title?: string, link?: string }} p
  * @returns {Set<string>}
@@ -83,9 +160,17 @@ export function buildTopic({ title = "", link = "" }) {
   const gh = parseGithubReleaseUrl(link);
   if (gh) return releaseTopicTokens(gh);
 
+  const slugText = slugTextFromUrl(link);
   const tokens = topicTokens(title);
-  for (const t of topicTokens(slugTextFromUrl(link))) tokens.add(t);
-  return tokens;
+  for (const t of topicTokens(slugText)) tokens.add(t);
+  // Judul jadi acuan. Slug (selalu berbahasa Inggris) hanya melengkapi nomor versi yang tidak
+  // disebut judul sama sekali, mis. judul Indonesia tanpa nama produk.
+  const titleVersions = scanVersions(title);
+  const variants = variantNames(title);
+  for (const [version, name] of variantNames(slugText)) {
+    if (!titleVersions.has(version)) variants.set(version, name);
+  }
+  return new Topic(tokens, variants);
 }
 
 /**
@@ -125,6 +210,7 @@ export function topicOverlap(a, b, weight) {
  * Cari topik yang sama di antara daftar pembanding.
  * Perusahaan sama: ambang 0,6 dengan minimal 2 kata kunci bersama.
  * Perusahaan berbeda (mis. NVIDIA menulis tentang rilis OpenAI): ambang 0,85 dengan minimal 3 kata bersama.
+ * Pasangan dengan nama varian berbeda untuk versi yang sama (Carbon vs Argon) tidak pernah dianggap sama.
  *
  * @param {{ topic: Set<string>, company?: string }} candidate
  * @param {{ topic: Set<string>, company?: string, label: string }[]} pool
@@ -134,6 +220,7 @@ export function topicOverlap(a, b, weight) {
 export function findSameTopic(candidate, pool, weight) {
   let best = null;
   for (const other of pool) {
+    if (hasVariantConflict(candidate.topic, other.topic)) continue;
     const { score, shared } = topicOverlap(candidate.topic, other.topic, weight);
     const sameCompany =
       candidate.company && other.company && candidate.company.toLowerCase() === other.company.toLowerCase();
