@@ -281,6 +281,24 @@
       "enabled": true,
       "aiFocused": true,
       "notes": "Newsroom resmi Mistral AI. Ringkasan di feed sering kosong atau sangat pendek, jadi konteks artikel diambil dari halaman sumber."
+    },
+    {
+      "id": "ibm-research",
+      "company": "IBM",
+      "type": "rss",
+      "url": "https://research.ibm.com/rss",
+      "home": "https://research.ibm.com/blog",
+      "enabled": true,
+      "notes": "IBM Research Blog (Granite, agen, AI untuk perusahaan, riset model). Memuat topik non-AI (komputasi kuantum, material), jadi tidak aiFocused dan harus lolos filter relevansi AI. Feed memuat 20 item. newsroom.ibm.com tidak punya feed, dan research.ibm.com/news/feed.xml 404."
+    },
+    {
+      "id": "salesforce-news",
+      "company": "Salesforce",
+      "type": "rss",
+      "url": "https://www.salesforce.com/news/feed/",
+      "home": "https://www.salesforce.com/news/",
+      "enabled": true,
+      "notes": "Newsroom resmi Salesforce (Agentforce, agen AI untuk perusahaan, Slack). Memuat akuisisi, ekspansi kantor, dan topik bisnis non-AI, jadi tidak aiFocused dan harus lolos filter relevansi AI. Feed memuat 10 item. URL ini mengalihkan ke /news/feed/?bc=OTH."
     }
   ]
 }
