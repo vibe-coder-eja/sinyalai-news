@@ -1,0 +1,23 @@
+---
+title: "NVIDIA Rilis Paket Resep untuk Menjalankan Dynamo di Kubernetes dengan Lebih Teratur"
+summary: "NVIDIA (30/10) memperkenalkan AICR, paket resep tervalidasi yang menggabungkan NVIDIA Dynamo dengan komponen infrastruktur pendukungnya agar tim platform bisa menyiapkan runtime Kubernetes untuk inferensi AI secara berulang dan konsisten."
+company: "NVIDIA"
+source: "https://developer.nvidia.com/blog/build-a-validated-kubernetes-runtime-for-nvidia-dynamo/"
+author: "Redaktur Sinyal AI News (RSAIN)"
+publishedAt: 2026-10-30T21:35:31.000Z
+draft: false
+sourceTitle: "Build a Validated Kubernetes Runtime for NVIDIA Dynamo"
+categories: ["Standar Umum"]
+---
+
+Berdasarkan tulisan di blog NVIDIA Developer (30/10), NVIDIA memperkenalkan NVIDIA AI Cluster Runtime (AICR), sebuah pendekatan berbasis resep untuk menyiapkan runtime Kubernetes yang dibutuhkan oleh NVIDIA Dynamo, framework inferensi terdistribusi milik NVIDIA yang melayani model AI di atas pekerja GPU. Tujuannya sederhana: memberi tim platform cara yang bisa diulang untuk menyiapkan seluruh lapisan infrastruktur, mulai dari driver GPU hingga pemantauan, sehingga developer tidak perlu lagi merakitnya satu per satu setiap kali ingin menjalankan model.
+
+Bagi tim yang sehari-harinya bergulat dengan orkestrasi container, menyiapkan runtime Kubernetes untuk inferensi AI biasanya berarti memasang NVIDIA GPU Operator, mengonfigurasi Dynamic Resource Allocation agar GPU dikenali Kubernetes, menyiapkan penjadwalan khusus untuk pekerja GPU, hingga memastikan Prometheus bisa mengumpulkan metrik dari akselerator dan layanan Dynamo. Semua komponen itu punya versi dan ketergantungan yang harus cocok satu sama lain. AICR menjawab masalah itu dengan membungkus Dynamo dan seluruh komponen pendukungnya ke dalam satu resep tervalidasi, lengkap dengan versi komponen yang dikunci, batasan kompatibilitas, dan pemeriksaan validasi. Hasilnya, proses pemasangan yang sama bisa direproduksi di lingkungan berbeda tanpa harus menebak-nebak konfigurasi ulang dari awal.
+
+Resep AICR untuk Dynamo saat ini mengirim chart dynamo-platform versi 1.4.2, yang mencakup operator Dynamo, image runtime, dan sumber daya seperti CustomResourceDefinition DynamoGraphDeployment versi v1beta1. Versi ini menggantikan API v1alpha1 yang dipakai sebelumnya. Di bawah Dynamo, resep AICR juga memasang komponen-komponen pendukung: NVIDIA GPU Operator untuk driver dan tumpukan perangkat lunak GPU, Node Feature Discovery agar node GPU bisa diberi label dan ditemukan penjadwal, DRA Driver untuk GPU NVIDIA agar alokasi GPU mengikuti cara Kubernetes-native, KAI Scheduler untuk penjadwalan kelompok dengan semantik gang scheduling, Grove untuk orkestrasi grafik serving multi-komponen, NVSentinel dan Nodewright untuk sinyal kesehatan node, serta stack Prometheus untuk metrik klaster, akselerator, dan layanan Dynamo.
+
+Salah satu pembaruan penting di Dynamo 1.4 adalah cara komponen-komponennya saling menemukan: frontend, worker, hingga komponen Gateway API Inference Extension (GAIE) dan Endpoint Picker Plugin (EPP) kini berkomunikasi lewat sumber daya Kubernetes, bukan lagi lewat NATS. Karena itu, jalur bawaan AICR tidak lagi memasang NATS secara default, meski NATS tetap tersedia sebagai opsi bagi pemasangan yang memang membutuhkannya. Untuk perutean permintaan, ada dua jalur yang ditawarkan. Jalur Dynamo Frontend router cocok untuk endpoint khusus model dengan topologi serving paling kecil, sementara jalur GAIE/EPP terintegrasi dengan ingress Kubernetes bersama yang dikelola lewat sumber daya Gateway API, sehingga pemilihan endpoint yang sadar cache bisa dilakukan di tingkat ingress.
+
+Alur pemasangan AICR sendiri dipisahkan dari pemasangan aplikasi dan berjalan dalam lima langkah: mengambil snapshot kondisi klaster, menghasilkan resep inferensi Dynamo, merender bundel pemasangan, memasang runtime lewat Helmfile atau GitOps, lalu memvalidasi runtime yang sudah terpasang sebelum aplikasi dijalankan. Pemisahan ini membuat tim platform bisa memastikan fondasi infrastruktur benar-benar siap sebelum developer menaruh beban kerja di atasnya.
+
+Secara umum, istilah "resep" di sini merujuk pada paket konfigurasi yang sudah diuji dan didokumentasikan: versi komponen, label node, toleransi, hingga checksum sudah ditentukan di awal, sehingga proses pemasangan bisa diputar ulang tanpa hasil yang berbeda-beda. Inferensi sendiri adalah tahap di mana model AI yang sudah dilatih dipakai untuk menjawab permintaan pengguna, dan Kubernetes adalah sistem orkestrasi yang umum dipakai untuk menjalankan layanan semacam ini dalam container. Dengan AICR, NVIDIA pada dasarnya ingin memastikan bahwa fondasi itu sudah benar sebelum developer mulai menguji perilaku model, performa serving, dan integrasi aplikasi.
