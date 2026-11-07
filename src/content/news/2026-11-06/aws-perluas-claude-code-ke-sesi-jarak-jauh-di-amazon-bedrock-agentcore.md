@@ -1,0 +1,21 @@
+---
+title: "AWS Perluas Claude Code ke Sesi Jarak Jauh di Amazon Bedrock AgentCore"
+summary: "AWS (06/11) menjelaskan cara menjalankan Claude Code sebagai agen jarak jauh di Amazon Bedrock AgentCore. Setiap tugas berjalan dalam sesi terisolasi di akun AWS dan menghasilkan pull request GitHub untuk ditinjau oleh pengembang."
+company: "AWS"
+source: "https://aws.amazon.com/blogs/machine-learning/extend-claude-code-to-remote-sessions-on-amazon-bedrock-agentcore-with-security-controls/"
+author: "Redaktur Sinyal AI News (RSAIN)"
+publishedAt: 2026-11-06T16:45:58.000Z
+draft: false
+sourceTitle: "Extend Claude Code to remote sessions on Amazon Bedrock AgentCore with security controls"
+categories: ["Rilis Model","Riset & Kebijakan"]
+---
+
+Dalam artikel resmi AWS (06/11), perusahaan menjelaskan cara menjalankan Claude Code sebagai agen jarak jauh di Amazon Bedrock AgentCore. Pada contoh bernama sample-remote-coding-agent, setiap tugas pemrograman berjalan dalam sesi terisolasi milik akun AWS pengguna, seluruh panggilan model melewati Amazon Bedrock, dan hasil perubahan dikembalikan sebagai pull request GitHub untuk diperiksa serta digabungkan oleh pengembang.
+
+Pola ini memungkinkan tugas diserahkan tanpa harus membiarkan laptop tetap terbuka. Tugas dapat dikirim melalui plugin sample-rca di Claude Code atau melalui konsol web. Plugin menjalankan Model Context Protocol atau MCP server lokal, yaitu pembantu yang memberikan Claude Code akses ke sejumlah alat tambahan. Server tersebut menandatangani permintaan dengan kredensial AWS sebelum memanggil Amazon API Gateway yang dilindungi izin IAM. Jika tugas dikirim melalui konsol web, Amazon CloudFront menyediakannya dan Amazon Cognito menangani autentikasi. AWS Lambda kemudian memeriksa perintah tugas dengan Amazon Bedrock Guardrails, mencatatnya di Amazon DynamoDB, dan memasukkannya ke antrean Amazon Simple Queue Service sebelum sesi dijalankan.
+
+Setiap repositori terdaftar memiliki AgentCore Runtime sendiri yang menjalankan citra kontainer dari Amazon Elastic Container Registry. Citra tersebut memuat Claude Code CLI, Claude Agent SDK, Git, dan Make. Setiap sesi dieksekusi dalam microVM, yaitu mesin virtual ringan dengan CPU, memori, dan sistem berkas yang terpisah, serta berada di dalam Amazon VPC dengan endpoint privat menuju Bedrock dan layanan AWS lain. Dalam sesi itu, agen memperoleh token akses GitHub dari AgentCore Identity, mengkloning repositori, dan mencari pembelajaran dari tugas sebelumnya melalui AgentCore Memory. Menurut AWS, Claude Opus di Amazon Bedrock menyusun rencana perubahan, Claude Sonnet menulis perubahannya, lalu agen menjalankan perintah pengujian yang ditentukan repositori sebelum mengembalikan pull request.
+
+AWS menyatakan bahwa Amazon Bedrock tidak menggunakan konten pengguna untuk melatih model atau membagikannya kepada penyedia model. Penyedia model juga tidak dapat mengakses perintah, keluaran, atau log layanan tersebut. Claude Code menggunakan kredensial AWS Identity and Access Management sementara dan dapat/autentikasi melalui penyedia identitas seperti Microsoft Entra ID atau Okta. AWS PrivateLink menyediakan jalur privat dari Amazon VPC menuju Bedrock, sedangkan CloudTrail mendukung jejak audit. Pengguna juga dapat mengatur apakah data permintaan dan keluaran disimpan, termasuk mengaktifkan retensi nol. Untuk engine inferensi Mantle, AWS mengatakan pendekatan tanpa akses operator dirancang agar operator tidak memiliki sarana teknis untuk membuka data pelanggan.
+
+Contoh ini sesuai untuk fitur dengan cakupan jelas, perbaikan bug, dan pengujian pada repositori tepercaya yang telah menetapkan perintah penyiapan serta pengujiannya. Kode yang tidak tepercaya tidak menjadi target karena agen menjalankan perintah repositori tanpa dapat memastikan perintah tersebut aman. Tugas terbuka juga kurang sesuai karena sesi contoh berhenti setelah tiga percobaan. AWS mencantumkan beberapa konsekuensinya: kendali langsung selama pekerjaan berkurang, lingkungan perlu disiapkan, dan biaya lebih sulit diprediksi. Secara umum, AgentCore menjadi tempat eksekusi agen, Bedrock menjadi jalur menuju model, sedangkan pull request mempertahankan pemeriksaan manusia sebelum perubahan masuk ke repositori utama.
