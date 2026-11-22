@@ -1,0 +1,21 @@
+---
+title: "Standard Bank Group dan AWS Otomatiskan Penilaian Risiko AI Generatif"
+summary: "Standard Bank Group bekerja sama dengan AWS Professional Services membangun penilaian otomatis di akun AWS-nya sendiri. Sistem ini menilai setiap kasus penggunaan AI generatif terhadap standar internasional dan kebijakan internal bank menggunakan teknik LLM-as-a-judge di Amazon Bedrock."
+company: "AWS"
+source: "https://aws.amazon.com/blogs/machine-learning/how-standard-bank-group-automates-ai-risk-assessment-for-generative-ai/"
+author: "Redaktur Sinyal AI News (RSAIN)"
+publishedAt: 2026-11-20T20:37:31.000Z
+draft: false
+sourceTitle: "How Standard Bank Group automates AI risk assessment for generative AI"
+categories: ["Riset & Kebijakan"]
+---
+
+Berdasarkan tulisan di blog AWS (20/11), Standard Bank Group dan AWS Professional Services membangun sistem otomatis yang menilai setiap kasus penggunaan AI generatif terhadap standar AI internasional dan kebijakan internal bank. Penilaian ini berjalan di akun AWS milik bank sendiri, sehingga dokumen, kode, dan hasil pengujian tetap berada di lingkungan yang dikendalikan langsung oleh Standard Bank Group. Hasilnya berupa laporan dan dasbor yang menunjukkan bagian mana yang sudah sesuai, mana yang berjalan baik, dan mana yang masih perlu mitigasi, lalu diteruskan ke komite risiko yang selama ini memegang otoritas persetujuan.
+
+Bagi tim yang harus meluncurkan aplikasi AI baru, proses ini biasanya menjadi titik paling lambat: setiap kasus penggunaan butuh persetujuan komite risiko sebelum dipakai pelanggan atau karyawan internal, dan peninjauan dilakukan secara manual. Dengan penilaian otomatis, bukti-bukti yang dibutuhkan komite dikumpulkan dan diuji dengan cara yang konsisten untuk setiap kasus penggunaan, sehingga keputusan bisa diambil berdasarkan data yang sama dari satu kasus ke kasus lain. Jörg Fischer, Group Chief Information and AI Officer Standard Bank Group, mengatakan bahwa otomatisasi ini memungkinkan bank mempercepat nilai bisnis sambil mempertahankan kontrol yang dibutuhkan industri perbankan.
+
+Secara teknis, alur penilaian ini terdiri dari empat langkah. Pertama, agen pra-penilaian yang berjalan di AWS Fargate memindai repositori kode dan dokumentasi kasus penggunaan, lalu mengisi sekitar 40 pertanyaan dalam AWS Well-Architected Tool dengan jawaban dan tautan ke bukti yang relevan. Tim pengembangan cukup memeriksa, memperbaiki jika ada yang keliru, dan menambahkan bukti yang tidak ditemukan agen. Kedua, pipeline memeriksa empat jenis bukti: dokumentasi sistem, dokumen kebijakan, kode sumber beserta system prompt, dan panggilan langsung ke aplikasi lewat AWS Lambda atau API. Pada tahap ini, pipeline juga menyisipkan upaya jailbreak dan pertanyaan di luar topik yang seharusnya ditolak aplikasi, lalu mengirim pertanyaan yang sama dalam bentuk asli dan yang diubah susunannya untuk mengukur konsistensi jawaban menggunakan model embedding di Amazon Bedrock.
+
+Langkah ketiga adalah evaluasi bukti terhadap kontrol yang berasal dari standar AI internasional atau kebijakan internal bank, misalnya prosedur penanganan insiden harus menjelaskan cara pelaporan. Langkah keempat merangkum hasil dalam format standar dan menyerahkannya ke pihak yang menindaklanjuti. Seluruh orkestrasi dijalankan oleh AWS Step Functions, dan model fondasi yang menilai bukti diakses lewat Amazon Bedrock dengan kontrol akses AWS Identity and Access Management (IAM) yang sama seperti beban kerja AWS lainnya. Amazon Bedrock tidak membagikan prompt maupun output bank ke penyedia model dan tidak menggunakan data tersebut untuk melatih model, sehingga data tetap berada di dalam akun bank.
+
+Secara umum, istilah LLM-as-a-judge merujuk pada teknik memakai model bahasa besar untuk menilai keluaran atau bukti berdasarkan kriteria yang ditentukan, mirip bagaimana seorang penilai manusia memeriksa dokumen. Karena Amazon Bedrock menawarkan banyak model fondasi lewat satu API, bank dapat mengganti model penilai ke versi yang lebih baru hanya dengan mengubah pengaturan konfigurasi, tanpa membangun ulang pipeline. Pendekatan ini memungkinkan Standard Bank Group menerapkan kebijakan AI yang sudah ada tanpa membuat kebijakan baru, sambil mempercepat proses persetujuan yang sebelumnya menjadi hambatan utama dalam peluncuran aplikasi AI generatif.
